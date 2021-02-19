@@ -1,4 +1,4 @@
-package com.example.securify.ui.home;
+package com.example.securify.ui.whitelist;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,17 +14,17 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.securify.R;
 
-public class HomeFragment extends Fragment {
+public class WhiteListFragment extends Fragment {
 
-    private HomeViewModel homeViewModel;
+    private WhiteListViewModel whiteListViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        homeViewModel =
-                new ViewModelProvider(this).get(HomeViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_home, container, false);
-        final TextView textView = root.findViewById(R.id.text_home);
-        homeViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        whiteListViewModel =
+                new ViewModelProvider(this).get(WhiteListViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_whitelist, container, false);
+        final TextView textView = root.findViewById(R.id.text_whitelist);
+        whiteListViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);

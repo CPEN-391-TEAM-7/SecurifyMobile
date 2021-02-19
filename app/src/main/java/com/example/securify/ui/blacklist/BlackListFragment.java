@@ -1,4 +1,4 @@
-package com.example.securify.ui.dashboard;
+package com.example.securify.ui.blacklist;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,17 +14,17 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.securify.R;
 
-public class DashboardFragment extends Fragment {
+public class BlackListFragment extends Fragment {
 
-    private DashboardViewModel dashboardViewModel;
+    private BlackListViewModel blackListViewModel;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        dashboardViewModel =
-                new ViewModelProvider(this).get(DashboardViewModel.class);
-        View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
-        final TextView textView = root.findViewById(R.id.text_dashboard);
-        dashboardViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+        blackListViewModel =
+                new ViewModelProvider(this).get(BlackListViewModel.class);
+        View root = inflater.inflate(R.layout.fragment_blacklist, container, false);
+        final TextView textView = root.findViewById(R.id.text_blacklist);
+        blackListViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
