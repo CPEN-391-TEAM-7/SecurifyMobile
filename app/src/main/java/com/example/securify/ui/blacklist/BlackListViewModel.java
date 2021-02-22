@@ -10,7 +10,7 @@ public class BlackListViewModel extends ViewModel {
 
     public BlackListViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is blacklist fragment");
+        mText.setValue("Blacklist");
     }
 
     public LiveData<String> getText() {
