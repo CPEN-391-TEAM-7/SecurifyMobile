@@ -43,8 +43,8 @@ public class StatisticsFragment extends Fragment {
     private PieChart pieChart;
     private BarChart barChart;
 
-    private float[] yData = {20f, 20f, 20f, 20f, 20f};
-    private String[] xData = {"Strawberries", "Apples", "Watermelons", "Pears", "Pineapple"};
+    ArrayList<Integer> colors = new ArrayList<>();
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -55,6 +55,7 @@ public class StatisticsFragment extends Fragment {
 
         pieChart = root.findViewById(R.id.pieChart_view);
         barChart = root.findViewById(R.id.barChart_view);
+        initColors();
 
         initPieChart();
         showPieChart();
@@ -68,6 +69,16 @@ public class StatisticsFragment extends Fragment {
 //            }
 //        });
         return root;
+    }
+
+    private void initColors() {
+        colors.add(getResources().getColor(R.color.main2));
+        colors.add(getResources().getColor(R.color.main3));
+        colors.add(getResources().getColor(R.color.main4));
+        colors.add(getResources().getColor(R.color.main5));
+        colors.add(getResources().getColor(R.color.main6));
+        colors.add(getResources().getColor(R.color.main7));
+        colors.add(getResources().getColor(R.color.main1));
     }
 
     private void initPieChart(){
@@ -104,21 +115,14 @@ public class StatisticsFragment extends Fragment {
 
         //initializing data
         Map<String, Integer> typeAmountMap = new HashMap<>();
-        typeAmountMap.put("Toys",200);
-        typeAmountMap.put("Snacks",230);
-        typeAmountMap.put("Clothes",100);
-        typeAmountMap.put("Stationary",500);
-        typeAmountMap.put("Phone",50);
+        typeAmountMap.put("Malicious",200);
+        typeAmountMap.put("Blacklisted",230);
+        typeAmountMap.put("Whitelisted",100);
+        typeAmountMap.put("Safe",500);
+        typeAmountMap.put("Undefined",50);
 
         //initializing colors for the entries
-        ArrayList<Integer> colors = new ArrayList<>();
-        colors.add(Color.parseColor("#304567"));
-        colors.add(Color.parseColor("#309967"));
-        colors.add(Color.parseColor("#476567"));
-        colors.add(Color.parseColor("#890567"));
-        colors.add(Color.parseColor("#a35567"));
-        colors.add(Color.parseColor("#ff5f67"));
-        colors.add(Color.parseColor("#3ca567"));
+
 
         //input data and fit data into pie chart entry
         for(String type: typeAmountMap.keySet()){
@@ -164,7 +168,7 @@ public class StatisticsFragment extends Fragment {
         BarData data = new BarData(bardataset);
         barChart.setData(data); // set the data and list of labels into chart
         barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(labels));
-        bardataset.setColors(ColorTemplate.COLORFUL_COLORS);
+        bardataset.setColors(colors);
         barChart.animateY(5000);
     }
 }
