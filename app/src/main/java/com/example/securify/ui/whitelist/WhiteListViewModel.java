@@ -10,7 +10,7 @@ public class WhiteListViewModel extends ViewModel {
 
     public WhiteListViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is whitelist fragment");
+        mText.setValue("Whitelist");
     }
 
     public LiveData<String> getText() {

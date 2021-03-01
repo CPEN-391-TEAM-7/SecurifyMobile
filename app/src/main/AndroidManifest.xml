@@ -26,7 +26,8 @@
             </intent-filter>
         </activity>
         <!--HomePage-->
-        <activity android:name=".MainActivity">
+        <activity android:name=".MainActivity"
+            android:windowSoftInputMode="adjustPan">
         </activity>
         <activity android:name=".BluetoothActivity">
         </activity>

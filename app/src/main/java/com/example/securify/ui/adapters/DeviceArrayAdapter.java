@@ -8,9 +8,6 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import com.example.securify.R;
 
 import java.util.ArrayList;
@@ -32,7 +29,7 @@ public class DeviceArrayAdapter extends ArrayAdapter<String> {
     @Override
     public View getView(int position, View convertView,  ViewGroup parent) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        View row =  inflater.inflate(R.layout.row, parent, false);
+        View row =  inflater.inflate(R.layout.bluetooth_row, parent, false);
 
         ImageView icon = row.findViewById(R.id.BTicon);
         icon.setImageResource(R.drawable.ic_bluetooth);

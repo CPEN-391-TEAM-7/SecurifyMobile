@@ -9,10 +9,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.icu.number.LocalizedNumberFormatter;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.PersistableBundle;
 import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
@@ -20,9 +17,6 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
@@ -69,8 +63,8 @@ public class BluetoothActivity extends AppCompatActivity {
         setContentView(R.layout.bluetooth);
         context = getApplicationContext();
 
-        PairedArrayAdapter = new DeviceArrayAdapter(this, R.layout.row, PairedDevicesArray);
-        DiscoveredArrayAdapter = new DeviceArrayAdapter(this, R.layout.row, DiscoveredDevicesArray);
+        PairedArrayAdapter = new DeviceArrayAdapter(this, R.layout.bluetooth_row, PairedDevicesArray);
+        DiscoveredArrayAdapter = new DeviceArrayAdapter(this, R.layout.bluetooth_row, DiscoveredDevicesArray);
 
         ListView pairedListView = findViewById(R.id.pairedList);
         ListView discoveredListView = findViewById(R.id.discoveredList);
@@ -91,23 +85,27 @@ public class BluetoothActivity extends AppCompatActivity {
             String action = intent.getAction();
             BluetoothDevice newDevice;
 
-            if (action.equals(BluetoothDevice.ACTION_FOUND)) {
+            switch (action) {
+                case BluetoothDevice.ACTION_FOUND:
 
-                newDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                if (!DiscoveredDevices.contains(newDevice) && !PairedDevices.contains(newDevice)) {
-                    String device = newDevice.getName() + "\nMAC Address =\n " + newDevice.getAddress();
-                    Toast.makeText(context, device, Toast.LENGTH_SHORT).show();
+                    newDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    if (!DiscoveredDevices.contains(newDevice) && !PairedDevices.contains(newDevice)) {
+                        String device = newDevice.getName() + "\nMAC Address =\n " + newDevice.getAddress();
+                        Toast.makeText(context, device, Toast.LENGTH_SHORT).show();
 
-                    DiscoveredDevices.add(newDevice);
-                    DiscoveredDevicesArray.add(device);
+                        DiscoveredDevices.add(newDevice);
+                        DiscoveredDevicesArray.add(device);
 
-                    DiscoveredArrayAdapter.notifyDataSetChanged();
-                }
+                        DiscoveredArrayAdapter.notifyDataSetChanged();
+                    }
 
-            } else if (action.equals(BluetoothAdapter.ACTION_DISCOVERY_STARTED)) {
-                Toast.makeText(context, "Discovery Started", Toast.LENGTH_LONG).show();
-            } else if (action.equals(BluetoothAdapter.ACTION_DISCOVERY_FINISHED)) {
-                Toast.makeText(context, "Discovery Finished", Toast.LENGTH_LONG).show();
+                    break;
+                case BluetoothAdapter.ACTION_DISCOVERY_STARTED:
+                    Toast.makeText(context, "Discovery Started", Toast.LENGTH_LONG).show();
+                    break;
+                case BluetoothAdapter.ACTION_DISCOVERY_FINISHED:
+                    Toast.makeText(context, "Discovery Finished", Toast.LENGTH_LONG).show();
+                    break;
             }
         }
     };
@@ -201,7 +199,6 @@ public class BluetoothActivity extends AppCompatActivity {
             if(resultCode != RESULT_OK) {
                 Toast.makeText(this, "Bluetooth failed to start", Toast.LENGTH_LONG).show();
                 finish();
-                return;
             }
 
     }

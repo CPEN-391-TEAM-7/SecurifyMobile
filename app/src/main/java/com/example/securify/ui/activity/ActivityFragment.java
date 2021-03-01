@@ -1,12 +1,12 @@
 package com.example.securify.ui.activity;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
@@ -15,13 +15,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.securify.BluetoothActivity;
 import com.example.securify.BluetoothStreams;
-import com.example.securify.MainActivity;
 import com.example.securify.R;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.OutputStream;
 
 public class ActivityFragment extends Fragment {
@@ -36,11 +33,13 @@ public class ActivityFragment extends Fragment {
                 new ViewModelProvider(this).get(ActivityViewModel.class);
         View root = inflater.inflate(R.layout.fragment_activity, container, false);
         final TextView textView = root.findViewById(R.id.text_activity);
+        outputStream = BluetoothStreams.getInstance().getOutputStream();
 
         ToggleButton toggleButton = root.findViewById(R.id.toggle);
         toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
                 if (isChecked) {
                     WritetoBTDevice("1");
                 } else {
@@ -62,8 +61,10 @@ public class ActivityFragment extends Fragment {
 
         byte[] msgBuffer = message.getBytes();
         byte[] newline = s.getBytes();
+
         if (outputStream == null) {
-            outputStream = BluetoothStreams.getInstance().getOutputStream();
+            Toast.makeText(getContext(), "Not connected to bluetooth device", Toast.LENGTH_LONG).show();
+            return;
         }
 
         try {

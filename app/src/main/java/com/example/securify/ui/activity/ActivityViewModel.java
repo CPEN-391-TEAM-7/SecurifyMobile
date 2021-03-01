@@ -1,7 +1,5 @@
 package com.example.securify.ui.activity;
 
-import android.widget.ToggleButton;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;

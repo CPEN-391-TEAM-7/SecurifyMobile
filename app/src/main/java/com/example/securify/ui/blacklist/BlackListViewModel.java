@@ -8,6 +8,7 @@ public class BlackListViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
 
+
     public BlackListViewModel() {
         mText = new MutableLiveData<>();
         mText.setValue("Blacklist");

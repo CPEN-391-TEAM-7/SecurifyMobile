@@ -5,7 +5,6 @@
     <string name="title_notifications">Notifications</string>
     <string name="sign_out">Sign Out</string>
     <string name="activity">Activity</string>
-    <string name="whitelist">Whitelist</string>
     <string name="blacklist">Blacklist</string>
     <string name="statistics">Statistics</string>
     <string name="www_example_com">www.example.com</string>
@@ -13,4 +12,5 @@
     <string name="bluetooth">BlueTooth</string>
     <string name="paired_devices">Paired Devices</string>
     <string name="discovered_devices">Discovered Devices</string>
+    <string name="whitelist">Whitelist</string>
 </resources>
