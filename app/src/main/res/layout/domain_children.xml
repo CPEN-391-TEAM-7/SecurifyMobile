@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+
+        <TextView
+            android:id="@+id/domain_name_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/domain"
+            android:textSize="12sp"
+            />
+
+        <TextView
+            android:id="@+id/domain_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_toEndOf="@id/domain_name_title"
+            android:layout_alignParentEnd="true"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"/>
+
+
+        <TextView
+            android:id="@+id/registry_domain_id_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/registry_domain_id"
+            android:textSize="12sp"
+            android:layout_below="@id/domain_name_text"
+            />
+
+        <TextView
+            android:id="@+id/registry_domain_id_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_toEndOf="@+id/registry_domain_id_title"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/domain_name_text"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"/>
+
+        <TextView
+            android:id="@+id/registrar_name_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/registrar"
+            android:textSize="12sp"
+            android:layout_below="@id/registry_domain_id_title"
+            />
+
+        <TextView
+            android:id="@+id/registrar_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_toEndOf="@id/registrar_name_title"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/registry_domain_id_text"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            />
+
+        <TextView
+            android:id="@+id/registrar_expiration_date_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/registrar_expiration_date"
+            android:textSize="12sp"
+            android:layout_below="@id/registrar_name_title"
+            />
+
+        <TextView
+            android:id="@+id/registrar_expiration_date_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_toEndOf="@id/registrar_expiration_date_title"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/registrar_name_text"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            />
+
+
+    </RelativeLayout>
+
+
+
+</LinearLayout>

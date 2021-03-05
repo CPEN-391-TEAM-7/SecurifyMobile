@@ -29,4 +29,6 @@ public class DomainLists {
     public void removeFromBlackList(String domain) {this.blackList.remove(domain);}
     public void removeFromWhiteList(String domain) {this.whiteList.remove(domain);}
 
+    public boolean blackListContains(String domain) {return this.blackList.contains(domain);}
+    public boolean whiteListContains(String domain) {return this.whiteList.contains(domain);}
 }
