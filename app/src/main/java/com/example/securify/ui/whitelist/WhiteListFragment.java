@@ -34,14 +34,45 @@ public class WhiteListFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        whiteListViewModel =
-                new ViewModelProvider(this).get(WhiteListViewModel.class);
+        WhiteListViewModel whiteListViewModel = new ViewModelProvider(this).get(WhiteListViewModel.class);
         View root = inflater.inflate(R.layout.fragment_whitelist, container, false);
-        final TextView textView = root.findViewById(R.id.text_whitelist);
-        whiteListViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
+
+        textViewResult = root.findViewById(R.id.text_view_result);
+
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("https://jsonplaceholder.typicode.com/")
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+
+        testapi testapi = retrofit.create(testapi.class);
+
+        Call<List<Post>> call = testapi.getPosts();
+
+        call.enqueue(new Callback<List<Post>>() {
             @Override
-            public void onChanged(@Nullable String s) {
-                textView.setText(s);
+            public void onResponse(Call<List<Post>> call, Response<List<Post>> response) {
+
+                if(!response.isSuccessful()) {
+                    textViewResult.setText("Code: " + response.code());
+                    return;
+                }
+
+                List<Post> posts = response.body();
+
+                for (Post post : posts) {
+                    String content = "";
+                    content += "ID: " + post.getId() + "\n";
+                    content += "User ID: " + post.getUserId() + "\n";
+                    content += "Title: " + post.getTitle() + "\n";
+                    content += "Text: " + post.getText() + "\n\n";
+
+                    textViewResult.append(content);
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<Post>> call, Throwable t) {
+                textViewResult.setText(t.getMessage());
             }
         });
 
@@ -85,7 +116,6 @@ public class WhiteListFragment extends Fragment {
                 addWhiteList.getText().clear();
             }
         });
-
         return root;
     }
 }
