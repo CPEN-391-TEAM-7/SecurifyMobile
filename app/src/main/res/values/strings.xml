@@ -5,7 +5,17 @@
     <string name="title_notifications">Notifications</string>
     <string name="sign_out">Sign Out</string>
     <string name="activity">Activity</string>
-    <string name="whitelist">Whitelist</string>
     <string name="blacklist">Blacklist</string>
     <string name="statistics">Statistics</string>
+    <string name="www_example_com">www.example.com</string>
+    <string name="add_domain">Add Domain</string>
+    <string name="bluetooth">BlueTooth</string>
+    <string name="paired_devices">Paired Devices</string>
+    <string name="discovered_devices">Discovered Devices</string>
+    <string name="whitelist">Whitelist</string>
+    <string name="domain">Domain:</string>
+    <string name="registry_domain_id">Registry Domain ID:</string>
+    <string name="registrar">Registrar:</string>
+    <string name="registrar_expiration_date">Registrar Expiration Date:</string>
+    <string name="test">Test</string>
 </resources>

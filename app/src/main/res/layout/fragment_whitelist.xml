@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp"
-    tools:context=".ui.whitelist.WhiteListFragment">
+    tools:context=".ui.whitelist.WhiteListFragment"
+    android:fitsSystemWindows="true">
 
 
     <androidx.core.widget.NestedScrollView
@@ -19,12 +19,67 @@
         android:layout_marginStart="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
-        android:textSize="20sp"
+        android:textAlignment="center"
+        android:textSize="30sp"
+        android:text="@string/whitelist"
+        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
-    </androidx.core.widget.NestedScrollView>
+    <EditText
+        android:id="@+id/add_whitelist_text"
+        android:layout_width="280dp"
+        android:layout_height="40dp"
+        android:background="@drawable/common_google_signin_btn_icon_dark_normal_background"
+        android:hint="@string/www_example_com"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.07"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.090" />
 
+    <Button
+        android:id="@+id/add_whitelist_domain_button"
+        android:layout_width="110dp"
+        android:layout_height="40dp"
+        android:text="@string/add_domain"
+        android:textSize="10dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.973"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.088" />
+
+    <View
+        android:id="@+id/whitelist_divider"
+        android:layout_width="390dp"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.454"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.164" />
+
+    <ExpandableListView
+        android:id="@+id/whitelist_domains"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="8dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/whitelist_divider"
+        app:layout_constraintVertical_bias="0.05"
+        android:dividerHeight="0dp"
+        android:divider="@null"
+        android:paddingBottom="120dp"/>
 </androidx.constraintlayout.widget.ConstraintLayout>
