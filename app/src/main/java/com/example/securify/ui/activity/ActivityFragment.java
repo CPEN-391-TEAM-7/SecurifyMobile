@@ -40,11 +40,15 @@ public class ActivityFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
+                /*
                 if (isChecked) {
                     WritetoBTDevice("1");
                 } else {
                     WritetoBTDevice("0");
                 }
+
+                 */
+                Toast.makeText(getContext(), "Not connected to bluetooth device", Toast.LENGTH_LONG).show();
             }
         });
         activityViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {

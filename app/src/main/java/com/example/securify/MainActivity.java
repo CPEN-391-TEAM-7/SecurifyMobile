@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
         DomainLists.getInstance().setBlackList(new ArrayList<>());
         DomainLists.getInstance().setWhiteList(new ArrayList<>());
 
-        startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
+        // startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
 
     }
 }
