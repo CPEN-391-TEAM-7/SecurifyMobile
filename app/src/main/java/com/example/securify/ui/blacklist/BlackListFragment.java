@@ -29,6 +29,7 @@ public class BlackListFragment extends Fragment {
 
     private BlackListViewModel blackListViewModel;
     private ArrayList<String> blackList;
+    private ArrayList<String> allDomainsList;
     private DomainListAdapter blackListArrayAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -45,11 +46,12 @@ public class BlackListFragment extends Fragment {
         });
 
         blackList = DomainLists.getInstance().getBlackList();
-        blackListArrayAdapter = new DomainListAdapter(getContext(), blackList, false);
+        blackListArrayAdapter = new DomainListAdapter(getContext(), blackList, false, false);
         ExpandableListView blackListDomains = root.findViewById(R.id.blacklist_domains);
         blackListDomains.setAdapter(blackListArrayAdapter);
         blackListDomains.setGroupIndicator(null);
 
+        allDomainsList = DomainLists.getInstance().getAllDomainsList();
         EditText addBlackList = root.findViewById(R.id.add_blacklist_text);
         // TODO: check if domain is valid
         Button addBlackListDomain = root.findViewById(R.id.add_blacklist_domain_button);
@@ -62,7 +64,9 @@ public class BlackListFragment extends Fragment {
                     addBlackList.getText().clear();
                     return;
                 }
+
                 blackList.add(blacklist);
+                allDomainsList.add(blacklist);
 
                 if (DomainLists.getInstance().whiteListContains(blacklist)) {
 
@@ -76,6 +80,7 @@ public class BlackListFragment extends Fragment {
                     domainInfo.put(DomainInfo.REGISTRAR_DOMAIN_ID, DomainInfo.REGISTRAR_DOMAIN_ID);
                     domainInfo.put(DomainInfo.REGISTRAR_NAME, DomainInfo.REGISTRAR_NAME);
                     domainInfo.put(DomainInfo.REGISTRAR_EXPIRY_DATE, DomainInfo.REGISTRAR_EXPIRY_DATE);
+                    domainInfo.put(DomainInfo.DOMAIN_TIMESTAMP, DomainInfo.DOMAIN_TIMESTAMP);
                     DomainInfo.getInstance().addDomain(blacklist, domainInfo);
                 }
 

@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        >
+        <Button
+            android:id="@+id/activity_whitelist_button"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="50dp"
+            android:text="@string/whitelist"
+            android:textSize="8sp"/>
+
+        <Button
+            android:id="@+id/activity_blacklist_button"
+            android:layout_width="100dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="100dp"
+            android:layout_toEndOf="@id/activity_whitelist_button"
+            android:text="@string/blacklist"
+            android:textSize="8sp"/>
+
+        <TextView
+            android:id="@+id/activity_domain_name_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/domain"
+            android:textSize="12sp"
+            android:layout_below="@id/activity_whitelist_button"
+            />
+
+        <TextView
+            android:id="@+id/activity_domain_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_toEndOf="@id/activity_domain_name_title"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/activity_whitelist_button"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"/>
+
+
+        <TextView
+            android:id="@+id/activity_registry_domain_id_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/registry_domain_id"
+            android:textSize="12sp"
+            android:layout_below="@id/activity_domain_name_text"
+            />
+
+        <TextView
+            android:id="@+id/activity_registry_domain_id_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_toEndOf="@+id/activity_registry_domain_id_title"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/activity_domain_name_text"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"/>
+
+        <TextView
+            android:id="@+id/activity_registrar_name_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/registrar"
+            android:textSize="12sp"
+            android:layout_below="@id/activity_registry_domain_id_title"
+            />
+
+        <TextView
+            android:id="@+id/activity_registrar_name_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_toEndOf="@id/activity_registrar_name_title"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/activity_registry_domain_id_text"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            />
+
+        <TextView
+            android:id="@+id/activity_registrar_expiration_date_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/registrar_expiration_date"
+            android:textSize="12sp"
+            android:layout_below="@id/activity_registrar_name_title"
+            />
+
+        <TextView
+            android:id="@+id/activity_registrar_expiration_date_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_toEndOf="@id/activity_registrar_expiration_date_title"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/activity_registrar_name_text"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            />
+
+
+    </RelativeLayout>
+
+
+
+</LinearLayout>

@@ -18,4 +18,8 @@
     <string name="registrar">Registrar:</string>
     <string name="registrar_expiration_date">Registrar Expiration Date:</string>
     <string name="test">Test</string>
+    <string name="filter">Filter</string>
+    <string name="timestamp">Timestamp</string>
+    <string name="list">List</string>
+    <string name="load_more">Load More</string>
 </resources>

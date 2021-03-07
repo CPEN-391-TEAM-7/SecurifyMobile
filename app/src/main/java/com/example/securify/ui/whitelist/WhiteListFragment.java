@@ -30,6 +30,7 @@ public class WhiteListFragment extends Fragment {
 
     private WhiteListViewModel whiteListViewModel;
     private ArrayList<String> whiteList;
+    private ArrayList<String> allDomainsList;
     private DomainListAdapter whiteListArrayAdapter;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -46,11 +47,12 @@ public class WhiteListFragment extends Fragment {
         });
 
         whiteList = DomainLists.getInstance().getWhiteList();
-        whiteListArrayAdapter =  new DomainListAdapter(getContext(), whiteList, true);
+        whiteListArrayAdapter =  new DomainListAdapter(getContext(), whiteList, true, false);
         ExpandableListView whiteListDomains = root.findViewById(R.id.whitelist_domains);
         whiteListDomains.setAdapter(whiteListArrayAdapter);
         whiteListDomains.setGroupIndicator(null);
 
+        allDomainsList = DomainLists.getInstance().getAllDomainsList();
         EditText addWhiteList = root.findViewById(R.id.add_whitelist_text);
         // TODO: check if domain is valid
         Button addWhiteListDomain =  root.findViewById(R.id.add_whitelist_domain_button);
@@ -65,6 +67,7 @@ public class WhiteListFragment extends Fragment {
                 }
 
                 whiteList.add(whitelist);
+                allDomainsList.add(whitelist);
 
                 if (DomainLists.getInstance().blackListContains(whitelist)) {
 
@@ -78,6 +81,7 @@ public class WhiteListFragment extends Fragment {
                     domainInfo.put(DomainInfo.REGISTRAR_DOMAIN_ID, DomainInfo.REGISTRAR_DOMAIN_ID);
                     domainInfo.put(DomainInfo.REGISTRAR_NAME, DomainInfo.REGISTRAR_NAME);
                     domainInfo.put(DomainInfo.REGISTRAR_EXPIRY_DATE, DomainInfo.REGISTRAR_EXPIRY_DATE);
+                    domainInfo.put(DomainInfo.DOMAIN_TIMESTAMP, DomainInfo.DOMAIN_TIMESTAMP);
                     DomainInfo.getInstance().addDomain(whitelist, domainInfo);
 
                 }

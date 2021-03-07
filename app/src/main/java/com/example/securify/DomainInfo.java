@@ -9,6 +9,7 @@ public class DomainInfo {
     public static final String REGISTRAR_DOMAIN_ID = "RegistrarDomainID";
     public static final String REGISTRAR_NAME = "RegistrarName";
     public static final String REGISTRAR_EXPIRY_DATE = "RegistrarExpiryDate";
+    public static final String DOMAIN_TIMESTAMP = "DomainTimeStamp";
 
     public static DomainInfo getInstance()
     {
