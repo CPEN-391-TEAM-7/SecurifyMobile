@@ -1,5 +1,12 @@
 package com.example.securify.api;
 
+import com.example.securify.model.User;
+
+import retrofit2.Call;
+import retrofit2.http.Body;
+import retrofit2.http.Headers;
+import retrofit2.http.POST;
+
 public interface Backend_API {
     /**
      * Define REST API Calls here
@@ -9,5 +16,11 @@ public interface Backend_API {
      *      @GET("<route>")
      *      Call<T> getT();
      */
+    @Headers({
+            "Content-type: application/json"
+    })
+
+    @POST("/user/register")
+    Call<User> registerUser(@Body User user);
 
 }
