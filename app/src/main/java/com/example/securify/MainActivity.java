@@ -9,12 +9,14 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import com.example.securify.model.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
+    private String userID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,7 +36,13 @@ public class MainActivity extends AppCompatActivity {
         DomainLists.getInstance().setBlackList(new ArrayList<>());
         DomainLists.getInstance().setWhiteList(new ArrayList<>());
 
-        startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
+        Bundle extras = getIntent().getExtras();
+
+        if(extras != null) {
+            userID = extras.getString("userID");
+        }
+
+        // startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
 
     }
 }
