@@ -28,6 +28,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
     private static int RC_SIGN_IN = 100;
+    private static String BASE_URL;
 
     private GoogleSignInClient mGoogleSignInClient;
     private SignInButton signInButton;
@@ -41,6 +42,8 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        BASE_URL = getResources().getString(R.string.BASE_URL);
 
         // Configure sign-in to request the user's ID, email address, and basic
         // profile. ID and basic profile are included in DEFAULT_SIGN_IN.
@@ -113,9 +116,11 @@ public class LoginActivity extends AppCompatActivity {
                 String personId = acct.getId();
 
                 Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl("http://54.70.155.180")
+                        .baseUrl(BASE_URL)
                         .addConverterFactory(GsonConverterFactory.create())
                         .build();
+
+                Log.i(TAG, String.format("Initializing retrofit... Base URL: %s", BASE_URL));
 
                 backend_api = retrofit.create(Backend_API.class);
 
@@ -154,7 +159,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onResponse(Call<User> call, Response<User> response) {
 
                 if(!response.isSuccessful()) {
-                    Log.e(TAG, "Something went wrong with registering the user");
+                    Log.e(TAG, "Something went wrong with registering the user: " + response.toString());
                 }
 
                 finalUser = response.body();
@@ -162,7 +167,7 @@ public class LoginActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(Call<User> call, Throwable t) {
-                Log.e(TAG, "Something went wrong with registering the user");
+                Log.e(TAG, "Something went wrong with registering the user: " + t.toString());
             }
         });
     }
