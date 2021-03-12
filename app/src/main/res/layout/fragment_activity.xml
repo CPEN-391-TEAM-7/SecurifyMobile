@@ -36,12 +36,135 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"/>
 
+    <RelativeLayout
+        android:id="@+id/filter_menu"
+        android:layout_width="350dp"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/filter_button"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone"
+        >
+
+        <TextView
+            android:id="@+id/filter_domain_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/domain_name"
+            android:textColor="@color/black"/>
+        <AutoCompleteTextView
+            android:id="@+id/filter_domain_name_autocomplete"
+            android:layout_below="@id/filter_domain_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/www_example_com"/>
+
+        <TextView
+            android:id="@+id/filter_start_date"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:text="@string/start_date"
+            android:textColor="@color/black"
+            android:layout_below="@id/filter_domain_name_autocomplete"/>
+        <EditText
+            android:id="@+id/filter_start_date_text"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/filter_start_date"
+            android:hint="@string/enter_date"
+            android:inputType="none"/>
+
+        <TextView
+            android:id="@+id/filter_start_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/start_time"
+            android:textColor="@color/black"
+            android:layout_below="@id/filter_domain_name_autocomplete"
+            android:layout_toEndOf="@+id/filter_start_date" />
+        <EditText
+            android:id="@+id/filter_start_time_text"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/filter_start_time"
+            android:layout_toEndOf="@id/filter_start_date_text"
+            android:hint="@string/enter_time"
+            android:inputType="none"/>
+
+        <TextView
+            android:id="@+id/filter_end_date"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:text="@string/end_date"
+            android:textColor="@color/black"
+            android:layout_below="@id/filter_start_date_text"/>
+        <EditText
+            android:id="@+id/filter_end_date_text"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/filter_end_date"
+            android:hint="@string/enter_date"
+            android:inputType="none"/>
+
+        <TextView
+            android:id="@+id/filter_end_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/end_time"
+            android:textColor="@color/black"
+            android:layout_below="@id/filter_start_date_text"
+            android:layout_toEndOf="@+id/filter_end_date" />
+
+        <EditText
+            android:id="@+id/filter_end_time_text"
+            android:layout_width="175dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/filter_end_time"
+            android:layout_toEndOf="@id/filter_end_date_text"
+            android:hint="@string/enter_time"
+            android:inputType="none" />
+
+        <TextView
+            android:id="@+id/filter_list"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/filter_end_date_text"
+            android:textColor="@color/black"
+            android:text="@string/lists"/>
+       <Spinner
+           android:id="@+id/filter_list_selector"
+           android:layout_width="wrap_content"
+           android:layout_height="wrap_content"
+           android:layout_below="@id/filter_list"
+           />
+
+        <Button
+            android:id="@+id/filter_reset_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/filter_list_selector"
+            android:layout_marginStart="80dp"
+            android:text="@string/reset"
+            style="@style/Widget.MaterialComponents.Button.TextButton"/>
+
+        <Button
+            android:id="@+id/filter_apply_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/filter_list_selector"
+            android:layout_toRightOf="@id/filter_reset_button"
+            android:layout_marginStart="80dp"
+            android:text="@string/apply"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            />
+
+    </RelativeLayout>
+
     <View
         android:id="@+id/activity_divider"
         android:layout_width="390dp"
         android:layout_height="1dp"
         android:background="@android:color/darker_gray"
-        android:layout_below="@id/filter_button"
+        android:layout_below="@id/filter_menu"
         android:layout_centerHorizontal="true"/>
 
     <LinearLayout

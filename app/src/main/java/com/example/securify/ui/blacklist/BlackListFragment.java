@@ -80,7 +80,7 @@ public class BlackListFragment extends Fragment {
                     domainInfo.put(DomainInfo.REGISTRAR_DOMAIN_ID, DomainInfo.REGISTRAR_DOMAIN_ID);
                     domainInfo.put(DomainInfo.REGISTRAR_NAME, DomainInfo.REGISTRAR_NAME);
                     domainInfo.put(DomainInfo.REGISTRAR_EXPIRY_DATE, DomainInfo.REGISTRAR_EXPIRY_DATE);
-                    domainInfo.put(DomainInfo.DOMAIN_TIMESTAMP, DomainInfo.DOMAIN_TIMESTAMP);
+                    domainInfo.put(DomainInfo.DOMAIN_TIMESTAMP, "2021-01-23-13:31:24");
                     DomainInfo.getInstance().addDomain(blacklist, domainInfo);
                 }
 

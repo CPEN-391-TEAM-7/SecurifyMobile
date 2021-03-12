@@ -1,12 +1,19 @@
 package com.example.securify.ui.activity;
 
+import android.app.DatePickerDialog;
+import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
@@ -20,22 +27,24 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.securify.BluetoothStreams;
 import com.example.securify.DomainLists;
 import com.example.securify.R;
-import com.example.securify.ui.adapters.DomainListAdapter;
+import com.example.securify.ui.adapters.ActivityDomainListAdapter;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class ActivityFragment extends Fragment {
 
     private ActivityViewModel activityViewModel;
     private OutputStream outputStream;
-    private ArrayList<String> domainList;
-    private DomainListAdapter domainListAdapter;
+    private ArrayList<String> domainList = new ArrayList<>();
+    private ActivityDomainListAdapter domainListAdapter;
     private boolean domainNameAscending = false;
     private boolean timeStampAscending = false;
     private boolean listAscending = false;
 
+    String[] listSelectorItems = {"All Domains", "Blacklist Domains Only", "Whitelist Domains Only"};
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -69,7 +78,7 @@ public class ActivityFragment extends Fragment {
         });
 
         domainList = DomainLists.getInstance().getAllDomainsList();
-        domainListAdapter = new DomainListAdapter(getContext(), domainList, false, true);
+        domainListAdapter = new ActivityDomainListAdapter(getContext(), domainList);
 
         ExpandableListView allDomains = root.findViewById(R.id.activity_domain_list);
         allDomains.setAdapter(domainListAdapter);
@@ -125,6 +134,111 @@ public class ActivityFragment extends Fragment {
                 domainListAdapter.notifyDataSetChanged();
             }
         });
+
+        View filterMenu = root.findViewById(R.id.filter_menu);
+        Button filterButton = root.findViewById(R.id.filter_button);
+        filterButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(filterMenu.getVisibility() == View.VISIBLE) {
+                    filterMenu.setVisibility(View.GONE);
+                } else {
+                    filterMenu.setVisibility(View.VISIBLE);
+                }
+            }
+        });
+
+        AutoCompleteTextView domainAutoComplete = root.findViewById(R.id.filter_domain_name_autocomplete);
+        ArrayAdapter<String> domainAutoCompleteAdapter = new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, domainList);
+        domainAutoComplete.setAdapter(domainAutoCompleteAdapter);
+
+        EditText startDate = root.findViewById(R.id.filter_start_date_text);
+        startDate.setInputType(InputType.TYPE_NULL);
+        startDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar calendar = Calendar.getInstance();
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                int month = calendar.get(Calendar.MONTH);
+                int year = calendar.get(Calendar.YEAR);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, year1, month1, dayOfMonth) -> startDate.setText(year + "-" + month + "-" + day), year, month, day);
+                datePickerDialog.show();
+            }
+        });
+
+        EditText startTime = root.findViewById(R.id.filter_start_time_text);
+        startTime.setInputType(InputType.TYPE_NULL);
+        startTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar calendar = Calendar.getInstance();
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
+                TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), (view, hourOfDay, minute1) -> startTime.setText(hour + ":" + minute), hour, minute, true);
+                timePickerDialog.show();
+            }
+        });
+
+
+
+        EditText endDate = root.findViewById(R.id.filter_end_date_text);
+        endDate.setInputType(InputType.TYPE_NULL);
+        endDate.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar calendar = Calendar.getInstance();
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+                int month = calendar.get(Calendar.MONTH);
+                int year = calendar.get(Calendar.YEAR);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, year1, month1, dayOfMonth) -> endDate.setText(year + "-" + month + "-" + day), year, month, day);
+                datePickerDialog.show();
+            }
+        });
+
+        EditText endTime = root.findViewById(R.id.filter_end_time_text);
+        endTime.setInputType(InputType.TYPE_NULL);
+        endTime.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Calendar calendar = Calendar.getInstance();
+                int hour = calendar.get(Calendar.HOUR_OF_DAY);
+                int minute = calendar.get(Calendar.MINUTE);
+                TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), (view, hourOfDay, minute1) -> endTime.setText(hour + ":" + minute), hour, minute, true);
+                timePickerDialog.show();
+            }
+        });
+
+        Spinner listSelector = root.findViewById(R.id.filter_list_selector);
+        ArrayAdapter<String> listSelectorAdapter = new ArrayAdapter<String>(getContext(), R.layout.support_simple_spinner_dropdown_item, listSelectorItems);
+        listSelector.setAdapter(listSelectorAdapter);
+
+        Button resetButton = root.findViewById(R.id.filter_reset_button);
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                domainAutoComplete.getText().clear();
+                startDate.getText().clear();
+                startTime.getText().clear();
+                endDate.getText().clear();
+                endTime.getText().clear();
+                listSelector.setSelection(0);
+            }
+        });
+
+        Button applyButton = root.findViewById(R.id.filter_apply_button);
+        applyButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                domainListAdapter.constraints.put(domainListAdapter.DOMAIN_NAME_FILTER, domainAutoComplete.getText().toString());
+                domainListAdapter.constraints.put(domainListAdapter.START_DATE_FILTER, startDate.getText().toString());
+                domainListAdapter.constraints.put(domainListAdapter.START_TIME_FILTER, startTime.getText().toString());
+                domainListAdapter.constraints.put(domainListAdapter.END_DATE_FILTER, endDate.getText().toString());
+                domainListAdapter.constraints.put(domainListAdapter.END_TIME_FILTER, endTime.getText().toString());
+                domainListAdapter.constraints.put(domainListAdapter.LIST_FILTER, listSelector.getSelectedItem().toString());
+                domainListAdapter.getFilter().filter("");
+            }
+        });
+
         return root;
     }
 

@@ -23,4 +23,14 @@
     <string name="list">List</string>
     <string name="load_more">Load More</string>
     <string name="BASE_URL">http://54.70.155.180</string>
+    <string name="domain_name">Domain Name</string>
+    <string name="start_date">Start Date</string>
+    <string name="start_time">Start Time</string>
+    <string name="enter_date">Enter Date</string>
+    <string name="enter_time">Enter Time</string>
+    <string name="end_date">End Date</string>
+    <string name="end_time">End Time</string>
+    <string name="lists">Lists</string>
+    <string name="reset">Reset</string>
+    <string name="apply">Apply</string>
 </resources>
