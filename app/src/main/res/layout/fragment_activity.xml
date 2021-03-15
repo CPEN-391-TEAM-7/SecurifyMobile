@@ -14,7 +14,19 @@
         android:textSize="30sp"
         android:text="@string/activity"
         android:textColor="@color/black"
+        android:layout_centerHorizontal="true"
         />
+
+    <ImageButton
+        android:id="@+id/bluetooth_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:background="@null"
+        android:layout_marginTop="12dp"
+        android:layout_marginEnd="30dp"
+        android:src="@drawable/ic_bluetooth" />
 
     <ToggleButton
         android:id="@+id/toggle"

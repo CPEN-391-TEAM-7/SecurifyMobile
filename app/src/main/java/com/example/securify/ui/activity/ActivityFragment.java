@@ -14,6 +14,7 @@ import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
@@ -26,8 +27,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.securify.BluetoothActivity;
 import com.example.securify.BluetoothStreams;
 import com.example.securify.DomainLists;
+import com.example.securify.MainActivity;
 import com.example.securify.R;
 import com.example.securify.ui.adapters.ActivityDomainListAdapter;
 
@@ -78,6 +81,15 @@ public class ActivityFragment extends Fragment {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
+            }
+        });
+
+        ImageButton blueToothButton = root.findViewById(R.id.bluetooth_button);
+        blueToothButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // startActivity(new Intent(getActivity(), BluetoothActivity.class));
+                Toast.makeText(getContext(), "Bluetooth disabled", Toast.LENGTH_LONG).show();
             }
         });
 

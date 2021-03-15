@@ -112,7 +112,12 @@ public class BluetoothActivity extends AppCompatActivity {
 
     @Override
     public void onDestroy() {
-        unregisterReceiver(mReceiver);
+
+        try {
+            unregisterReceiver(mReceiver);
+        } catch (IllegalArgumentException ignored) {
+            ignored.printStackTrace();
+        }
 
         BluetoothStreams.getInstance().setInputStream(mmInStream);
         BluetoothStreams.getInstance().setOutputStream(mmOutStream);
