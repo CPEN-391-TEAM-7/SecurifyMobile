@@ -82,19 +82,6 @@ public class LoginActivity extends AppCompatActivity {
         Log.d(TAG, "Login Activity is created.");
     }
 
-//    @Override
-//    protected void onStart() {
-//        super.onStart();
-//
-//        Log.d(TAG, "Skipping Login, We remember him");
-//        Toast.makeText(LoginActivity.this, "Welcome Back.", Toast.LENGTH_LONG).show();
-//
-//        // Check for existing Google Sign In account, if the user is already signed in
-//        // the GoogleSignInAccount will be non-null.
-//        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-//        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-//    }
-
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);

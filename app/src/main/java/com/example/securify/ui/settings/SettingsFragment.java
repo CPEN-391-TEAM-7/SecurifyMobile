@@ -2,6 +2,7 @@ package com.example.securify.ui.settings;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,6 +31,8 @@ public class SettingsFragment extends Fragment {
     private Button signOutButton;
     private GoogleSignInClient mGoogleSignInClient;
 
+    private static final String TAG = "SettingsFragment";
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_settings, container, false);
@@ -51,6 +54,12 @@ public class SettingsFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 googleSignOut();
+                revokeAccess();
+
+                Toast.makeText(getActivity(), "GoodBye.", Toast.LENGTH_LONG).show();
+
+                getActivity().finishAffinity();
+                startActivity(new Intent(getActivity(), LoginActivity.class));
             }
         });
 
@@ -62,10 +71,17 @@ public class SettingsFragment extends Fragment {
                 .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
                     @Override
                     public void onComplete(@NonNull Task<Void> task) {
-                        getActivity().finishAffinity();
-                        startActivity(new Intent(getActivity(), LoginActivity.class));
+                        Log.i(TAG, "User is signed out of google.");
+                    }
+                });
+    }
 
-                        Toast.makeText(getActivity(), "GoodBye.", Toast.LENGTH_LONG).show();
+    private void revokeAccess() {
+        mGoogleSignInClient.revokeAccess()
+                .addOnCompleteListener(getActivity(), new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Log.i(TAG, "User is revoked");
                     }
                 });
     }
