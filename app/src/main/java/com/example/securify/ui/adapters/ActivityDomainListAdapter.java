@@ -1,6 +1,7 @@
 package com.example.securify.ui.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,8 +29,11 @@ import com.example.securify.ui.comparators.DescendingTimeStampComparator;
 import org.w3c.dom.Text;
 
 import java.lang.reflect.Array;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -48,6 +52,9 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
     public HashMap<String, String> constraints = new HashMap<>();
     private ArrayList<String> filteredList =  new ArrayList<>();
     private DomainFilter domainFilter;
+    private final String TAG = "ACTIVITY_DOMAIN_LIST_ADAPTER";
+
+    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
 
     public ActivityDomainListAdapter(Context _context, ArrayList<String> dList) {
         context = _context;
@@ -261,7 +268,7 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
             // TODO: add filtering for dates
             switch (listConstraint) {
                 case "Blacklist Domains Only":
-                    for (String domain: filteredDomainList) {
+                    for (String domain:filteredDomainList) {
                         if(!domainLists.blackListContains(domain)) {
                             filteredDomainList.remove(domain);
                         }
@@ -275,6 +282,88 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
                         }
                     }
                     break;
+            }
+
+            String startDate = constraints.get(START_DATE_FILTER);
+            Date startDateTime = null;
+
+            if (!startDate.matches("")) {
+                String startTime = constraints.get(START_TIME_FILTER);
+                if (startTime.matches("")) {
+                    try {
+                        startDateTime = dateFormat.parse(startDate + "-" + "00:00:00");
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        startDateTime = dateFormat.parse(startDate + "-" + startTime);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            String endDate = constraints.get(END_DATE_FILTER);
+            Date endDateTime = null;
+
+            if (!startDate.matches("")) {
+
+                String endTime = constraints.get(END_TIME_FILTER);
+                if (endTime.matches("")) {
+                    try {
+                        endDateTime = dateFormat.parse(endDate + "-" + "00:00:00");
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        endDateTime = dateFormat.parse(endDate + "-" + endTime);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            DomainInfo domainInformation = DomainInfo.getInstance();
+
+            for (String domain:filteredDomainList) {
+
+                Date timeStamp = null;
+
+                try {
+                    timeStamp = dateFormat.parse(domainInformation.getInfo(domain).get(DomainInfo.DOMAIN_TIMESTAMP));
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
+
+                if (timeStamp == null) {
+                    Log.e(TAG, domain + "'s timestamp is null");
+                    continue;
+                }
+
+                /*
+                Log.e(TAG, "startDateTime:" + startDateTime);
+                Log.e(TAG, "endDateTime:" + endDateTime);
+                Log.e(TAG, "timeStamp:" + timeStamp);
+                 */
+
+                if (startDateTime != null) {
+
+                    if (startDateTime.after(timeStamp)) {
+                        filteredDomainList.remove(domain);
+                        continue;
+                    }
+
+                }
+
+                if (endDateTime != null) {
+
+                    if (endDateTime.before(timeStamp)) {
+                        filteredDomainList.remove(domain);
+                    }
+
+                }
             }
 
             results.count = filteredDomainList.size();

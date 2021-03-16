@@ -11,10 +11,13 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.TimePicker;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
@@ -24,8 +27,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.securify.BluetoothActivity;
 import com.example.securify.BluetoothStreams;
 import com.example.securify.DomainLists;
+import com.example.securify.MainActivity;
 import com.example.securify.R;
 import com.example.securify.ui.adapters.ActivityDomainListAdapter;
 
@@ -36,6 +41,7 @@ import java.util.Calendar;
 
 public class ActivityFragment extends Fragment {
 
+    // TODO: prevent dialogs from appearing twice
     private ActivityViewModel activityViewModel;
     private OutputStream outputStream;
     private ArrayList<String> domainList = new ArrayList<>();
@@ -45,6 +51,7 @@ public class ActivityFragment extends Fragment {
     private boolean listAscending = false;
 
     String[] listSelectorItems = {"All Domains", "Blacklist Domains Only", "Whitelist Domains Only"};
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -74,6 +81,15 @@ public class ActivityFragment extends Fragment {
             @Override
             public void onChanged(@Nullable String s) {
                 textView.setText(s);
+            }
+        });
+
+        ImageButton blueToothButton = root.findViewById(R.id.bluetooth_button);
+        blueToothButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // startActivity(new Intent(getActivity(), BluetoothActivity.class));
+                Toast.makeText(getContext(), "Bluetooth disabled", Toast.LENGTH_LONG).show();
             }
         });
 
@@ -157,11 +173,16 @@ public class ActivityFragment extends Fragment {
         startDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Calendar calendar = Calendar.getInstance();
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
-                int month = calendar.get(Calendar.MONTH);
-                int year = calendar.get(Calendar.YEAR);
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, year1, month1, dayOfMonth) -> startDate.setText(year + "-" + month + "-" + day), year, month, day);
+                Calendar calendar = Calendar.getInstance();
+                int mDay = calendar.get(Calendar.DAY_OF_MONTH);
+                int mMonth = calendar.get(Calendar.MONTH);
+                int mYear = calendar.get(Calendar.YEAR);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        startDate.setText(year + "-" + (month + 1) + "-" + dayOfMonth);
+                    }
+                }, mYear, mMonth, mDay);
                 datePickerDialog.show();
             }
         });
@@ -171,26 +192,40 @@ public class ActivityFragment extends Fragment {
         startTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Calendar calendar = Calendar.getInstance();
-                int hour = calendar.get(Calendar.HOUR_OF_DAY);
-                int minute = calendar.get(Calendar.MINUTE);
-                TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), (view, hourOfDay, minute1) -> startTime.setText(hour + ":" + minute), hour, minute, true);
+
+                if (startDate.getText().toString().matches("")) {
+                    Toast.makeText(getContext(), "Please enter a starting date", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                Calendar calendar = Calendar.getInstance();
+                int mHour = calendar.get(Calendar.HOUR_OF_DAY);
+                int mMminute = calendar.get(Calendar.MINUTE);
+                TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        startTime.setText(hourOfDay + ":" + minute);
+                    }
+                }, mHour, mMminute, true);
                 timePickerDialog.show();
             }
         });
-
-
 
         EditText endDate = root.findViewById(R.id.filter_end_date_text);
         endDate.setInputType(InputType.TYPE_NULL);
         endDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Calendar calendar = Calendar.getInstance();
-                int day = calendar.get(Calendar.DAY_OF_MONTH);
-                int month = calendar.get(Calendar.MONTH);
-                int year = calendar.get(Calendar.YEAR);
-                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), (view, year1, month1, dayOfMonth) -> endDate.setText(year + "-" + month + "-" + day), year, month, day);
+                Calendar calendar = Calendar.getInstance();
+                int mDay = calendar.get(Calendar.DAY_OF_MONTH);
+                int mMonth = calendar.get(Calendar.MONTH);
+                int mYear = calendar.get(Calendar.YEAR);
+                DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                        endDate.setText(year + "-" + (month + 1) + "-" + dayOfMonth);
+                    }
+                }, mYear, mMonth, mDay);
                 datePickerDialog.show();
             }
         });
@@ -200,10 +235,21 @@ public class ActivityFragment extends Fragment {
         endTime.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Calendar calendar = Calendar.getInstance();
-                int hour = calendar.get(Calendar.HOUR_OF_DAY);
-                int minute = calendar.get(Calendar.MINUTE);
-                TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), (view, hourOfDay, minute1) -> endTime.setText(hour + ":" + minute), hour, minute, true);
+
+                if (endDate.getText().toString().matches("")) {
+                    Toast.makeText(getContext(), "Please enter a ending date", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                Calendar calendar = Calendar.getInstance();
+                int mHour = calendar.get(Calendar.HOUR_OF_DAY);
+                int mMminute = calendar.get(Calendar.MINUTE);
+                TimePickerDialog timePickerDialog = new TimePickerDialog(getContext(), new TimePickerDialog.OnTimeSetListener() {
+                    @Override
+                    public void onTimeSet(TimePicker view, int hourOfDay, int minute) {
+                        endTime.setText(hourOfDay + ":" + minute);
+                    }
+                }, mHour, mMminute, true);
                 timePickerDialog.show();
             }
         });
