@@ -5,7 +5,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.securify.api.Backend_API;
@@ -16,6 +18,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
 import retrofit2.Call;
@@ -76,21 +79,35 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        Log.d(TAG, "Login Activity is created.");
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-
-        // Check for existing Google Sign In account, if the user is already signed in
-        // the GoogleSignInAccount will be non-null.
-        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
-        startActivity(new Intent(LoginActivity.this, MainActivity.class));
-    }
+//    @Override
+//    protected void onStart() {
+//        super.onStart();
+//
+//        Log.d(TAG, "Skipping Login, We remember him");
+//        Toast.makeText(LoginActivity.this, "Welcome Back.", Toast.LENGTH_LONG).show();
+//
+//        // Check for existing Google Sign In account, if the user is already signed in
+//        // the GoogleSignInAccount will be non-null.
+//        GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
+//        startActivity(new Intent(LoginActivity.this, MainActivity.class));
+//    }
 
     private void signIn() {
         Intent signInIntent = mGoogleSignInClient.getSignInIntent();
         startActivityForResult(signInIntent, RC_SIGN_IN);
+    }
+
+    private void googleSignOut() {
+        mGoogleSignInClient.signOut()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        Toast.makeText(getApplicationContext(), "Goodbye.", Toast.LENGTH_LONG).show();
+                    }
+                });
     }
 
     @Override
@@ -115,19 +132,21 @@ public class LoginActivity extends AppCompatActivity {
                 String personName = acct.getDisplayName();
                 String personId = acct.getId();
 
-                Retrofit retrofit = new Retrofit.Builder()
-                        .baseUrl(BASE_URL)
-                        .addConverterFactory(GsonConverterFactory.create())
-                        .build();
+//                Retrofit retrofit = new Retrofit.Builder()
+//                        .baseUrl(BASE_URL)
+//                        .addConverterFactory(GsonConverterFactory.create())
+//                        .build();
+//
+//                Log.i(TAG, String.format("Initializing retrofit... Base URL: %s", BASE_URL));
+//
+//                backend_api = retrofit.create(Backend_API.class);
+//
+//                addUser(personName, personId);
 
-                Log.i(TAG, String.format("Initializing retrofit... Base URL: %s", BASE_URL));
-
-                backend_api = retrofit.create(Backend_API.class);
-
-                addUser(personName, personId);
+                Toast.makeText(getApplicationContext(), "Welcome to Securify", Toast.LENGTH_LONG).show();
             }
 
-            Log.i("LOGIN", "Successfull");
+            Log.i("LOGIN", "Successful");
 
             // Signed in successfully, show authenticated UI.
             // updateUI(account);
@@ -135,7 +154,6 @@ public class LoginActivity extends AppCompatActivity {
             signOutButton.setVisibility(View.VISIBLE);
 
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            intent.putExtra("userID", finalUser.getUserID());
 
             startActivity(intent);
         } catch (ApiException e) {
@@ -146,29 +164,31 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    // HTTP Call to the backend to register a User
-    private void addUser(String name, String userID) {
-        User user = new User(name, userID);
-
-        Log.i(TAG, "HTTP Call to register the user");
-
-        Call<User> call = backend_api.registerUser(user);
-
-        call.enqueue(new Callback<User>() {
-            @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-
-                if(!response.isSuccessful()) {
-                    Log.e(TAG, "Something went wrong with registering the user: " + response.toString());
-                }
-
-                finalUser = response.body();
-            }
-
-            @Override
-            public void onFailure(Call<User> call, Throwable t) {
-                Log.e(TAG, "Something went wrong with registering the user: " + t.toString());
-            }
-        });
-    }
+//    // HTTP Call to the backend to register a User
+//    private void addUser(String name, String userID) {
+//        User user = new User(name, userID);
+//
+//        Log.i(TAG, "HTTP Call to register the user");
+//
+//        Call<User> call = backend_api.registerUser(user);
+//
+//        call.enqueue(new Callback<User>() {
+//            @Override
+//            public void onResponse(Call<User> call, Response<User> response) {
+//
+//                if(!response.isSuccessful()) {
+//                    Log.e(TAG, "Something went wrong with registering the user: " + response.toString());
+//                    return;
+//                }
+//
+//                Log.d(TAG, "HTTP Call successful");
+//                finalUser = response.body();
+//            }
+//
+//            @Override
+//            public void onFailure(Call<User> call, Throwable t) {
+//                Log.e(TAG, "Something went wrong with registering the user: " + t.toString());
+//            }
+//        });
+//    }
 }

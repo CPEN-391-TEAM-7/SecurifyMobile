@@ -28,4 +28,11 @@
         android:name="com.example.securify.ui.statistics.StatisticsFragment"
         android:label="@string/statistics"
         tools:layout="@layout/fragment_statistics"/>
+
+    <fragment
+        android:id="@+id/navigation_settings"
+        android:name="com.example.securify.ui.settings.SettingsFragment"
+        android:label="@string/settings"
+        tools:layout="@layout/fragment_settings"/>
+
 </navigation>
