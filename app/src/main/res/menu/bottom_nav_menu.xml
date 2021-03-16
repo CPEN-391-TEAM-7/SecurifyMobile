@@ -22,5 +22,11 @@
         android:title="@string/statistics"
         />
 
+    <item
+        android:id="@+id/navigation_settings"
+        android:icon="@drawable/ic_statistics"
+        android:title="@string/settings"
+        />
+
 
 </menu>
