@@ -145,6 +145,7 @@ public class BlackListFragment extends Fragment {
                     addBlackList.getText().clear();
                     blackList.add(blacklist);
                     allDomainsList.add(blacklist);
+
                 } else {
                     Toast.makeText(getContext(), "Invalid Domain", Toast.LENGTH_LONG).show();
                     validDomain = true;

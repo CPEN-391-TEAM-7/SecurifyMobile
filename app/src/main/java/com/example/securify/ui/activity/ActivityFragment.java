@@ -52,7 +52,6 @@ public class ActivityFragment extends Fragment {
 
     String[] listSelectorItems = {"All Domains", "Blacklist Domains Only", "Whitelist Domains Only"};
 
-
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         activityViewModel =

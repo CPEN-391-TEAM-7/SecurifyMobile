@@ -46,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
             userID = extras.getString("userID");
         }
 
-         startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
+        // startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
 
     }
 
