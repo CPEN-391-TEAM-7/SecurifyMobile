@@ -75,7 +75,7 @@
             android:layout_height="wrap_content"
             android:text="@string/registrar"
             android:textSize="12sp"
-            android:layout_below="@id/activity_registry_domain_id_title"
+            android:layout_below="@id/activity_registry_domain_id_text"
             />
 
         <TextView
@@ -96,7 +96,7 @@
             android:layout_height="wrap_content"
             android:text="@string/registrar_expiration_date"
             android:textSize="12sp"
-            android:layout_below="@id/activity_registrar_name_title"
+            android:layout_below="@id/activity_registrar_name_text"
             />
 
         <TextView

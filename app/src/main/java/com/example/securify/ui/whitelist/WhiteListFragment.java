@@ -1,13 +1,13 @@
 package com.example.securify.ui.whitelist;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ExpandableListView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,12 +19,17 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.securify.DomainInfo;
 import com.example.securify.DomainLists;
+import com.example.securify.DomainMatcher;
 import com.example.securify.R;
 import com.example.securify.ui.adapters.DomainListAdapter;
 
-
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import org.apache.commons.net.whois.WhoisClient;
 
 public class WhiteListFragment extends Fragment {
 
@@ -32,6 +37,13 @@ public class WhiteListFragment extends Fragment {
     private ArrayList<String> whiteList;
     private ArrayList<String> allDomainsList;
     private DomainListAdapter whiteListArrayAdapter;
+
+    private WhoisClient whoisClient;
+    private Boolean validDomain = true;
+    private final String TAG = "WhiteListFragment";
+
+    private static Pattern pattern;
+    private Matcher matcher;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -54,7 +66,9 @@ public class WhiteListFragment extends Fragment {
 
         allDomainsList = DomainLists.getInstance().getAllDomainsList();
         EditText addWhiteList = root.findViewById(R.id.add_whitelist_text);
-        // TODO: check if domain is valid
+
+        whoisClient = new WhoisClient();
+
         Button addWhiteListDomain =  root.findViewById(R.id.add_whitelist_domain_button);
         addWhiteListDomain.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,30 +80,86 @@ public class WhiteListFragment extends Fragment {
                     return;
                 }
 
-                whiteList.add(whitelist);
-                allDomainsList.add(whitelist);
-
                 if (DomainLists.getInstance().blackListContains(whitelist)) {
 
                     DomainLists.getInstance().removeFromBlackList(whitelist);
 
                 } else {
 
-                    /* placeholder code */
-                    HashMap<String, String> domainInfo = new HashMap<>();
-                    domainInfo.put(DomainInfo.DOMAIN_NAME, DomainInfo.DOMAIN_NAME);
-                    domainInfo.put(DomainInfo.REGISTRAR_DOMAIN_ID, DomainInfo.REGISTRAR_DOMAIN_ID);
-                    domainInfo.put(DomainInfo.REGISTRAR_NAME, DomainInfo.REGISTRAR_NAME);
-                    domainInfo.put(DomainInfo.REGISTRAR_EXPIRY_DATE, DomainInfo.REGISTRAR_EXPIRY_DATE);
-                    domainInfo.put(DomainInfo.DOMAIN_TIMESTAMP, "2021-01-23-13:31:24");
-                    DomainInfo.getInstance().addDomain(whitelist, domainInfo);
+                    Thread t = new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                StringBuilder server = new StringBuilder("");
+
+                                whoisClient.connect("whois.iana.org");
+                                server.append(whoisClient.query(whitelist));
+                                whoisClient.disconnect();
+
+                                String whoIsServer = DomainMatcher.getMatch(server.toString(), DomainMatcher.WHOIS_SERVER).trim();
+                                if (whoIsServer.equals("")) {
+                                    validDomain = false;
+                                    return;
+                                }
+
+                                Log.i(TAG,  whoIsServer);
+                                whoisClient.connect(whoIsServer);
+                                StringBuilder result = new StringBuilder("");
+                                result.append(whoisClient.query(whitelist));
+                                Log.i(TAG,  result.toString());
+                                String whoIsInfo = result.toString();
+
+                                HashMap<String, String> domainInfo = new HashMap<>();
+                                domainInfo.put(DomainInfo.DOMAIN_NAME, whitelist);
+
+                                String domainID = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_DOMAIN_ID).trim();
+
+                                Log.i(TAG, "registrar domain id:" + domainID);
+                                domainInfo.put(DomainInfo.REGISTRAR_DOMAIN_ID, domainID);
+
+                                String registrarName = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_NAME).trim();
+
+                                Log.i(TAG, "registrar name:" + registrarName);
+                                domainInfo.put(DomainInfo.REGISTRAR_NAME, registrarName);
+
+                                String registrarExpiryDate = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_EXPIRY_DATE).trim();
+
+                                Log.i(TAG, "expiry date:" + registrarExpiryDate);
+                                domainInfo.put(DomainInfo.REGISTRAR_EXPIRY_DATE, registrarExpiryDate);
+
+                                // TODO: implement proper timestamping
+                                domainInfo.put(DomainInfo.DOMAIN_TIMESTAMP, "2021-01-23-13:31:24");
+                                DomainInfo.getInstance().addDomain(whitelist, domainInfo);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+                    t.start();
+                    try {
+                        t.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
 
                 }
-                whiteListArrayAdapter.notifyDataSetChanged();
-                addWhiteList.getText().clear();
+
+                if (validDomain) {
+                    whiteListArrayAdapter.notifyDataSetChanged();
+                    addWhiteList.getText().clear();
+                    whiteList.add(whitelist);
+                    allDomainsList.add(whitelist);
+                } else {
+                    Toast.makeText(getContext(), "Invalid Domain", Toast.LENGTH_LONG).show();
+                    validDomain = true;
+                    addWhiteList.getText().clear();
+                }
+
             }
         });
 
         return root;
     }
+
 }
