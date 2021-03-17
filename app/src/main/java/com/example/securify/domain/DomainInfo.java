@@ -1,4 +1,4 @@
-package com.example.securify;
+package com.example.securify.domain;
 
 import java.util.HashMap;
 

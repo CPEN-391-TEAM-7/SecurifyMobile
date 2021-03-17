@@ -68,7 +68,7 @@
             android:layout_below="@id/filter_domain_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="@string/www_example_com"/>
+            android:hint="@string/example_com"/>
 
         <TextView
             android:id="@+id/filter_start_date"

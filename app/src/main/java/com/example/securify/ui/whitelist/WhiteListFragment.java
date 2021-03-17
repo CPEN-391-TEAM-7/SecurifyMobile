@@ -17,11 +17,11 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.securify.DomainInfo;
-import com.example.securify.DomainLists;
-import com.example.securify.DomainMatcher;
+import com.example.securify.domain.DomainInfo;
+import com.example.securify.domain.DomainLists;
+import com.example.securify.domain.DomainMatcher;
 import com.example.securify.R;
-import com.example.securify.ui.adapters.DomainListAdapter;
+import com.example.securify.adapters.DomainListAdapter;
 
 import java.io.IOException;
 import java.util.ArrayList;

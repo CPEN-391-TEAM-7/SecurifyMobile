@@ -1,4 +1,4 @@
-package com.example.securify;
+package com.example.securify.bluetooth;
 
 import java.io.InputStream;
 import java.io.OutputStream;

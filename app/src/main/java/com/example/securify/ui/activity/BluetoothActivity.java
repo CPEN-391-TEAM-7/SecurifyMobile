@@ -1,4 +1,4 @@
-package com.example.securify;
+package com.example.securify.ui.activity;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
@@ -21,7 +21,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
-import com.example.securify.ui.adapters.DeviceArrayAdapter;
+import com.example.securify.R;
+import com.example.securify.adapters.DeviceArrayAdapter;
+import com.example.securify.bluetooth.BluetoothStreams;
 
 import java.io.IOException;
 import java.io.InputStream;

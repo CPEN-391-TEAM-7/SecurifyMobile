@@ -1,4 +1,4 @@
-package com.example.securify;
+package com.example.securify.domain;
 
 import java.util.ArrayList;
 
@@ -53,4 +53,5 @@ public class DomainLists {
 
     public boolean blackListContains(String domain) {return this.blackList.contains(domain);}
     public boolean whiteListContains(String domain) {return this.whiteList.contains(domain);}
+
 }

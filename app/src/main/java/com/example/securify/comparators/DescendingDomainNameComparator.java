@@ -1,4 +1,4 @@
-package com.example.securify.ui.comparators;
+package com.example.securify.comparators;
 
 import java.util.Comparator;
 

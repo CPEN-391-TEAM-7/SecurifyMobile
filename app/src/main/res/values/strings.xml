@@ -8,7 +8,7 @@
     <string name="blacklist">Blacklist</string>
     <string name="statistics">Statistics</string>
     <string name="settings">Settings</string>
-    <string name="www_example_com">www.example.com</string>
+    <string name="example_com">example.com</string>
     <string name="add_domain">Add Domain</string>
     <string name="bluetooth">BlueTooth</string>
     <string name="paired_devices">Paired Devices</string>

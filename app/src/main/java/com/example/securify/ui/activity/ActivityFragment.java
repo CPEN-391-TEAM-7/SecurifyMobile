@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,17 +28,23 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.securify.BluetoothActivity;
-import com.example.securify.BluetoothStreams;
-import com.example.securify.DomainLists;
-import com.example.securify.MainActivity;
+import com.example.securify.bluetooth.BluetoothStreams;
+import com.example.securify.domain.DomainInfo;
+import com.example.securify.domain.DomainLists;
 import com.example.securify.R;
-import com.example.securify.ui.adapters.ActivityDomainListAdapter;
+import com.example.securify.adapters.ActivityDomainListAdapter;
+import com.example.securify.ui.volley.VolleyGetRequest;
+import com.example.securify.ui.volley.VolleyResponseListener;
+import com.example.securify.ui.volley.VolleySingleton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 
 public class ActivityFragment extends Fragment {
 
@@ -49,6 +56,14 @@ public class ActivityFragment extends Fragment {
     private boolean domainNameAscending = false;
     private boolean timeStampAscending = false;
     private boolean listAscending = false;
+
+    private final String TAG = "ActivityFragment";
+    private final String START_DATE = "2021-03-20T10:11:36.251Z";
+    private final String END_DATE = "2021-03-01T10:11:36.251Z";
+    private final int LIMIT = 50;
+    private final String[] LIST_TYPES = {"Safe"};
+
+    private VolleyResponseListener volleyResponseListener;
 
     String[] listSelectorItems = {"All Domains", "Blacklist Domains Only", "Whitelist Domains Only"};
 
@@ -284,7 +299,76 @@ public class ActivityFragment extends Fragment {
             }
         });
 
+        // populateDomains();
         return root;
+    }
+
+    private void populateDomains() {
+        JSONObject domainRequest = new JSONObject();
+
+        volleyResponseListener = new VolleyResponseListener() {
+            @Override
+            public void onError(String message) {
+                Log.e(TAG, message);
+            }
+
+            @Override
+            public void onResponse(Object response) {
+                JSONObject jsonObject = (JSONObject) response;
+                try {
+
+                    JSONObject[] domainList = (JSONObject[]) jsonObject.get(VolleySingleton.activities);
+                    Log.i(TAG, response.toString());
+                    DomainInfo domainInfo = DomainInfo.getInstance();
+                    DomainLists domainLists = DomainLists.getInstance();
+
+                    for (JSONObject domain :domainList) {
+
+                        String domainName = domain.get(VolleySingleton.domainName).toString();
+                        HashMap<String, String> info = new HashMap<>();
+                        // TODO: add proper domain info
+                        info.put(DomainInfo.DOMAIN_NAME, domainName);
+                        info.put(DomainInfo.REGISTRAR_DOMAIN_ID, "");
+                        info.put(DomainInfo.REGISTRAR_NAME, "");
+                        info.put(DomainInfo.REGISTRAR_EXPIRY_DATE, "");
+
+                        String timeStamp = domain.get(VolleySingleton.timestamp).toString();
+                        timeStamp = timeStamp.replaceAll("T", "-");
+                        timeStamp = timeStamp.replaceAll("Z", "");
+
+                        info.put(DomainInfo.DOMAIN_TIMESTAMP, timeStamp);
+
+                        domainInfo.addDomain(domainName, info);
+
+                        if (domain.get(VolleySingleton.listType).equals(VolleySingleton.BlackList)) {
+                            domainLists.addToBlackList(domainName);
+                        }
+
+                        if (domain.get(VolleySingleton.listType).equals(VolleySingleton.WhiteList)) {
+                            domainLists.addToWhiteList(domainName);
+                        }
+
+                    }
+
+                } catch (JSONException e) {
+                    Log.e(TAG, "Error On Response from Populate Domain Request");
+                    e.printStackTrace();
+                }
+            }
+        };
+
+        try {
+            domainRequest.put(VolleySingleton.startDate, START_DATE);
+            domainRequest.putOpt(VolleySingleton.endDate, END_DATE);
+            domainRequest.putOpt(VolleySingleton.limit, LIMIT);
+            domainRequest.putOpt(VolleySingleton.listTypes, LIST_TYPES);
+            // TODO: add actual userID
+            VolleyGetRequest.addRequest(getContext(), VolleyGetRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY, "userID", domainRequest, volleyResponseListener);
+        } catch (JSONException e) {
+            Log.e(TAG, "Populate Domain Request Creation Failed");
+            e.printStackTrace();
+        }
+
     }
 
     public void WritetoBTDevice(String message) {

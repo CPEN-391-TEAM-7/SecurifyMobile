@@ -1,4 +1,4 @@
-package com.example.securify.ui.adapters;
+package com.example.securify.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;

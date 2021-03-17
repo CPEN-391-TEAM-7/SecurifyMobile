@@ -1,4 +1,4 @@
-package com.example.securify.ui.adapters;
+package com.example.securify.adapters;
 
 import android.content.Context;
 import android.util.Log;
@@ -15,27 +15,22 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
-import com.example.securify.DomainInfo;
-import com.example.securify.DomainLists;
+import com.example.securify.domain.DomainInfo;
+import com.example.securify.domain.DomainLists;
 import com.example.securify.R;
-import com.example.securify.model.Domain;
-import com.example.securify.ui.comparators.AscendingDomainNameComparator;
-import com.example.securify.ui.comparators.AscendingListComparator;
-import com.example.securify.ui.comparators.AscendingTimeStampComparator;
-import com.example.securify.ui.comparators.DescendingDomainNameComparator;
-import com.example.securify.ui.comparators.DescendingListComparator;
-import com.example.securify.ui.comparators.DescendingTimeStampComparator;
+import com.example.securify.comparators.AscendingDomainNameComparator;
+import com.example.securify.comparators.AscendingListComparator;
+import com.example.securify.comparators.AscendingTimeStampComparator;
+import com.example.securify.comparators.DescendingDomainNameComparator;
+import com.example.securify.comparators.DescendingListComparator;
+import com.example.securify.comparators.DescendingTimeStampComparator;
 
-import org.w3c.dom.Text;
-
-import java.lang.reflect.Array;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Map;
 
 public class ActivityDomainListAdapter extends BaseExpandableListAdapter implements Filterable {
     private Context context;
