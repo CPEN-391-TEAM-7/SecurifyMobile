@@ -122,7 +122,7 @@ public class LoginActivity extends AppCompatActivity {
 //
 //                addUser(personName, personId);
 
-                Toast.makeText(getApplicationContext(), "Welcome to Securify", Toast.LENGTH_LONG).show();
+                Toast.makeText(getApplicationContext(), "Welcome to Securify", Toast.LENGTH_SHORT).show();
             }
 
             Log.i("LOGIN", "Successful");
