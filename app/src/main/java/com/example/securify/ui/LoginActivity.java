@@ -10,6 +10,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.securify.R;
 import com.example.securify.model.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -20,6 +26,9 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -111,16 +120,7 @@ public class LoginActivity extends AppCompatActivity {
                 String personName = acct.getDisplayName();
                 String personId = acct.getId();
 
-//                Retrofit retrofit = new Retrofit.Builder()
-//                        .baseUrl(BASE_URL)
-//                        .addConverterFactory(GsonConverterFactory.create())
-//                        .build();
-//
-//                Log.i(TAG, String.format("Initializing retrofit... Base URL: %s", BASE_URL));
-//
-//                backend_api = retrofit.create(Backend_API.class);
-//
-//                addUser(personName, personId);
+                volleyPost("/user/register", personId, personName);
 
                 Toast.makeText(getApplicationContext(), "Welcome to Securify", Toast.LENGTH_SHORT).show();
             }
@@ -143,31 +143,36 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-//    // HTTP Call to the backend to register a User
-//    private void addUser(String name, String userID) {
-//        User user = new User(name, userID);
-//
-//        Log.i(TAG, "HTTP Call to register the user");
-//
-//        Call<User> call = backend_api.registerUser(user);
-//
-//        call.enqueue(new Callback<User>() {
-//            @Override
-//            public void onResponse(Call<User> call, Response<User> response) {
-//
-//                if(!response.isSuccessful()) {
-//                    Log.e(TAG, "Something went wrong with registering the user: " + response.toString());
-//                    return;
-//                }
-//
-//                Log.d(TAG, "HTTP Call successful");
-//                finalUser = response.body();
-//            }
-//
-//            @Override
-//            public void onFailure(Call<User> call, Throwable t) {
-//                Log.e(TAG, "Something went wrong with registering the user: " + t.toString());
-//            }
-//        });
-//    }
+    private void volleyPost(String path, String userID, String name) {
+        String postUrl = BASE_URL + path;
+        RequestQueue requestQueue = Volley.newRequestQueue(LoginActivity.this);
+
+        Log.i(TAG, "POST REQUEST starting...");
+        Log.d(TAG, userID);
+        Log.d(TAG, name);
+
+        JSONObject postData = new JSONObject();
+        try {
+            postData.put("userID", "userID");
+            postData.put("name", "name");
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, postUrl, postData, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.i(TAG, "Response is " + response.toString());
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                error.printStackTrace();
+            }
+        });
+
+        requestQueue.add(jsonObjectRequest);
+    }
+
 }
