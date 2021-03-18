@@ -153,7 +153,7 @@ public class LoginActivity extends AppCompatActivity {
 
         JSONObject postData = new JSONObject();
         try {
-            postData.put("userID", "userID");
+            postData.put("userID", userID);
             postData.put("name", "name");
 
         } catch (JSONException e) {
@@ -169,6 +169,7 @@ public class LoginActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 error.printStackTrace();
+                Log.i(TAG, error.toString());
             }
         });
 
