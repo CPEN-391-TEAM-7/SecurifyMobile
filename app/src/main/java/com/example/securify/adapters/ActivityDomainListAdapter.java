@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.HashMap;
 
 public class ActivityDomainListAdapter extends BaseExpandableListAdapter implements Filterable {
+    
     private Context context;
     private ArrayList<String> domainList;
     private ArrayList<String> mDomainFilterList;

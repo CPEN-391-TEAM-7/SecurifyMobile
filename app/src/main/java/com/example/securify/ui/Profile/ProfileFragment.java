@@ -1,4 +1,4 @@
-package com.example.securify.ui.settings;
+package com.example.securify.ui.Profile;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -21,7 +21,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-public class SettingsFragment extends Fragment {
+public class ProfileFragment extends Fragment {
 
     private Button signOutButton;
     private GoogleSignInClient mGoogleSignInClient;
@@ -30,7 +30,7 @@ public class SettingsFragment extends Fragment {
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_settings, container, false);
+        View root = inflater.inflate(R.layout.fragment_profile, container, false);
         final TextView textView = root.findViewById(R.id.text_blacklist);
 
         signOutButton = root.findViewById(R.id.sign_out_button);

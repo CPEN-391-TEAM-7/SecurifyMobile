@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.securify.R;
-import com.example.securify.api.Backend_API;
 import com.example.securify.model.User;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -31,8 +30,6 @@ public class LoginActivity extends AppCompatActivity {
     private GoogleSignInClient mGoogleSignInClient;
     private SignInButton signInButton;
     private Button signOutButton;
-
-    private Backend_API backend_api;
 
     private User finalUser;
 

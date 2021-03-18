@@ -56,14 +56,10 @@ dependencies {
     // Charts
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
 
-    // HTTP Retrofit
-    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
-    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
-
     implementation "androidx.activity:activity:$activity_version"
 
     implementation 'commons-net:commons-net:3.6'
 
-    implementation 'com.android.volley:volley:1.1.1'
+    implementation 'com.android.volley:volley:1.2.0'
 
 }

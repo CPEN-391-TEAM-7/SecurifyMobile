@@ -23,9 +23,9 @@
         />
 
     <item
-        android:id="@+id/navigation_settings"
+        android:id="@+id/navigation_profile"
         android:icon="@drawable/ic_statistics"
-        android:title="@string/settings"
+        android:title="@string/profile"
         />
 
 
