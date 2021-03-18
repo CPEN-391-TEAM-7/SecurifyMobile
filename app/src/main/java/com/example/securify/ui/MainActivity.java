@@ -1,4 +1,4 @@
-package com.example.securify.ui.activity;
+package com.example.securify.ui;
 
 import android.os.Bundle;
 

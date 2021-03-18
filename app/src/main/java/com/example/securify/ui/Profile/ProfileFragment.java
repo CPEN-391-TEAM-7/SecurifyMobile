@@ -13,7 +13,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.example.securify.ui.activity.LoginActivity;
+import com.example.securify.ui.LoginActivity;
 import com.example.securify.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
