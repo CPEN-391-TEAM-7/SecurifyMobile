@@ -24,6 +24,8 @@ import com.example.securify.comparators.AscendingTimeStampComparator;
 import com.example.securify.comparators.DescendingDomainNameComparator;
 import com.example.securify.comparators.DescendingListComparator;
 import com.example.securify.comparators.DescendingTimeStampComparator;
+import com.example.securify.ui.volley.VolleyRequest;
+import com.example.securify.ui.volley.VolleyResponseListener;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -158,6 +160,20 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
                 public void onClick(View v) {
                     String domain = domainList.get(groupPosition);
                     if (!DomainLists.getInstance().whiteListContains(domain)) {
+
+                        // TODO: add actual userID
+                        VolleyRequest.addRequest(context, VolleyRequest.PUT_WHITELIST, "", domain, "", null, new VolleyResponseListener() {
+                            @Override
+                            public void onError(String message) {
+                                Log.i(TAG, message);
+                            }
+
+                            @Override
+                            public void onResponse(Object response) {
+                                Log.i(TAG, response.toString());
+                            }
+                        });
+
                         DomainLists.getInstance().removeFromBlackList(domain);
                         DomainLists.getInstance().addToWhiteList(domain);
                         notifyDataSetChanged();
@@ -172,6 +188,20 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
                 public void onClick(View v) {
                     String domain = domainList.get(groupPosition);
                     if (!DomainLists.getInstance().blackListContains(domain)) {
+
+                        // TODO: add actual userID
+                        VolleyRequest.addRequest(context, VolleyRequest.PUT_BLACKLIST, "", domain, "", null, new VolleyResponseListener() {
+                            @Override
+                            public void onError(String message) {
+                                Log.i(TAG, message);
+                            }
+
+                            @Override
+                            public void onResponse(Object response) {
+                                Log.i(TAG, response.toString());
+                            }
+                        });
+
                         DomainLists.getInstance().removeFromWhiteList(domain);
                         DomainLists.getInstance().addToBlackList(domain);
                         notifyDataSetChanged();

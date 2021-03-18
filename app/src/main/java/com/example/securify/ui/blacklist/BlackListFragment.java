@@ -22,6 +22,9 @@ import com.example.securify.domain.DomainLists;
 import com.example.securify.domain.DomainMatcher;
 import com.example.securify.R;
 import com.example.securify.adapters.DomainListAdapter;
+import com.example.securify.ui.volley.VolleyRequest;
+import com.example.securify.ui.volley.VolleyResponseListener;
+import com.example.securify.ui.volley.VolleySingleton;
 
 import org.apache.commons.net.whois.WhoisClient;
 
@@ -77,7 +80,19 @@ public class BlackListFragment extends Fragment {
                 if (DomainLists.getInstance().whiteListContains(blacklist)) {
 
                     DomainLists.getInstance().removeFromWhiteList(blacklist);
-                    //TODO: update lists in the backend
+
+                    //TODO: add actual userID
+                    VolleyRequest.addRequest(getContext(), VolleyRequest.PUT_BLACKLIST, "", blacklist, "", null, new VolleyResponseListener() {
+                        @Override
+                        public void onError(String message) {
+                            Log.i(TAG, message);
+                        }
+
+                        @Override
+                        public void onResponse(Object response) {
+                            Log.i(TAG, response.toString());
+                        }
+                    });
 
                 } else {
 
@@ -138,6 +153,19 @@ public class BlackListFragment extends Fragment {
                         e.printStackTrace();
                     }
 
+                    // TODO: add actual userID
+                    VolleyRequest.addRequest(getContext(), VolleyRequest.POST_NEW_DOMAIN, "", blacklist, VolleySingleton.Blacklist, null, new VolleyResponseListener() {
+                        @Override
+                        public void onError(String message) {
+                            Log.i(TAG, message);
+                        }
+
+                        @Override
+                        public void onResponse(Object response) {
+                            Log.i(TAG, response.toString());
+                        }
+                    });
+
                 }
 
                 if (validDomain) {
@@ -145,7 +173,6 @@ public class BlackListFragment extends Fragment {
                     addBlackList.getText().clear();
                     blackList.add(blacklist);
                     allDomainsList.add(blacklist);
-                    //TODO: update lists in the backend
 
                 } else {
                     Toast.makeText(getContext(), "Invalid Domain", Toast.LENGTH_LONG).show();

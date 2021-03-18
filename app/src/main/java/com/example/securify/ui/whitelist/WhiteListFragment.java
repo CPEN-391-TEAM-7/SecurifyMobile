@@ -22,6 +22,9 @@ import com.example.securify.domain.DomainLists;
 import com.example.securify.domain.DomainMatcher;
 import com.example.securify.R;
 import com.example.securify.adapters.DomainListAdapter;
+import com.example.securify.ui.volley.VolleyRequest;
+import com.example.securify.ui.volley.VolleyResponseListener;
+import com.example.securify.ui.volley.VolleySingleton;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -84,7 +87,18 @@ public class WhiteListFragment extends Fragment {
 
                     DomainLists.getInstance().removeFromBlackList(whitelist);
 
-                    //TODO: update lists in the backend
+                    //TODO: add actual userID
+                    VolleyRequest.addRequest(getContext(), VolleyRequest.PUT_WHITELIST, "", whitelist, "", null, new VolleyResponseListener() {
+                        @Override
+                        public void onError(String message) {
+                            Log.i(TAG, message);
+                        }
+
+                        @Override
+                        public void onResponse(Object response) {
+                            Log.i(TAG, response.toString());
+                        }
+                    });
 
                 } else {
 
@@ -145,6 +159,18 @@ public class WhiteListFragment extends Fragment {
                         e.printStackTrace();
                     }
 
+                    // TODO: add actual userID
+                    VolleyRequest.addRequest(getContext(), VolleyRequest.POST_NEW_DOMAIN, "", whitelist, VolleySingleton.Whitelist, null, new VolleyResponseListener() {
+                        @Override
+                        public void onError(String message) {
+                            Log.i(TAG, message);
+                        }
+
+                        @Override
+                        public void onResponse(Object response) {
+                            Log.i(TAG, response.toString());
+                        }
+                    });
                 }
 
                 if (validDomain) {
@@ -152,7 +178,7 @@ public class WhiteListFragment extends Fragment {
                     addWhiteList.getText().clear();
                     whiteList.add(whitelist);
                     allDomainsList.add(whitelist);
-                    //TODO: update lists in the backend
+
                 } else {
                     Toast.makeText(getContext(), "Invalid Domain", Toast.LENGTH_LONG).show();
                     validDomain = true;
