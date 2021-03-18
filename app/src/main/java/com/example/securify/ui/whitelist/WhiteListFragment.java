@@ -84,6 +84,8 @@ public class WhiteListFragment extends Fragment {
 
                     DomainLists.getInstance().removeFromBlackList(whitelist);
 
+                    //TODO: update lists in the backend
+
                 } else {
 
                     Thread t = new Thread(new Runnable() {
@@ -150,6 +152,7 @@ public class WhiteListFragment extends Fragment {
                     addWhiteList.getText().clear();
                     whiteList.add(whitelist);
                     allDomainsList.add(whitelist);
+                    //TODO: update lists in the backend
                 } else {
                     Toast.makeText(getContext(), "Invalid Domain", Toast.LENGTH_LONG).show();
                     validDomain = true;

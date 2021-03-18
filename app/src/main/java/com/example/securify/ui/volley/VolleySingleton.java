@@ -18,8 +18,10 @@ public class VolleySingleton {
     public static String listType = "listType";
     public static String domainName = "domainName";
     public static String timestamp = "timestamp";
-    public static String WhiteList = "WhiteList";
-    public static String BlackList = "BlackList";
+    public static String Whitelist = "Whitelist";
+    public static String Blacklist = "Blacklist";
+    public static String lastEndDate = "lastEndDate";
+    public static String count = "count";
 
     private VolleySingleton(Context context) {
         ctx = context;

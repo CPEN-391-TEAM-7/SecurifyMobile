@@ -18,6 +18,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.securify.R;
 import com.example.securify.model.User;
+import com.example.securify.ui.volley.VolleySingleton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -145,7 +146,6 @@ public class LoginActivity extends AppCompatActivity {
 
     private void volleyPost(String path, String userID, String name) {
         String postUrl = BASE_URL + path;
-        RequestQueue requestQueue = Volley.newRequestQueue(LoginActivity.this);
 
         Log.i(TAG, "POST REQUEST starting...");
         Log.d(TAG, userID);
@@ -173,7 +173,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
-        requestQueue.add(jsonObjectRequest);
+        VolleySingleton.getInstance(LoginActivity.this).addToRequestQueue(jsonObjectRequest);
     }
 
 }

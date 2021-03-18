@@ -33,7 +33,7 @@ import com.example.securify.domain.DomainInfo;
 import com.example.securify.domain.DomainLists;
 import com.example.securify.R;
 import com.example.securify.adapters.ActivityDomainListAdapter;
-import com.example.securify.ui.volley.VolleyGetRequest;
+import com.example.securify.ui.volley.VolleyRequest;
 import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
 
@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 public class ActivityFragment extends Fragment {
@@ -59,9 +60,11 @@ public class ActivityFragment extends Fragment {
 
     private final String TAG = "ActivityFragment";
     private final String START_DATE = "2021-03-20T10:11:36.251Z";
-    private final String END_DATE = "2021-03-01T10:11:36.251Z";
-    private final int LIMIT = 50;
+    private Date lastEndDate = null;
+    private int count = 0;
+    private final int LIMIT = 20;
     private final String[] LIST_TYPES = {"Safe"};
+
 
     private VolleyResponseListener volleyResponseListener;
 
@@ -160,8 +163,11 @@ public class ActivityFragment extends Fragment {
         loadMoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: load more events
+                // populateDomains();
                 domainListAdapter.notifyDataSetChanged();
+                if (count == 0) {
+                    Toast.makeText(getContext(), "No more domains can be loaded", Toast.LENGTH_LONG).show();
+                }
             }
         });
 
@@ -299,7 +305,7 @@ public class ActivityFragment extends Fragment {
             }
         });
 
-        // populateDomains();
+
         return root;
     }
 
@@ -340,16 +346,18 @@ public class ActivityFragment extends Fragment {
 
                         domainInfo.addDomain(domainName, info);
 
-                        if (domain.get(VolleySingleton.listType).equals(VolleySingleton.BlackList)) {
+                        if (domain.get(VolleySingleton.listType).equals(VolleySingleton.Blacklist)) {
                             domainLists.addToBlackList(domainName);
                         }
 
-                        if (domain.get(VolleySingleton.listType).equals(VolleySingleton.WhiteList)) {
+                        if (domain.get(VolleySingleton.listType).equals(VolleySingleton.Whitelist)) {
                             domainLists.addToWhiteList(domainName);
                         }
 
                     }
 
+                lastEndDate = (Date) jsonObject.get(VolleySingleton.lastEndDate);
+                count = (int) jsonObject.get(VolleySingleton.count);
                 } catch (JSONException e) {
                     Log.e(TAG, "Error On Response from Populate Domain Request");
                     e.printStackTrace();
@@ -359,11 +367,11 @@ public class ActivityFragment extends Fragment {
 
         try {
             domainRequest.put(VolleySingleton.startDate, START_DATE);
-            domainRequest.putOpt(VolleySingleton.endDate, END_DATE);
+            // domainRequest.putOpt(VolleySingleton.endDate, END_DATE);
             domainRequest.putOpt(VolleySingleton.limit, LIMIT);
             domainRequest.putOpt(VolleySingleton.listTypes, LIST_TYPES);
             // TODO: add actual userID
-            VolleyGetRequest.addRequest(getContext(), VolleyGetRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY, "userID", domainRequest, volleyResponseListener);
+            VolleyRequest.addRequest(getContext(), VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY, "userID", "", "", domainRequest, volleyResponseListener);
         } catch (JSONException e) {
             Log.e(TAG, "Populate Domain Request Creation Failed");
             e.printStackTrace();

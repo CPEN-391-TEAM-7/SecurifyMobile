@@ -77,6 +77,7 @@ public class BlackListFragment extends Fragment {
                 if (DomainLists.getInstance().whiteListContains(blacklist)) {
 
                     DomainLists.getInstance().removeFromWhiteList(blacklist);
+                    //TODO: update lists in the backend
 
                 } else {
 
@@ -144,6 +145,7 @@ public class BlackListFragment extends Fragment {
                     addBlackList.getText().clear();
                     blackList.add(blacklist);
                     allDomainsList.add(blacklist);
+                    //TODO: update lists in the backend
 
                 } else {
                     Toast.makeText(getContext(), "Invalid Domain", Toast.LENGTH_LONG).show();
