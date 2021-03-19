@@ -36,30 +36,25 @@
             android:layout_marginBottom="8dp"
             android:textSize="18sp"/>
 
-        <LinearLayout
-            android:id="@+id/weekly_statistics_layout"
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/pieChart_view"
             android:layout_width="match_parent"
-            android:layout_height="250dp"
-            android:orientation="horizontal"
+            android:layout_height="200dp"
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:layout_below="@id/weekly_statistics_text">
-
-        <com.github.mikephil.charting.charts.PieChart
-            android:id="@+id/pieChart_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
+            android:layout_below="@id/weekly_statistics_text"
             />
 
         <com.github.mikephil.charting.charts.BarChart
             android:id="@+id/barChart_view"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_below="@id/pieChart_view"/>
 
-        </LinearLayout>
 
         <TextView
             android:id="@+id/daily_usage_text"
@@ -71,16 +66,20 @@
             android:layout_marginStart="8dp"
             android:layout_marginEnd="8dp"
             android:layout_marginBottom="8dp"
-            android:layout_below="@+id/weekly_statistics_layout"/>
+            android:layout_below="@+id/barChart_view"
+           />
 
-        <View
+        <com.github.mikephil.charting.charts.LineChart
             android:id="@+id/lineChart_view"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
             android:layout_below="@id/daily_usage_text"
             android:layout_centerHorizontal="true"
             android:background="@null"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="8dp" />
+
 
         <TextView
             android:id="@+id/top_domains_text"
@@ -96,9 +95,11 @@
             android:layout_below="@id/lineChart_view" />
 
         <Spinner
+            android:id="@+id/top_domains_spinner"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_toEndOf="@+id/top_domains_text"
+            android:layout_alignBaseline="@id/top_domains_text"
             android:layout_below="@id/lineChart_view" />
 
         <LinearLayout
@@ -138,14 +139,11 @@
         </LinearLayout>
 
         <ListView
-            android:id="@+id/top_domains_lit"
+            android:id="@+id/top_domains_list"
             android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_below="@id/top_domains_titles"
             android:layout_centerHorizontal="true"/>
-
-
-
 
     </RelativeLayout>
 </ScrollView>

@@ -76,6 +76,7 @@ public class ActivityFragment extends Fragment {
                 new ViewModelProvider(this).get(ActivityViewModel.class);
         View root = inflater.inflate(R.layout.fragment_activity, container, false);
         final TextView textView = root.findViewById(R.id.text_activity);
+
         outputStream = BluetoothStreams.getInstance().getOutputStream();
 
         ToggleButton toggleButton = root.findViewById(R.id.toggle);
@@ -275,7 +276,7 @@ public class ActivityFragment extends Fragment {
         });
 
         Spinner listSelector = root.findViewById(R.id.filter_list_selector);
-        ArrayAdapter<String> listSelectorAdapter = new ArrayAdapter<String>(getContext(), R.layout.support_simple_spinner_dropdown_item, listSelectorItems);
+        ArrayAdapter<String> listSelectorAdapter = new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, listSelectorItems);
         listSelector.setAdapter(listSelectorAdapter);
 
         Button resetButton = root.findViewById(R.id.filter_reset_button);

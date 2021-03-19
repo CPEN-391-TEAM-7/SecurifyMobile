@@ -10,6 +10,7 @@ public class VolleySingleton {
     private static VolleySingleton instance;
     private RequestQueue requestQueue;
     private static Context ctx;
+
     public static String startDate = "startDate";
     public static String endDate = "endDate";
     public static String limit = "limit";
@@ -22,6 +23,7 @@ public class VolleySingleton {
     public static String Blacklist = "Blacklist";
     public static String lastEndDate = "lastEndDate";
     public static String count = "count";
+    public static String num_of_accesses = "num_of_accesses";
 
     private VolleySingleton(Context context) {
         ctx = context;

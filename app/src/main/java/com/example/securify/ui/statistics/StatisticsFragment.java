@@ -6,6 +6,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,24 +18,35 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.securify.R;
+import com.example.securify.adapters.StatisticsListAdapter;
+import com.example.securify.ui.volley.VolleyRequest;
+import com.example.securify.ui.volley.VolleySingleton;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
+import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
+import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.XAxis;
+import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -42,8 +56,14 @@ public class StatisticsFragment extends Fragment {
 
     private PieChart pieChart;
     private BarChart barChart;
+    private LineChart lineChart;
 
     ArrayList<Integer> colors = new ArrayList<>();
+
+    String[] spinnerItems = {"Daily", "Weekly", "Monthly", "Yearly", "All Time"};
+
+    private HashMap<String, HashMap<String, Object>> topDomainsMap = new HashMap<>();
+    private StatisticsListAdapter statisticsListAdapter;
 
 
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -55,12 +75,30 @@ public class StatisticsFragment extends Fragment {
 
         pieChart = root.findViewById(R.id.pieChart_view);
         barChart = root.findViewById(R.id.barChart_view);
+        lineChart = root.findViewById(R.id.lineChart_view);
         initColors();
 
         initPieChart();
         showPieChart();
 
         showBarChart();
+        showLineChart();
+
+        Spinner topDomainsSpinner = root.findViewById(R.id.top_domains_spinner);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, spinnerItems);
+        topDomainsSpinner.setAdapter(spinnerAdapter);
+
+        /* Test Data */
+        HashMap<String, Object> testData = new HashMap<>();
+        testData.put(VolleySingleton.domainName, "testName");
+        testData.put(VolleySingleton.listType, VolleySingleton.Whitelist);
+        testData.put(VolleySingleton.num_of_accesses, 10);
+        /* Test Data */
+
+        topDomainsMap.put("testName", testData);
+        statisticsListAdapter = new StatisticsListAdapter(topDomainsMap, getContext());
+        ListView topDomainsList = root.findViewById(R.id.top_domains_list);
+        topDomainsList.setAdapter(statisticsListAdapter);
 
 //        statisticsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
 //            @Override
@@ -69,6 +107,34 @@ public class StatisticsFragment extends Fragment {
 //            }
 //        });
         return root;
+    }
+
+    private void showLineChart() {
+        List<Entry> valsComp1 = new ArrayList<Entry>();
+        List<Entry> valsComp2 = new ArrayList<Entry>();
+
+        Entry c1e1 = new Entry(0f, 100000f); // 0 == quarter 1
+        valsComp1.add(c1e1);
+        Entry c1e2 = new Entry(1f, 140000f); // 1 == quarter 2 ...
+        valsComp1.add(c1e2);
+        Entry c2e1 = new Entry(0f, 130000f); // 0 == quarter 1
+        valsComp2.add(c2e1);
+        Entry c2e2 = new Entry(1f, 115000f); // 1 == quarter 2 ...
+        valsComp2.add(c2e2);
+
+        LineDataSet setComp1 = new LineDataSet(valsComp1, "Company 1");
+        setComp1.setAxisDependency(YAxis.AxisDependency.LEFT);
+        LineDataSet setComp2 = new LineDataSet(valsComp2, "Company 2");
+        setComp2.setAxisDependency(YAxis.AxisDependency.LEFT);
+
+        // use the interface ILineDataSet
+        List<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
+        dataSets.add(setComp1);
+        dataSets.add(setComp2);
+        LineData data = new LineData(dataSets);
+        lineChart.setData(data);
+        lineChart.invalidate(); // refresh
+
     }
 
     private void initColors() {

@@ -18,6 +18,8 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.securify.R;
 import com.example.securify.model.User;
+import com.example.securify.ui.volley.VolleyRequest;
+import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -121,8 +123,31 @@ public class LoginActivity extends AppCompatActivity {
                 String personName = acct.getDisplayName();
                 String personId = acct.getId();
 
-                volleyPost("/user/register", personId, personName);
+                Log.i(TAG, "POST REQUEST starting...");
+                Log.d(TAG, personId);
+                Log.d(TAG, personName);
 
+
+                JSONObject postData = new JSONObject();
+                try {
+                    postData.put("userID", personId);
+                    postData.put("name", personName);
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                VolleyRequest.addRequest(getBaseContext(), VolleyRequest.POST_REGISTER_USER, "", "", "", postData, new VolleyResponseListener() {
+                    @Override
+                    public void onError(String message) {
+                        Log.i(TAG, message);
+                    }
+
+                    @Override
+                    public void onResponse(Object response) {
+                        Log.i(TAG, "Response is " + response.toString());
+
+                    }
+                });
                 Toast.makeText(getApplicationContext(), "Welcome to Securify", Toast.LENGTH_SHORT).show();
             }
 
@@ -144,36 +169,5 @@ public class LoginActivity extends AppCompatActivity {
         }
     }
 
-    private void volleyPost(String path, String userID, String name) {
-        String postUrl = BASE_URL + path;
-
-        Log.i(TAG, "POST REQUEST starting...");
-        Log.d(TAG, userID);
-        Log.d(TAG, name);
-
-        JSONObject postData = new JSONObject();
-        try {
-            postData.put("userID", userID);
-            postData.put("name", "name");
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(Request.Method.POST, postUrl, postData, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                Log.i(TAG, "Response is " + response.toString());
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                error.printStackTrace();
-                Log.i(TAG, error.toString());
-            }
-        });
-
-        VolleySingleton.getInstance(LoginActivity.this).addToRequestQueue(jsonObjectRequest);
-    }
 
 }
