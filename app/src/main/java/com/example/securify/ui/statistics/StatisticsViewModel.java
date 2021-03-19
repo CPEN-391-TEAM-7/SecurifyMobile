@@ -11,7 +11,7 @@ public class StatisticsViewModel extends ViewModel {
 
     public StatisticsViewModel() {
         mText = new MutableLiveData<>();
-        mText.setValue("This is statistics fragment");
+        mText.setValue("Statistics");
     }
 
     public LiveData<String> getText() {

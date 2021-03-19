@@ -1,49 +1,151 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.statistics.StatisticsFragment">
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        app:layout_constraintHorizontal_weight="100">
+        android:layout_height="wrap_content"
+        tools:context=".ui.statistics.StatisticsFragment">
 
-    <com.github.mikephil.charting.charts.PieChart
-        android:id="@+id/pieChart_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="60"
-        android:layout_margin="20dp"
-        />
+        <TextView
+            android:id="@+id/text_statistics"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_marginEnd="8dp"
+            android:textAlignment="center"
+            android:textSize="30sp"
+            android:text="@string/statistics"
+            android:textColor="@color/black"
+            android:layout_alignParentTop="true"/>
 
-    <com.github.mikephil.charting.charts.BarChart
-        android:id="@+id/barChart_view"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_weight="40"
-        android:layout_margin="20dp"
-        android:paddingBottom="5dp"
-        android:paddingTop="5dp"/>
+        <TextView
+            android:id="@+id/weekly_statistics_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:text="@string/weekly_statistics"
+            android:textColor="@color/black"
+            android:layout_below="@+id/text_statistics"
+            android:layout_marginStart="8dp"
+            android:layout_marginBottom="8dp"
+            android:textSize="18sp"/>
 
-    </LinearLayout>
+        <LinearLayout
+            android:id="@+id/weekly_statistics_layout"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
+            android:orientation="horizontal"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_below="@id/weekly_statistics_text">
 
-<!--    <TextView-->
-<!--        android:id="@+id/text_statistics"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:layout_weight="80"-->
-<!--        android:layout_marginStart="8dp"-->
-<!--        android:layout_marginTop="8dp"-->
-<!--        android:layout_marginEnd="8dp"-->
-<!--        android:textAlignment="center"-->
-<!--        android:textSize="20sp"-->
-<!--        app:layout_constraintBottom_toBottomOf="parent"-->
-<!--        app:layout_constraintEnd_toEndOf="parent"-->
-<!--        app:layout_constraintStart_toStartOf="parent"-->
-<!--        app:layout_constraintTop_toTopOf="parent" />-->
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <com.github.mikephil.charting.charts.PieChart
+            android:id="@+id/pieChart_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            />
+
+        <com.github.mikephil.charting.charts.BarChart
+            android:id="@+id/barChart_view"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/daily_usage_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/daily_usage"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_below="@+id/weekly_statistics_layout"/>
+
+        <View
+            android:id="@+id/lineChart_view"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/daily_usage_text"
+            android:layout_centerHorizontal="true"
+            android:background="@null"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/top_domains_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/top_domains"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:layout_below="@id/lineChart_view" />
+
+        <Spinner
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@+id/top_domains_text"
+            android:layout_below="@id/lineChart_view" />
+
+        <LinearLayout
+            android:id="@+id/top_domains_titles"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:layout_below="@id/top_domains_text">
+
+            <TextView
+                android:id="@+id/domain_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Domain"
+                android:textSize="14sp"
+                android:layout_weight="0.5"
+                android:paddingEnd="24dp"
+                android:textColor="@color/black" />
+            <TextView
+                android:id="@+id/count_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/count"
+                android:textSize="14sp"
+                android:textColor="@color/black"
+                android:layout_weight="0.25"
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp" />
+            <TextView
+                android:id="@+id/list_text"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/list"
+                android:textSize="14sp"
+                android:textColor="@color/black"
+                android:layout_weight="0.25"/>
+        </LinearLayout>
+
+        <ListView
+            android:id="@+id/top_domains_lit"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/top_domains_titles"
+            android:layout_centerHorizontal="true"/>
+
+
+
+
+    </RelativeLayout>
+</ScrollView>

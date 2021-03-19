@@ -34,4 +34,8 @@
     <string name="lists">Lists</string>
     <string name="reset">Reset</string>
     <string name="apply">Apply</string>
+    <string name="weekly_statistics">Weekly Statistics</string>
+    <string name="daily_usage">Daily Usage</string>
+    <string name="top_domains">Top Domains</string>
+    <string name="count">Count</string>
 </resources>
