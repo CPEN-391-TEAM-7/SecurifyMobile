@@ -1,6 +1,7 @@
 package com.example.securify.ui.volley;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -12,6 +13,8 @@ import org.json.JSONObject;
 import java.util.HashMap;
 
 public class VolleyRequest {
+
+    private static final String TAG = "HTTP REQUEST";
 
     private static final String baseAddress = " http://54.70.155.180";
 
@@ -25,8 +28,8 @@ public class VolleyRequest {
     private static final String recentDomainUrl = "/activity/recent/";
     private static final String mostRequestedAllTimeDomainUrl = "/activity/allTimeMostRequested/";
     private static final String mostRequestedBtwnDatesUrl = "/activity/mostRequested/";
-    private static final String blackListUrl = "/domain/Blacklist?userId=";
-    private static final String whiteListUrl = "/domain/Whitelist?userId=";
+    private static final String blackListUrl = "/domain/Blacklist/";
+    private static final String whiteListUrl = "/domain/Whitelist/";
     private static final String domainStatusIdUrl = "/domain?userId=";
 
     public static final String POST_NEW_DOMAIN = "POST_NEW_DOMAIN";
@@ -43,6 +46,9 @@ public class VolleyRequest {
 
         String url;
         int requestType;
+
+        Log.i(TAG, "Adding a Request...");
+
         switch (request) {
             case GET_RECENT_DOMAIN_REQUEST_ACTIVITY:
                 url = baseAddress + recentDomainUrl + userID;
@@ -94,6 +100,7 @@ public class VolleyRequest {
 
     private static void sendRequest(Context context, String url, JSONObject jsonObject, VolleyResponseListener listener, int requestType) {
 
+        Log.i(TAG, "Sending a request...");
 
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(requestType, url, jsonObject, new Response.Listener<JSONObject>() {
             @Override

@@ -136,6 +136,8 @@ public class LoginActivity extends AppCompatActivity {
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
+
+                // Send request here.
                 VolleyRequest.addRequest(getBaseContext(), VolleyRequest.POST_REGISTER_USER, "", "", "", postData, new VolleyResponseListener() {
                     @Override
                     public void onError(String message) {
@@ -148,6 +150,7 @@ public class LoginActivity extends AppCompatActivity {
 
                     }
                 });
+
                 Toast.makeText(getApplicationContext(), "Welcome to Securify", Toast.LENGTH_SHORT).show();
             }
 
