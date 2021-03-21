@@ -1,31 +1,29 @@
 package com.example.securify.ui.statistics;
 
-import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.securify.R;
 import com.example.securify.adapters.StatisticsListAdapter;
 import com.example.securify.ui.volley.VolleyRequest;
+import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
 import com.github.mikephil.charting.animation.Easing;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
-import com.github.mikephil.charting.components.AxisBase;
+import com.github.mikephil.charting.components.Description;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
@@ -39,15 +37,19 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.highlight.Highlight;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
-import com.github.mikephil.charting.listener.OnChartValueSelectedListener;
-import com.github.mikephil.charting.utils.ColorTemplate;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.TimeZone;
 
 
 public class StatisticsFragment extends Fragment {
@@ -58,13 +60,21 @@ public class StatisticsFragment extends Fragment {
     private BarChart barChart;
     private LineChart lineChart;
 
-    ArrayList<Integer> colors = new ArrayList<>();
+    private ArrayList<Integer> colors = new ArrayList<>();
 
     String[] spinnerItems = {"Daily", "Weekly", "Monthly", "Yearly", "All Time"};
 
-    private HashMap<String, HashMap<String, Object>> topDomainsMap = new HashMap<>();
+    private HashMap<String, HashMap<String, Object>> topDomainsData = new HashMap<>();
     private StatisticsListAdapter statisticsListAdapter;
 
+    private Description description = new Description();
+    private final String TAG = "StatisticsFragment";
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+    private HashMap<String, Integer> pieChartData =  new HashMap<>();
+    private HashMap<String, HashMap<String, Integer>> barChartData = new HashMap<>();
+    private HashMap<String, Integer> lineChartData = new HashMap<>();
+    private ArrayList<String> days = new ArrayList<String>();
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -76,7 +86,13 @@ public class StatisticsFragment extends Fragment {
         pieChart = root.findViewById(R.id.pieChart_view);
         barChart = root.findViewById(R.id.barChart_view);
         lineChart = root.findViewById(R.id.lineChart_view);
+
+        description.setText("");
         initColors();
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+        initData();
+        // getWeeklyData();
+        // getMonthlyData();
 
         initPieChart();
         showPieChart();
@@ -88,6 +104,30 @@ public class StatisticsFragment extends Fragment {
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, spinnerItems);
         topDomainsSpinner.setAdapter(spinnerAdapter);
 
+        topDomainsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedItem = parent.getItemAtPosition(position).toString();
+                // TODO: add volley requests
+                switch (selectedItem) {
+                    case "Daily":
+                        break;
+                    case "Weekly":
+                        break;
+                    case "Monthly":
+                        break;
+                    case "Yearly":
+                        break;
+                    case "All Time":
+                        break;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {}
+
+        });
+        
         /* Test Data */
         HashMap<String, Object> testData = new HashMap<>();
         testData.put(VolleySingleton.domainName, "testName");
@@ -95,8 +135,8 @@ public class StatisticsFragment extends Fragment {
         testData.put(VolleySingleton.num_of_accesses, 10);
         /* Test Data */
 
-        topDomainsMap.put("testName", testData);
-        statisticsListAdapter = new StatisticsListAdapter(topDomainsMap, getContext());
+        topDomainsData.put("testName", testData);
+        statisticsListAdapter = new StatisticsListAdapter(topDomainsData, getContext());
         ListView topDomainsList = root.findViewById(R.id.top_domains_list);
         topDomainsList.setAdapter(statisticsListAdapter);
 
@@ -109,31 +149,93 @@ public class StatisticsFragment extends Fragment {
         return root;
     }
 
-    private void showLineChart() {
-        List<Entry> valsComp1 = new ArrayList<Entry>();
-        List<Entry> valsComp2 = new ArrayList<Entry>();
+    private void initData() {
 
-        Entry c1e1 = new Entry(0f, 100000f); // 0 == quarter 1
-        valsComp1.add(c1e1);
-        Entry c1e2 = new Entry(1f, 140000f); // 1 == quarter 2 ...
-        valsComp1.add(c1e2);
-        Entry c2e1 = new Entry(0f, 130000f); // 0 == quarter 1
-        valsComp2.add(c2e1);
-        Entry c2e2 = new Entry(1f, 115000f); // 1 == quarter 2 ...
-        valsComp2.add(c2e2);
+        ArrayList<String> listTypes = new ArrayList<>();
+        listTypes.add(VolleySingleton.Whitelist);
+        listTypes.add(VolleySingleton.Blacklist);
+        listTypes.add(VolleySingleton.Safe);
+        listTypes.add(VolleySingleton.Malicious);
+        listTypes.add(VolleySingleton.Undefined);
 
-        LineDataSet setComp1 = new LineDataSet(valsComp1, "Company 1");
-        setComp1.setAxisDependency(YAxis.AxisDependency.LEFT);
-        LineDataSet setComp2 = new LineDataSet(valsComp2, "Company 2");
-        setComp2.setAxisDependency(YAxis.AxisDependency.LEFT);
+        days.add("MON");
+        days.add("TUE");
+        days.add("WED");
+        days.add("THU");
+        days.add("FRI");
+        days.add("SAT");
+        days.add("SUN");
 
-        // use the interface ILineDataSet
-        List<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
-        dataSets.add(setComp1);
-        dataSets.add(setComp2);
-        LineData data = new LineData(dataSets);
-        lineChart.setData(data);
-        lineChart.invalidate(); // refresh
+        for (String type: listTypes) {
+            pieChartData.put(type, 0);
+        }
+
+        HashMap<String, Integer> init;
+
+        for (String day: days) {
+            barChartData.put(day, new HashMap<>());
+            init = barChartData.get(day);
+            for (String type: listTypes) {
+                init.put(type, 0);
+            }
+        }
+    }
+
+    private void getWeeklyData() {
+
+        JSONObject domainRequest = new JSONObject();
+
+        VolleyResponseListener volleyResponseListener = new VolleyResponseListener() {
+            @Override
+            public void onError(String message) {
+                Log.e(TAG, message);
+            }
+
+            @Override
+            public void onResponse(Object response) {
+
+                JSONObject domainList = (JSONObject) response;
+                Iterator<String> keys = domainList.keys();
+                Integer numAccesses;
+
+                while (keys.hasNext()) {
+                    String domain = keys.next();
+                    try {
+
+                            // TODO: update barChartData
+                            // TODO: update pieChartData
+
+                            switch (((JSONObject) domainList.get(domain)).get(VolleySingleton.listType).toString()) {
+
+                                case "Whitelist":
+                                    break;
+                                case "Blacklist":
+                                    break;
+                                case "Safe":
+                                    break;
+                                case "Malicious":
+                                    break;
+                                case "Undefined":
+                                    break;
+
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        };
+
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        try {
+            domainRequest.put(VolleySingleton.startDate, simpleDateFormat.format(currentDateTime));
+            domainRequest.put(VolleySingleton.endDate, simpleDateFormat.format(currentDateTime.minusWeeks(1)));
+            // TODO: add userID
+            VolleyRequest.addRequest(getContext(), VolleyRequest.GET_BY_DATE_MOST_REQUESTED_DOMAINS, "", "", "", domainRequest, volleyResponseListener);
+        } catch (JSONException e) {
+            Log.e(TAG, "Initialize Data Failed");
+            e.printStackTrace();
+        }
 
     }
 
@@ -143,8 +245,6 @@ public class StatisticsFragment extends Fragment {
         colors.add(getResources().getColor(R.color.main4));
         colors.add(getResources().getColor(R.color.main5));
         colors.add(getResources().getColor(R.color.main6));
-        colors.add(getResources().getColor(R.color.main7));
-        colors.add(getResources().getColor(R.color.main1));
     }
 
     private void initPieChart(){
@@ -177,23 +277,13 @@ public class StatisticsFragment extends Fragment {
     private void showPieChart(){
 
         ArrayList<PieEntry> pieEntries = new ArrayList<>();
-        String label = "type";
+        String label = "";
 
-        //initializing data
-        Map<String, Integer> typeAmountMap = new HashMap<>();
-        typeAmountMap.put("Malicious",200);
-        typeAmountMap.put("Blacklisted",230);
-        typeAmountMap.put("Whitelisted",100);
-        typeAmountMap.put("Safe",500);
-        typeAmountMap.put("Undefined",50);
-
-        //initializing colors for the entries
-
-
-        //input data and fit data into pie chart entry
-        for(String type: typeAmountMap.keySet()){
-            pieEntries.add(new PieEntry(typeAmountMap.get(type).floatValue(), type));
-        }
+        pieEntries.add(new PieEntry(100, VolleySingleton.Whitelist));
+        pieEntries.add(new PieEntry(200, VolleySingleton.Blacklist));
+        pieEntries.add(new PieEntry(300, VolleySingleton.Safe));
+        pieEntries.add(new PieEntry(400, VolleySingleton.Malicious));
+        pieEntries.add(new PieEntry(500, VolleySingleton.Undefined));
 
         //collecting the entries with label name
         PieDataSet pieDataSet = new PieDataSet(pieEntries,label);
@@ -214,27 +304,68 @@ public class StatisticsFragment extends Fragment {
 
     private void showBarChart() {
         ArrayList<BarEntry> entries = new ArrayList<>();
-        entries.add(new BarEntry(0f, 30f));
-        entries.add(new BarEntry(1f, 40f));
-        entries.add(new BarEntry(2f, 60f));
-        entries.add(new BarEntry(3f, 10f));
-        entries.add(new BarEntry(4f, 5f));
-        entries.add(new BarEntry(5f, 45f));
 
-        BarDataSet bardataset = new BarDataSet(entries, "Cells");
+        // TODO: get actual data
 
-        ArrayList<String> labels = new ArrayList<String>();
-        labels.add("MON");
-        labels.add("TUE");
-        labels.add("WED");
-        labels.add("THU");
-        labels.add("FRI");
-        labels.add("WEEKEND");
+        for (int i = 0; i < 7; i++) {
+            float whiteListedDomains = (float) (Math.random() * i + 100);
+            float blackListedDomains = (float) (Math.random() * i + 100);
+            float safeDomains = (float) (Math.random() * i + 100);
+            float maliciousDomains = (float) (Math.random() * i + 100);
+            float undefinedDomains = (float) (Math.random() * i + 100);
 
-        BarData data = new BarData(bardataset);
-        barChart.setData(data); // set the data and list of labels into chart
-        barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(labels));
-        bardataset.setColors(colors);
+            entries.add(new BarEntry(
+                    i,
+                    new float[]{whiteListedDomains, blackListedDomains, safeDomains, maliciousDomains, undefinedDomains}
+            ));
+        }
+
+        BarDataSet barDataSet1;
+
+        barDataSet1 = new BarDataSet(entries, "");
+        barDataSet1.setDrawIcons(false);
+        barDataSet1.setColors(colors);
+        barDataSet1.setStackLabels(new String[]{"Whitelist", "BlackList", "Safe", "Malicious", "Undefined"});
+
+        ArrayList<IBarDataSet> dataSets = new ArrayList<>();
+        dataSets.add(barDataSet1);
+
+        BarData data = new BarData(dataSets);
+        data.setDrawValues(false);
+        barChart.setData(data);
         barChart.animateY(5000);
+        barChart.getAxisLeft().setEnabled(false);
+        barChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        barChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(days));
+
+        barChart.setDescription(description);
+    }
+
+    private void showLineChart() {
+        ArrayList<Entry> lineData = new ArrayList<Entry>();
+        ArrayList<String> xAxisLabels = new ArrayList<>(30);
+
+        for (int i = 0; i < 30; i++) {
+            lineData.add(new Entry(i,  i * 100));
+            xAxisLabels.add("March " + i);
+        }
+
+        LineDataSet setComp1 = new LineDataSet(lineData, "");
+        setComp1.setAxisDependency(YAxis.AxisDependency.LEFT);
+
+
+        // use the interface ILineDataSet
+        List<ILineDataSet> dataSets = new ArrayList<ILineDataSet>();
+        dataSets.add(setComp1);
+        LineData data = new LineData(dataSets);
+        data.setDrawValues(false);
+        lineChart.setData(data);
+        lineChart.invalidate(); // refresh
+        lineChart.getAxisLeft().setEnabled(false);
+        lineChart.getXAxis().setPosition(XAxis.XAxisPosition.BOTTOM);
+        lineChart.getXAxis().setValueFormatter(new IndexAxisValueFormatter(xAxisLabels));
+        lineChart.getLegend().setEnabled(false);
+
+        lineChart.setDescription(description);
     }
 }

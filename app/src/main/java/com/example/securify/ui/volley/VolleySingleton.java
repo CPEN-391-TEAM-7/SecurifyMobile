@@ -24,6 +24,10 @@ public class VolleySingleton {
     public static String lastEndDate = "lastEndDate";
     public static String count = "count";
     public static String num_of_accesses = "num_of_accesses";
+    public static String Safe = "Safe";
+    public static String Malicious = "Malicious";
+    public static String Undefined = "Undefined";
+    public static String domains = "domains";
 
     private VolleySingleton(Context context) {
         ctx = context;
