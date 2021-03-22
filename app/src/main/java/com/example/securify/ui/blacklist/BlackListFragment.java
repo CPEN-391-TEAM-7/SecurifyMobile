@@ -22,6 +22,7 @@ import com.example.securify.domain.DomainLists;
 import com.example.securify.domain.DomainMatcher;
 import com.example.securify.R;
 import com.example.securify.adapters.DomainListAdapter;
+import com.example.securify.model.User;
 import com.example.securify.ui.volley.VolleyRequest;
 import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
@@ -67,6 +68,8 @@ public class BlackListFragment extends Fragment {
 
         whoisClient = new WhoisClient();
 
+        String userID = User.getInstance().getUserID();
+
         Button addBlackListDomain = root.findViewById(R.id.add_blacklist_domain_button);
         addBlackListDomain.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -81,7 +84,7 @@ public class BlackListFragment extends Fragment {
 
                     DomainLists.getInstance().removeFromWhiteList(blacklist);
 
-                    //TODO: add actual userID
+                    // TODO: add actual userID
                     VolleyRequest.addRequest(getContext(), VolleyRequest.PUT_BLACKLIST, "", blacklist, "", null, new VolleyResponseListener() {
                         @Override
                         public void onError(String message) {
@@ -153,8 +156,7 @@ public class BlackListFragment extends Fragment {
                         e.printStackTrace();
                     }
 
-                    // TODO: add actual userID
-                    VolleyRequest.addRequest(getContext(), VolleyRequest.POST_NEW_DOMAIN, "", blacklist, VolleySingleton.Blacklist, null, new VolleyResponseListener() {
+                    VolleyRequest.addRequest(getContext(), VolleyRequest.POST_NEW_DOMAIN, User.getInstance().getUserID(), blacklist, VolleySingleton.Blacklist, null, new VolleyResponseListener() {
                         @Override
                         public void onError(String message) {
                             Log.i(TAG, message);
@@ -184,5 +186,9 @@ public class BlackListFragment extends Fragment {
         });
 
         return root;
+    }
+
+    private void getBlacklist() {
+
     }
 }

@@ -43,8 +43,6 @@ public class LoginActivity extends AppCompatActivity {
     private SignInButton signInButton;
     private Button signOutButton;
 
-    private User finalUser;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -130,8 +128,8 @@ public class LoginActivity extends AppCompatActivity {
 
                 JSONObject postData = new JSONObject();
                 try {
-                    postData.put("userID", personId);
-                    postData.put("name", personName);
+                    postData.put("userID", "testID3");
+                    postData.put("name", "Luffy D Monkey");
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -148,22 +146,37 @@ public class LoginActivity extends AppCompatActivity {
                     public void onResponse(Object response) {
                         Log.i(TAG, "Response is " + response.toString());
 
+                        try {
+                            JSONObject json = new JSONObject(response.toString());
+
+                            Log.i(TAG, "userID: " + json.getString("userID"));
+                            Log.i(TAG, "userID: " + json.getString("name"));
+
+                            User.getInstance().setName(json.getString("name"));
+                            User.getInstance().setUserID(json.getString("userID"));
+
+                            Log.i(TAG, "name: " + User.getInstance().getName());
+
+                        } catch (JSONException e){
+                            Log.e(TAG, "JSON Error");
+                            e.printStackTrace();
+                        }
+
+                        // TODO: Only go to mainActivity if we get user back.
                     }
                 });
-
-                Toast.makeText(getApplicationContext(), "Welcome to Securify", Toast.LENGTH_SHORT).show();
             }
 
-            Log.i("LOGIN", "Successful");
-
-            // Signed in successfully, show authenticated UI.
-            // updateUI(account);
             signInButton.setVisibility(View.GONE);
             signOutButton.setVisibility(View.VISIBLE);
 
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            Toast.makeText(getApplicationContext(), "Welcome to Securify", Toast.LENGTH_SHORT).show();
 
+            Log.i("LOGIN", "Successful");
+
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
+
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
             // Please refer to the GoogleSignInStatusCodes class reference for more information.
