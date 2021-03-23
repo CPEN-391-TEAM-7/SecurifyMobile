@@ -32,11 +32,9 @@ public class VolleyRequest {
     private static final String whiteListUrl = "/domain/Whitelist/";
     private static final String domainStatusIdUrl = "/domain?userId=";
 
-    public static final String ADD_NEW_DOMAIN = "ADD_NEW_DOMAIN";
     public static final String POST_REGISTER_USER = "POST_REGISTER_USER";
 
     private static final String updateDomain = "/domain/update";
-    private static final String addNewDomain = "/domain/add";
     private static final String registerUser = "/user/register";
 
     public static final String PUT_LIST = "PUT_LIST";
@@ -73,10 +71,6 @@ public class VolleyRequest {
             case GET_DOMAIN_STATUS:
                 url = baseAddress + domainStatusIdUrl + userID + "&domainName=" + domainName;
                 requestType = Request.Method.GET;
-                break;
-            case ADD_NEW_DOMAIN:
-                url = baseAddress + addNewDomain;
-                requestType = Request.Method.POST;
                 break;
             case POST_REGISTER_USER:
                 url = baseAddress + registerUser;
