@@ -28,6 +28,8 @@ import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
 
 import org.apache.commons.net.whois.WhoisClient;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -74,29 +76,15 @@ public class BlackListFragment extends Fragment {
         addBlackListDomain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String blacklist = addBlackList.getText().toString();
-                if (blackList.contains(blacklist)) {
+                String domain_to_add = addBlackList.getText().toString();
+                if (blackList.contains(domain_to_add)) {
                     Toast.makeText(getContext(), "Domain already in whitelist", Toast.LENGTH_LONG).show();
                     addBlackList.getText().clear();
                     return;
                 }
-                if (DomainLists.getInstance().whiteListContains(blacklist)) {
+                if (DomainLists.getInstance().whiteListContains(domain_to_add)) {
 
-                    DomainLists.getInstance().removeFromWhiteList(blacklist);
-
-                    // TODO: add actual userID
-                    VolleyRequest.addRequest(getContext(), VolleyRequest.PUT_BLACKLIST, "", blacklist, "", null, new VolleyResponseListener() {
-                        @Override
-                        public void onError(String message) {
-                            Log.i(TAG, message);
-                        }
-
-                        @Override
-                        public void onResponse(Object response) {
-                            Log.i(TAG, response.toString());
-                        }
-                    });
-
+                    DomainLists.getInstance().removeFromWhiteList(domain_to_add);
                 } else {
 
                     Thread t = new Thread(new Runnable() {
@@ -106,7 +94,7 @@ public class BlackListFragment extends Fragment {
                                 StringBuilder server = new StringBuilder("");
 
                                 whoisClient.connect("whois.iana.org");
-                                server.append(whoisClient.query(blacklist));
+                                server.append(whoisClient.query(domain_to_add));
                                 whoisClient.disconnect();
 
                                 String whoIsServer = DomainMatcher.getMatch(server.toString(), DomainMatcher.WHOIS_SERVER).trim();
@@ -118,12 +106,12 @@ public class BlackListFragment extends Fragment {
                                 Log.i(TAG,  whoIsServer);
                                 whoisClient.connect(whoIsServer);
                                 StringBuilder result = new StringBuilder("");
-                                result.append(whoisClient.query(blacklist));
+                                result.append(whoisClient.query(domain_to_add));
                                 Log.i(TAG,  result.toString());
                                 String whoIsInfo = result.toString();
 
                                 HashMap<String, String> domainInfo = new HashMap<>();
-                                domainInfo.put(DomainInfo.DOMAIN_NAME, blacklist);
+                                domainInfo.put(DomainInfo.DOMAIN_NAME, domain_to_add);
 
                                 String domainID = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_DOMAIN_ID).trim();
 
@@ -142,7 +130,7 @@ public class BlackListFragment extends Fragment {
 
                                 // TODO: implement proper timestamping
                                 domainInfo.put(DomainInfo.DOMAIN_TIMESTAMP, "2021-01-23-13:31:24");
-                                DomainInfo.getInstance().addDomain(blacklist, domainInfo);
+                                DomainInfo.getInstance().addDomain(domain_to_add, domainInfo);
                             } catch (IOException e) {
                                 e.printStackTrace();
                             }
@@ -155,26 +143,16 @@ public class BlackListFragment extends Fragment {
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-
-                    VolleyRequest.addRequest(getContext(), VolleyRequest.POST_NEW_DOMAIN, User.getInstance().getUserID(), blacklist, VolleySingleton.Blacklist, null, new VolleyResponseListener() {
-                        @Override
-                        public void onError(String message) {
-                            Log.i(TAG, message);
-                        }
-
-                        @Override
-                        public void onResponse(Object response) {
-                            Log.i(TAG, response.toString());
-                        }
-                    });
-
                 }
+
+                // HTTP CALL MADE HERE
+                addBlacklist(domain_to_add);
 
                 if (validDomain) {
                     blackListArrayAdapter.notifyDataSetChanged();
                     addBlackList.getText().clear();
-                    blackList.add(blacklist);
-                    allDomainsList.add(blacklist);
+                    blackList.add(domain_to_add);
+                    allDomainsList.add(domain_to_add);
 
                 } else {
                     Toast.makeText(getContext(), "Invalid Domain", Toast.LENGTH_LONG).show();
@@ -190,5 +168,46 @@ public class BlackListFragment extends Fragment {
 
     private void getBlacklist() {
 
+    }
+
+    private void addBlacklist(String domain_name) {
+        // This is the request body.
+        JSONObject postData = new JSONObject();
+
+        try {
+            postData.put("userID", User.getInstance().getUserID());
+            postData.put("listType", "Blacklist");
+            postData.put("domainName", domain_name);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Sending the request...
+        VolleyRequest.addRequest(getContext(), VolleyRequest.PUT_LIST, User.getInstance().getUserID(), domain_name, "", postData, new VolleyResponseListener() {
+            @Override
+            public void onError(String message) {
+                Log.i(TAG, message);
+            }
+
+            @Override
+            public void onResponse(Object response) {
+                Log.i(TAG, response.toString());
+                try {
+                    JSONObject json = new JSONObject(response.toString());
+
+                    // Something went wrong
+                    if(!json.getString("status").equals("Success")) {
+                        Toast.makeText(getContext(), json.getString("msg"), Toast.LENGTH_LONG).show();
+                    }
+                    // Successfully added.
+                    else {
+                        Toast.makeText(getContext(), json.getString("msg"), Toast.LENGTH_SHORT).show();
+                    }
+
+                } catch (JSONException e){
+                    Log.d(TAG, e.toString());
+                }
+            }
+        });
     }
 }

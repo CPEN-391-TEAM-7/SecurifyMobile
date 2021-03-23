@@ -32,14 +32,14 @@ public class VolleyRequest {
     private static final String whiteListUrl = "/domain/Whitelist/";
     private static final String domainStatusIdUrl = "/domain?userId=";
 
-    public static final String POST_NEW_DOMAIN = "POST_NEW_DOMAIN";
+    public static final String ADD_NEW_DOMAIN = "ADD_NEW_DOMAIN";
     public static final String POST_REGISTER_USER = "POST_REGISTER_USER";
 
-    private static final String addNewDomain = "/domain?userId=";
+    private static final String updateDomain = "/domain/update";
+    private static final String addNewDomain = "/domain/add";
     private static final String registerUser = "/user/register";
 
-    public static final String PUT_BLACKLIST = "PUT_BLACKLIST";
-    public static final String PUT_WHITELIST = "PUT_WHITELIST";
+    public static final String PUT_LIST = "PUT_LIST";
 
 
     public static void addRequest(Context context, String request, String userID, String domainName, String listType, JSONObject jsonObject, VolleyResponseListener listener) {
@@ -74,20 +74,16 @@ public class VolleyRequest {
                 url = baseAddress + domainStatusIdUrl + userID + "&domainName=" + domainName;
                 requestType = Request.Method.GET;
                 break;
-            case POST_NEW_DOMAIN:
-                url = baseAddress + addNewDomain + userID + "&domainName=" + domainName + "&listType=" + listType;
+            case ADD_NEW_DOMAIN:
+                url = baseAddress + addNewDomain;
                 requestType = Request.Method.POST;
                 break;
             case POST_REGISTER_USER:
                 url = baseAddress + registerUser;
                 requestType = Request.Method.POST;
                 break;
-            case PUT_BLACKLIST:
-                url = baseAddress + addNewDomain + userID + "&listType=Blacklist";
-                requestType = Request.Method.PUT;
-                break;
-            case PUT_WHITELIST:
-                url = baseAddress + addNewDomain + userID + "&listType=Whitelist";
+            case PUT_LIST:
+                url = baseAddress + updateDomain + userID;
                 requestType = Request.Method.PUT;
                 break;
             default:
