@@ -22,6 +22,7 @@ import com.example.securify.domain.DomainLists;
 import com.example.securify.domain.DomainMatcher;
 import com.example.securify.R;
 import com.example.securify.adapters.DomainListAdapter;
+import com.example.securify.model.User;
 import com.example.securify.ui.volley.VolleyRequest;
 import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
@@ -33,6 +34,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.net.whois.WhoisClient;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class WhiteListFragment extends Fragment {
 
@@ -44,9 +47,6 @@ public class WhiteListFragment extends Fragment {
     private WhoisClient whoisClient;
     private Boolean validDomain = true;
     private final String TAG = "WhiteListFragment";
-
-    private static Pattern pattern;
-    private Matcher matcher;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -86,19 +86,6 @@ public class WhiteListFragment extends Fragment {
                 if (DomainLists.getInstance().blackListContains(whitelist)) {
 
                     DomainLists.getInstance().removeFromBlackList(whitelist);
-
-                    //TODO: add actual userID
-                    VolleyRequest.addRequest(getContext(), VolleyRequest.PUT_WHITELIST, "", whitelist, "", null, new VolleyResponseListener() {
-                        @Override
-                        public void onError(String message) {
-                            Log.i(TAG, message);
-                        }
-
-                        @Override
-                        public void onResponse(Object response) {
-                            Log.i(TAG, response.toString());
-                        }
-                    });
 
                 } else {
 
@@ -159,19 +146,9 @@ public class WhiteListFragment extends Fragment {
                         e.printStackTrace();
                     }
 
-                    // TODO: add actual userID
-                    VolleyRequest.addRequest(getContext(), VolleyRequest.POST_NEW_DOMAIN, "", whitelist, VolleySingleton.Whitelist, null, new VolleyResponseListener() {
-                        @Override
-                        public void onError(String message) {
-                            Log.i(TAG, message);
-                        }
-
-                        @Override
-                        public void onResponse(Object response) {
-                            Log.i(TAG, response.toString());
-                        }
-                    });
                 }
+
+                addWhiteList(whitelist);
 
                 if (validDomain) {
                     whiteListArrayAdapter.notifyDataSetChanged();
@@ -191,4 +168,46 @@ public class WhiteListFragment extends Fragment {
         return root;
     }
 
+    private void addWhiteList(String domainName) {
+        // This is the request body.
+        JSONObject postData = new JSONObject();
+
+        try {
+            postData.put("userID", User.getInstance().getUserID());
+            postData.put(VolleySingleton.listType, VolleySingleton.Blacklist);
+            postData.put(VolleySingleton.domainName, domainName);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Sending the request...
+        VolleyRequest.addRequest(getContext(), VolleyRequest.PUT_LIST, User.getInstance().getUserID(), domainName, "", postData, new VolleyResponseListener() {
+            @Override
+            public void onError(String message) {
+                Log.i(TAG, message);
+            }
+
+            @Override
+            public void onResponse(Object response) {
+                Log.i(TAG, response.toString());
+                try {
+                    JSONObject json = new JSONObject(response.toString());
+
+                    // Something went wrong
+                    if(!json.getString("status").equals("Success")) {
+                        Toast.makeText(getContext(), json.getString("msg"), Toast.LENGTH_LONG).show();
+                    }
+                    // Successfully added.
+                    else {
+                        Toast.makeText(getContext(), json.getString("msg"), Toast.LENGTH_SHORT).show();
+                    }
+
+                } catch (JSONException e){
+                    Log.d(TAG, e.toString());
+                }
+            }
+        });
+    }
+
 }
+

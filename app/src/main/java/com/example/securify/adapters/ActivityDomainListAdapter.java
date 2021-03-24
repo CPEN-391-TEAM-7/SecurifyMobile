@@ -24,8 +24,13 @@ import com.example.securify.comparators.AscendingTimeStampComparator;
 import com.example.securify.comparators.DescendingDomainNameComparator;
 import com.example.securify.comparators.DescendingListComparator;
 import com.example.securify.comparators.DescendingTimeStampComparator;
+import com.example.securify.model.User;
 import com.example.securify.ui.volley.VolleyRequest;
 import com.example.securify.ui.volley.VolleyResponseListener;
+import com.example.securify.ui.volley.VolleySingleton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -161,8 +166,17 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
                     String domain = domainList.get(groupPosition);
                     if (!DomainLists.getInstance().whiteListContains(domain)) {
 
-                        // TODO: add actual userID
-                        VolleyRequest.addRequest(context, VolleyRequest.PUT_WHITELIST, "", domain, "", null, new VolleyResponseListener() {
+                        JSONObject postData = new JSONObject();
+
+                        try {
+                            postData.put("userID", User.getInstance().getUserID());
+                            postData.put(VolleySingleton.listType, VolleySingleton.Whitelist);
+                            postData.put(VolleySingleton.domainName, domain);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        VolleyRequest.addRequest(context, VolleyRequest.PUT_LIST, User.getInstance().getUserID(), domain, "", postData, new VolleyResponseListener() {
                             @Override
                             public void onError(String message) {
                                 Log.i(TAG, message);
@@ -189,8 +203,17 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
                     String domain = domainList.get(groupPosition);
                     if (!DomainLists.getInstance().blackListContains(domain)) {
 
-                        // TODO: add actual userID
-                        VolleyRequest.addRequest(context, VolleyRequest.PUT_BLACKLIST, "", domain, "", null, new VolleyResponseListener() {
+                        JSONObject postData = new JSONObject();
+
+                        try {
+                            postData.put("userID", User.getInstance().getUserID());
+                            postData.put(VolleySingleton.listType, VolleySingleton.Blacklist);
+                            postData.put(VolleySingleton.domainName, domain);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+                        VolleyRequest.addRequest(context, VolleyRequest.PUT_LIST, User.getInstance().getUserID(), domain, "", postData, new VolleyResponseListener() {
                             @Override
                             public void onError(String message) {
                                 Log.i(TAG, message);
@@ -291,7 +314,6 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
             String listConstraint = constraints.get(LIST_FILTER);
             DomainLists domainLists = DomainLists.getInstance();
 
-            // TODO: add filtering for dates
             switch (listConstraint) {
                 case "Blacklist Domains Only":
                     for (String domain:filteredDomainList) {

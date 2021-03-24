@@ -170,20 +170,20 @@ public class BlackListFragment extends Fragment {
 
     }
 
-    private void addBlacklist(String domain_name) {
+    private void addBlacklist(String domainName) {
         // This is the request body.
         JSONObject postData = new JSONObject();
 
         try {
             postData.put("userID", User.getInstance().getUserID());
-            postData.put("listType", "Blacklist");
-            postData.put("domainName", domain_name);
+            postData.put(VolleySingleton.listType, VolleySingleton.Blacklist);
+            postData.put(VolleySingleton.domainName, domainName);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         // Sending the request...
-        VolleyRequest.addRequest(getContext(), VolleyRequest.PUT_LIST, User.getInstance().getUserID(), domain_name, "", postData, new VolleyResponseListener() {
+        VolleyRequest.addRequest(getContext(), VolleyRequest.PUT_LIST, User.getInstance().getUserID(), domainName, "", postData, new VolleyResponseListener() {
             @Override
             public void onError(String message) {
                 Log.i(TAG, message);

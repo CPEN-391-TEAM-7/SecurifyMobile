@@ -26,7 +26,7 @@ public class ProfileFragment extends Fragment {
     private Button signOutButton;
     private GoogleSignInClient mGoogleSignInClient;
 
-    private static final String TAG = "SettingsFragment";
+    private static final String TAG = "ProfileFragment";
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {

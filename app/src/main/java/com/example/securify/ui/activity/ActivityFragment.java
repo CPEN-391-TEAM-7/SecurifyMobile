@@ -33,10 +33,13 @@ import com.example.securify.domain.DomainInfo;
 import com.example.securify.domain.DomainLists;
 import com.example.securify.R;
 import com.example.securify.adapters.ActivityDomainListAdapter;
+import com.example.securify.domain.DomainMatcher;
+import com.example.securify.model.User;
 import com.example.securify.ui.volley.VolleyRequest;
 import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
 
+import org.apache.commons.net.whois.WhoisClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -65,6 +68,7 @@ public class ActivityFragment extends Fragment {
     private final int LIMIT = 20;
     private final String[] LIST_TYPES = {"Safe"};
 
+    private WhoisClient whoisClient;
 
     private VolleyResponseListener volleyResponseListener;
 
@@ -333,7 +337,7 @@ public class ActivityFragment extends Fragment {
 
                         String domainName = domain.get(VolleySingleton.domainName).toString();
                         HashMap<String, String> info = new HashMap<>();
-                        // TODO: add proper domain info
+
                         info.put(DomainInfo.DOMAIN_NAME, domainName);
                         info.put(DomainInfo.REGISTRAR_DOMAIN_ID, "");
                         info.put(DomainInfo.REGISTRAR_NAME, "");
@@ -355,6 +359,50 @@ public class ActivityFragment extends Fragment {
                             domainLists.addToWhiteList(domainName);
                         }
 
+                        Thread t = new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    StringBuilder server = new StringBuilder("");
+
+                                    whoisClient.connect("whois.iana.org");
+                                    server.append(whoisClient.query(domainName));
+                                    whoisClient.disconnect();
+
+                                    String whoIsServer = DomainMatcher.getMatch(server.toString(), DomainMatcher.WHOIS_SERVER).trim();
+                                    if (whoIsServer.equals("")) {
+                                        return;
+                                    }
+
+                                    Log.i(TAG,  whoIsServer);
+                                    whoisClient.connect(whoIsServer);
+                                    StringBuilder result = new StringBuilder("");
+                                    result.append(whoisClient.query(domainName));
+                                    Log.i(TAG,  result.toString());
+                                    String whoIsInfo = result.toString();
+
+                                    HashMap<String, String> domainInfo = DomainInfo.getInstance().getInfo(domainName);
+                                    String domainID = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_DOMAIN_ID).trim();
+
+                                    Log.i(TAG, "registrar domain id:" + domainID);
+                                    domainInfo.put(DomainInfo.REGISTRAR_DOMAIN_ID, domainID);
+
+                                    String registrarName = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_NAME).trim();
+
+                                    Log.i(TAG, "registrar name:" + registrarName);
+                                    domainInfo.put(DomainInfo.REGISTRAR_NAME, registrarName);
+
+                                    String registrarExpiryDate = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_EXPIRY_DATE).trim();
+
+                                    Log.i(TAG, "expiry date:" + registrarExpiryDate);
+                                    domainInfo.put(DomainInfo.REGISTRAR_EXPIRY_DATE, registrarExpiryDate);
+
+                                } catch (IOException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        });
                     }
 
                 lastEndDate = (Date) jsonObject.get(VolleySingleton.lastEndDate);
@@ -371,8 +419,7 @@ public class ActivityFragment extends Fragment {
             // domainRequest.putOpt(VolleySingleton.endDate, END_DATE);
             domainRequest.putOpt(VolleySingleton.limit, LIMIT);
             domainRequest.putOpt(VolleySingleton.listTypes, LIST_TYPES);
-            // TODO: add actual userID
-            VolleyRequest.addRequest(getContext(), VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY, "userID", "", "", domainRequest, volleyResponseListener);
+            VolleyRequest.addRequest(getContext(), VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY, User.getInstance().getUserID(), "", "", domainRequest, volleyResponseListener);
         } catch (JSONException e) {
             Log.e(TAG, "Populate Domain Request Creation Failed");
             e.printStackTrace();
