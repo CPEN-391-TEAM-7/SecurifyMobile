@@ -13,6 +13,8 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import com.bumptech.glide.Glide;
+import com.example.securify.model.User;
 import com.example.securify.ui.LoginActivity;
 import com.example.securify.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -20,6 +22,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class ProfileFragment extends Fragment {
 
@@ -31,7 +35,6 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         View root = inflater.inflate(R.layout.fragment_profile, container, false);
-        final TextView textView = root.findViewById(R.id.text_blacklist);
 
         signOutButton = root.findViewById(R.id.sign_out_button);
 
@@ -44,6 +47,22 @@ public class ProfileFragment extends Fragment {
 
         // Build a GoogleSignInClient with the options specified by gso.
         mGoogleSignInClient = GoogleSignIn.getClient(getActivity(), gso);
+
+        TextView profileName = root.findViewById(R.id.profile_name);
+        profileName.setText(User.getInstance().getName());
+
+        TextView profileEmail = root.findViewById(R.id.profile_email);
+        profileEmail.setText(User.getInstance().getEmail());
+
+        CircleImageView profilePicture = root.findViewById(R.id.profile_picture);
+        String profileUri = User.getInstance().getProfilePicture();
+
+        if(profileUri.equals("")) {
+            profilePicture.setImageResource(R.drawable.ic_profile);
+        } else {
+            Glide.with(getContext()).load(User.getInstance().getProfilePicture()).into(profilePicture);
+        }
+
 
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override

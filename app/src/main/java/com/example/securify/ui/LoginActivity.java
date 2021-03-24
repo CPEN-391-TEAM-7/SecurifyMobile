@@ -120,6 +120,10 @@ public class LoginActivity extends AppCompatActivity {
             if (acct != null) {
                 String personName = acct.getDisplayName();
                 String personId = acct.getId();
+                User.getInstance().setName(personName);
+                User.getInstance().setUserID(personId);
+                User.getInstance().setProfilePicture(acct.getPhotoUrl() == null ? "": acct.getPhotoUrl().toString());
+                User.getInstance().setEmail(acct.getEmail());
 
                 Log.i(TAG, "POST REQUEST starting...");
                 Log.d(TAG, personId);
@@ -152,8 +156,7 @@ public class LoginActivity extends AppCompatActivity {
                             Log.i(TAG, "userID: " + json.getString("userID"));
                             Log.i(TAG, "userID: " + json.getString("name"));
 
-                            User.getInstance().setName(json.getString("name"));
-                            User.getInstance().setUserID(json.getString("userID"));
+
 
                             Log.i(TAG, "name: " + User.getInstance().getName());
 
