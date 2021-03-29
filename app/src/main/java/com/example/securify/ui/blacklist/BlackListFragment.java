@@ -146,18 +146,12 @@ public class BlackListFragment extends Fragment {
                 }
 
                 // HTTP CALL MADE HERE
-                addBlacklist(domain_to_add);
-
+                addBlackList.getText().clear();
                 if (validDomain) {
-                    blackListArrayAdapter.notifyDataSetChanged();
-                    addBlackList.getText().clear();
-                    blackList.add(domain_to_add);
-                    allDomainsList.add(domain_to_add);
-
+                    addBlacklist(domain_to_add);
                 } else {
                     Toast.makeText(getContext(), "Invalid Domain", Toast.LENGTH_LONG).show();
                     validDomain = true;
-                    addBlackList.getText().clear();
                 }
 
             }
@@ -202,6 +196,11 @@ public class BlackListFragment extends Fragment {
                     // Successfully added.
                     else {
                         Toast.makeText(getContext(), json.getString("msg"), Toast.LENGTH_SHORT).show();
+
+                            blackListArrayAdapter.notifyDataSetChanged();
+                            blackList.add(domainName);
+                            allDomainsList.add(domainName);
+
                     }
 
                 } catch (JSONException e){

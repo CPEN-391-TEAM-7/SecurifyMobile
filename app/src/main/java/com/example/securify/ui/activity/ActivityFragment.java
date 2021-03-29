@@ -40,6 +40,7 @@ import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
 
 import org.apache.commons.net.whois.WhoisClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -325,16 +326,23 @@ public class ActivityFragment extends Fragment {
 
             @Override
             public void onResponse(Object response) {
-                JSONObject jsonObject = (JSONObject) response;
+                JSONObject jsonObject = null;
+                try {
+                    jsonObject = new JSONObject(response.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 try {
 
-                    JSONObject[] domainList = (JSONObject[]) jsonObject.get(VolleySingleton.activities);
+                    JSONArray domainList =  jsonObject.getJSONArray(VolleySingleton.activities);
                     Log.i(TAG, response.toString());
                     DomainInfo domainInfo = DomainInfo.getInstance();
                     DomainLists domainLists = DomainLists.getInstance();
+                    JSONObject domain;
 
-                    for (JSONObject domain :domainList) {
+                    for (int i = 0; i < domainList.length(); i++) {
 
+                        domain = domainList.getJSONObject(i);
                         String domainName = domain.get(VolleySingleton.domainName).toString();
                         HashMap<String, String> info = new HashMap<>();
 

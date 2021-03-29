@@ -14,8 +14,10 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.android.volley.toolbox.Volley;
 import com.example.securify.R;
 import com.example.securify.adapters.StatisticsListAdapter;
+import com.example.securify.model.User;
 import com.example.securify.ui.volley.VolleyRequest;
 import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
@@ -40,6 +42,7 @@ import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -104,23 +107,89 @@ public class StatisticsFragment extends Fragment {
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, spinnerItems);
         topDomainsSpinner.setAdapter(spinnerAdapter);
 
+        LocalDateTime currentDateTime = LocalDateTime.now();
         topDomainsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedItem = parent.getItemAtPosition(position).toString();
                 // TODO: add volley requests
+                JSONObject getData = new JSONObject();
+                try {
+                    getData.put(VolleySingleton.startDate, simpleDateFormat.format(currentDateTime));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 switch (selectedItem) {
                     case "Daily":
+                        try {
+                            getData.put(VolleySingleton.endDate, simpleDateFormat.format(currentDateTime.minusDays(1)));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         break;
                     case "Weekly":
+                        try {
+                            getData.put(VolleySingleton.endDate, simpleDateFormat.format(currentDateTime.minusWeeks(1)));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         break;
                     case "Monthly":
+                        try {
+                            getData.put(VolleySingleton.endDate, simpleDateFormat.format(currentDateTime.minusMonths(1)));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         break;
                     case "Yearly":
+                        try {
+                            getData.put(VolleySingleton.endDate, simpleDateFormat.format(currentDateTime.minusYears(1)));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         break;
                     case "All Time":
                         break;
                 }
+
+                VolleyRequest.addRequest(getContext(), VolleyRequest.GET_BY_DATE_MOST_REQUESTED_DOMAINS, User.getInstance().getUserID(), "", "", getData, new VolleyResponseListener() {
+                    @Override
+                    public void onError(String message) {
+                        Log.e(TAG, message);
+                    }
+
+                    @Override
+                    public void onResponse(Object response) {
+                        topDomainsData.clear();
+
+
+                        try {
+                            JSONObject jsonArray = new JSONObject(response.toString());
+
+                            Iterator iterator = jsonArray.keys();
+
+                            while(iterator.hasNext()) {
+
+                                HashMap<String, Object> topDomainsDataEntry = new HashMap<>();
+
+                                String domainName = iterator.next().toString();
+                                topDomainsDataEntry.put(VolleySingleton.domainName, domainName);
+
+                                JSONObject jsonObject = new JSONObject(jsonArray.getString(domainName));
+                                topDomainsDataEntry.put(VolleySingleton.listType, jsonObject.get(VolleySingleton.listType));
+                                topDomainsDataEntry.put(VolleySingleton.num_of_accesses, jsonObject.get(VolleySingleton.count));
+
+                                topDomainsData.put(domainName, topDomainsDataEntry);
+                            }
+
+
+                        } catch (JSONException jsonException) {
+                            jsonException.printStackTrace();
+                        }
+
+
+                    }
+                });
             }
 
             @Override
@@ -194,35 +263,38 @@ public class StatisticsFragment extends Fragment {
             @Override
             public void onResponse(Object response) {
 
-                JSONObject domainList = (JSONObject) response;
-                Iterator<String> keys = domainList.keys();
-                Integer numAccesses;
+                // TODO: update barChartData
+                // TODO: update pieChartData
 
-                while (keys.hasNext()) {
-                    String domain = keys.next();
-                    try {
+                try {
+                    JSONObject jsonArray = new JSONObject(response.toString());
 
-                            // TODO: update barChartData
-                            // TODO: update pieChartData
+                    Iterator iterator = jsonArray.keys();
 
-                            switch (((JSONObject) domainList.get(domain)).get(VolleySingleton.listType).toString()) {
+                    while(iterator.hasNext()) {
 
-                                case "Whitelist":
-                                    break;
-                                case "Blacklist":
-                                    break;
-                                case "Safe":
-                                    break;
-                                case "Malicious":
-                                    break;
-                                case "Undefined":
-                                    break;
+                        String domainName = iterator.next().toString();
+                        JSONObject jsonObject = new JSONObject(jsonArray.getString(domainName));
 
+                        switch (domainName) {
+                            case "Whitelist":
+                                break;
+                            case "Blacklist":
+                                break;
+                            case "Safe":
+                                break;
+                            case "Malicious":
+                                break;
+                            case "Undefined":
+                                break;
                         }
-                    } catch (JSONException e) {
-                        e.printStackTrace();
                     }
+
+
+                } catch (JSONException jsonException) {
+                    jsonException.printStackTrace();
                 }
+               
             }
         };
 
