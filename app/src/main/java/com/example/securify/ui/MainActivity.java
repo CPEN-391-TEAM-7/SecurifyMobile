@@ -1,5 +1,6 @@
 package com.example.securify.ui;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -83,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
                 });
-        // startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
+         // startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
 
     }
 

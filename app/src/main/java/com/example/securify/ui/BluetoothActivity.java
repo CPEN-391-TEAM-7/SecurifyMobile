@@ -206,6 +206,8 @@ public class BluetoothActivity extends AppCompatActivity {
             if(resultCode != RESULT_OK) {
                 Toast.makeText(this, "Bluetooth failed to start", Toast.LENGTH_LONG).show();
                 finish();
+            } else {
+                setUpBluetooth();
             }
 
     }
@@ -314,9 +316,8 @@ public class BluetoothActivity extends AppCompatActivity {
         if(!mBluetoothAdapter.isEnabled()) {
             Intent enableBtIntent =  new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+
         }
-
-
 
         IntentFilter filterFound = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         IntentFilter filterStart = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_STARTED);

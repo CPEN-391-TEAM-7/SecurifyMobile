@@ -2,6 +2,7 @@ package com.example.securify.ui.activity;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.InputType;
 import android.util.Log;
@@ -35,6 +36,7 @@ import com.example.securify.R;
 import com.example.securify.adapters.ActivityDomainListAdapter;
 import com.example.securify.domain.DomainMatcher;
 import com.example.securify.model.User;
+import com.example.securify.ui.BluetoothActivity;
 import com.example.securify.ui.volley.VolleyRequest;
 import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
@@ -96,14 +98,15 @@ public class ActivityFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                /*
+            /*
                 if (isChecked) {
                     WritetoBTDevice("1");
                 } else {
                     WritetoBTDevice("0");
                 }
+                
+             */
 
-                 */
                 Toast.makeText(getContext(), "Not connected to bluetooth device", Toast.LENGTH_LONG).show();
             }
         });
@@ -118,8 +121,7 @@ public class ActivityFragment extends Fragment {
         blueToothButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // startActivity(new Intent(getActivity(), BluetoothActivity.class));
-                Toast.makeText(getContext(), "Bluetooth disabled", Toast.LENGTH_LONG).show();
+                startActivity(new Intent(getActivity(), BluetoothActivity.class));
             }
         });
 
