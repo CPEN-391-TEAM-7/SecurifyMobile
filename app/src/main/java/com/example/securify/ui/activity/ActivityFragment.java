@@ -51,10 +51,8 @@ import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 
 public class ActivityFragment extends Fragment {
@@ -122,7 +120,7 @@ public class ActivityFragment extends Fragment {
             }
         });
 
-        domainList = DomainLists.getInstance().getAllDomainsList();
+        domainList = DomainLists.getInstance().getActivityDomainsList();
         domainListAdapter = new ActivityDomainListAdapter(getContext(), domainList);
 
         ExpandableListView allDomains = root.findViewById(R.id.activity_domain_list);

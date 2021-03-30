@@ -151,11 +151,9 @@ public class DomainListAdapter extends BaseExpandableListAdapter {
                         e.printStackTrace();
                     }
 
-
                     DomainLists.getInstance().removeFromBlackList(domain);
                     DomainLists.getInstance().addToWhiteList(domain);
                 }
-
 
             }
         });

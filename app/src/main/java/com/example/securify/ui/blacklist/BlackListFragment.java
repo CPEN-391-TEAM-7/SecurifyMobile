@@ -33,8 +33,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -72,7 +70,7 @@ public class BlackListFragment extends Fragment {
         blackListDomains.setAdapter(blackListArrayAdapter);
         blackListDomains.setGroupIndicator(null);
 
-        allDomainsList = DomainLists.getInstance().getAllDomainsList();
+        allDomainsList = DomainLists.getInstance().getActivityDomainsList();
         EditText addBlackList = root.findViewById(R.id.add_blacklist_text);
 
         whoisClient = new WhoisClient();
@@ -281,7 +279,6 @@ public class BlackListFragment extends Fragment {
 
     private void addListAdapter(String domainName) {
         if(!blackList.contains(domainName)) blackList.add(domainName);
-        if(!allDomainsList.contains(domainName)) allDomainsList.add(domainName);
         if (!DomainInfo.getInstance().contains(domainName)) {
             Thread t = new Thread(new Runnable() {
                 @Override

@@ -28,14 +28,10 @@ import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
 
 import java.io.IOException;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import org.apache.commons.net.whois.WhoisClient;
 import org.json.JSONArray;
@@ -75,7 +71,7 @@ public class WhiteListFragment extends Fragment {
         whiteListDomains.setAdapter(whiteListArrayAdapter);
         whiteListDomains.setGroupIndicator(null);
 
-        allDomainsList = DomainLists.getInstance().getAllDomainsList();
+        allDomainsList = DomainLists.getInstance().getActivityDomainsList();
         EditText addWhiteList = root.findViewById(R.id.add_whitelist_text);
 
         whoisClient = new WhoisClient();
@@ -284,7 +280,6 @@ public class WhiteListFragment extends Fragment {
 
     private void addListAdapter(String domainName) {
         if(!whiteList.contains(domainName)) whiteList.add(domainName);
-        if(!allDomainsList.contains(domainName)) allDomainsList.add(domainName);
 
         if (!DomainInfo.getInstance().contains(domainName)) {
             Thread t = new Thread(new Runnable() {

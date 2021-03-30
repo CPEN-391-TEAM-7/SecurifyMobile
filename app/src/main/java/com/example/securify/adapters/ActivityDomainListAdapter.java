@@ -38,7 +38,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
 
 public class ActivityDomainListAdapter extends BaseExpandableListAdapter implements Filterable {
     
@@ -299,7 +298,7 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
             ArrayList<String> filteredDomainList = new ArrayList<>();
             ArrayList<String> filteredDomainListIterate = new ArrayList<>();
 
-            mDomainFilterList = DomainLists.getInstance().getAllDomainsList();
+            mDomainFilterList = DomainLists.getInstance().getActivityDomainsList();
 
             String nameConstraint = constraints.get(DOMAIN_NAME_FILTER);
 
