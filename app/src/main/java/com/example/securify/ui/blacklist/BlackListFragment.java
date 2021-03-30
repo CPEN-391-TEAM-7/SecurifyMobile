@@ -32,6 +32,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -45,6 +46,8 @@ public class BlackListFragment extends Fragment {
     private WhoisClient whoisClient;
     private Boolean validDomain = true;
     private final String TAG = "BlackListFragment";
+
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -159,11 +162,7 @@ public class BlackListFragment extends Fragment {
 
         return root;
     }
-
-    private void getBlacklist() {
-
-    }
-
+    
     private void addBlacklist(String domainName) {
         // This is the request body.
         JSONObject postData = new JSONObject();

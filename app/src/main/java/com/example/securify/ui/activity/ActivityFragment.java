@@ -46,6 +46,10 @@ import org.json.JSONObject;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -63,7 +67,7 @@ public class ActivityFragment extends Fragment {
     private boolean listAscending = false;
 
     private final String TAG = "ActivityFragment";
-    private final String START_DATE = "2021-03-20T10:11:36.251Z";
+    private String START_DATE;
     private Date lastEndDate = null;
     private int count = 0;
     private final int LIMIT = 20;
@@ -72,6 +76,8 @@ public class ActivityFragment extends Fragment {
     private WhoisClient whoisClient;
 
     private VolleyResponseListener volleyResponseListener;
+
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
 
     String[] listSelectorItems = {"All Domains", "Blacklist Domains Only", "Whitelist Domains Only"};
 
@@ -84,6 +90,7 @@ public class ActivityFragment extends Fragment {
 
         outputStream = BluetoothStreams.getInstance().getOutputStream();
 
+        START_DATE = LocalDateTime.now().toString();
         ToggleButton toggleButton = root.findViewById(R.id.toggle);
         toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -352,8 +359,7 @@ public class ActivityFragment extends Fragment {
                         info.put(DomainInfo.REGISTRAR_EXPIRY_DATE, "");
 
                         String timeStamp = domain.get(VolleySingleton.timestamp).toString();
-                        timeStamp = timeStamp.replaceAll("T", "-");
-                        timeStamp = timeStamp.replaceAll("Z", "");
+                        timeStamp = String.valueOf(simpleDateFormat.parse(timeStamp));
 
                         info.put(DomainInfo.DOMAIN_TIMESTAMP, timeStamp);
 
@@ -417,6 +423,8 @@ public class ActivityFragment extends Fragment {
                 count = (int) jsonObject.get(VolleySingleton.count);
                 } catch (JSONException e) {
                     Log.e(TAG, "Error On Response from Populate Domain Request");
+                    e.printStackTrace();
+                } catch (ParseException e) {
                     e.printStackTrace();
                 }
             }

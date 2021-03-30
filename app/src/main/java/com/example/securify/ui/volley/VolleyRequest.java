@@ -16,7 +16,7 @@ public class VolleyRequest {
 
     private static final String TAG = "HTTP REQUEST";
 
-    private static final String baseAddress = " http://54.70.155.180";
+    private static final String baseAddress = "https://securifyapi.online/";
 
     public static final String GET_RECENT_DOMAIN_REQUEST_ACTIVITY = "GET_RECENT_DOMAIN_REQUEST_ACTIVITY";
     public static final String GET_ALL_TIME_MOST_REQUESTED_DOMAINS = "GET_ALL_TIME_MOST_REQUESTED_DOMAINS";

@@ -71,6 +71,18 @@ public class MainActivity extends AppCompatActivity {
                         User.getInstance().setFireBaseToken(token);
                     }
                 });
+
+        FirebaseMessaging.getInstance().subscribeToTopic("alerts")
+                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        if (!task.isSuccessful()) {
+                            Log.i(TAG, "Subscription to alerts topic failed");
+                        } else {
+                            Log.i(TAG, "Subscription to alerts topic successful");
+                        }
+                    }
+                });
         // startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
 
     }

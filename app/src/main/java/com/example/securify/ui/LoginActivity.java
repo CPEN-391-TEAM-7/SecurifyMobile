@@ -170,6 +170,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
 
+
             signInButton.setVisibility(View.GONE);
             signOutButton.setVisibility(View.VISIBLE);
 
