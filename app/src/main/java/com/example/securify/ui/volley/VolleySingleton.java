@@ -28,6 +28,7 @@ public class VolleySingleton {
     public static String Malicious = "Malicious";
     public static String Undefined = "Undefined";
     public static String domains = "domains";
+    public static String userID = "userID";
 
     private VolleySingleton(Context context) {
         ctx = context;

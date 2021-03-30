@@ -69,11 +69,8 @@ public class ActivityFragment extends Fragment {
     private boolean listAscending = false;
 
     private final String TAG = "ActivityFragment";
-    private String START_DATE;
-    private Date lastEndDate = null;
-    private int count = 0;
+    private LocalDateTime START_DATE;
     private final int LIMIT = 20;
-    private final String[] LIST_TYPES = {"Safe"};
 
     private WhoisClient whoisClient;
 
@@ -92,7 +89,7 @@ public class ActivityFragment extends Fragment {
 
         outputStream = BluetoothStreams.getInstance().getOutputStream();
 
-        START_DATE = LocalDateTime.now().toString();
+        START_DATE = LocalDateTime.now();
         ToggleButton toggleButton = root.findViewById(R.id.toggle);
         toggleButton.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -181,9 +178,7 @@ public class ActivityFragment extends Fragment {
                 // TODO: test http calls
                  populateDomains();
                 domainListAdapter.notifyDataSetChanged();
-                if (count == 0) {
-                    Toast.makeText(getContext(), "No more domains can be loaded", Toast.LENGTH_LONG).show();
-                }
+
             }
         });
 
@@ -354,76 +349,77 @@ public class ActivityFragment extends Fragment {
 
                         domain = domainList.getJSONObject(i);
                         String domainName = domain.get(VolleySingleton.domainName).toString();
-                        HashMap<String, String> info = new HashMap<>();
+                        if (!DomainInfo.getInstance().contains(domainName)) {
+                            HashMap<String, String> info = new HashMap<>();
 
-                        info.put(DomainInfo.DOMAIN_NAME, domainName);
-                        info.put(DomainInfo.REGISTRAR_DOMAIN_ID, "");
-                        info.put(DomainInfo.REGISTRAR_NAME, "");
-                        info.put(DomainInfo.REGISTRAR_EXPIRY_DATE, "");
+                            info.put(DomainInfo.DOMAIN_NAME, domainName);
+                            info.put(DomainInfo.REGISTRAR_DOMAIN_ID, "");
+                            info.put(DomainInfo.REGISTRAR_NAME, "");
+                            info.put(DomainInfo.REGISTRAR_EXPIRY_DATE, "");
 
-                        String timeStamp = domain.get(VolleySingleton.timestamp).toString();
-                        timeStamp = String.valueOf(simpleDateFormat.parse(timeStamp));
+                            String timeStamp = domain.get(VolleySingleton.timestamp).toString();
+                            timeStamp = String.valueOf(simpleDateFormat.parse(timeStamp));
 
-                        info.put(DomainInfo.DOMAIN_TIMESTAMP, timeStamp);
+                            info.put(DomainInfo.DOMAIN_TIMESTAMP, timeStamp);
 
-                        domainInfo.addDomain(domainName, info);
+                            domainInfo.addDomain(domainName, info);
 
-                        if (domain.get(VolleySingleton.listType).equals(VolleySingleton.Blacklist)) {
-                            domainLists.addToBlackList(domainName);
-                        }
+                            if (domain.get(VolleySingleton.listType).equals(VolleySingleton.Blacklist)) {
+                                domainLists.addToBlackList(domainName);
+                            }
 
-                        if (domain.get(VolleySingleton.listType).equals(VolleySingleton.Whitelist)) {
-                            domainLists.addToWhiteList(domainName);
-                        }
+                            if (domain.get(VolleySingleton.listType).equals(VolleySingleton.Whitelist)) {
+                                domainLists.addToWhiteList(domainName);
+                            }
 
-                        Thread t = new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                try {
-                                    StringBuilder server = new StringBuilder("");
+                            Thread t = new Thread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        StringBuilder server = new StringBuilder("");
 
-                                    whoisClient.connect("whois.iana.org");
-                                    server.append(whoisClient.query(domainName));
-                                    whoisClient.disconnect();
+                                        whoisClient.connect("whois.iana.org");
+                                        server.append(whoisClient.query(domainName));
+                                        whoisClient.disconnect();
 
-                                    String whoIsServer = DomainMatcher.getMatch(server.toString(), DomainMatcher.WHOIS_SERVER).trim();
-                                    if (whoIsServer.equals("")) {
-                                        return;
+                                        String whoIsServer = DomainMatcher.getMatch(server.toString(), DomainMatcher.WHOIS_SERVER).trim();
+                                        if (whoIsServer.equals("")) {
+                                            return;
+                                        }
+
+                                        Log.i(TAG,  whoIsServer);
+                                        whoisClient.connect(whoIsServer);
+                                        StringBuilder result = new StringBuilder("");
+                                        result.append(whoisClient.query(domainName));
+                                        Log.i(TAG,  result.toString());
+                                        String whoIsInfo = result.toString();
+
+                                        HashMap<String, String> domainInfo = DomainInfo.getInstance().getInfo(domainName);
+                                        String domainID = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_DOMAIN_ID).trim();
+
+                                        Log.i(TAG, "registrar domain id:" + domainID);
+                                        domainInfo.put(DomainInfo.REGISTRAR_DOMAIN_ID, domainID);
+
+                                        String registrarName = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_NAME).trim();
+
+                                        Log.i(TAG, "registrar name:" + registrarName);
+                                        domainInfo.put(DomainInfo.REGISTRAR_NAME, registrarName);
+
+                                        String registrarExpiryDate = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_EXPIRY_DATE).trim();
+
+                                        Log.i(TAG, "expiry date:" + registrarExpiryDate);
+                                        domainInfo.put(DomainInfo.REGISTRAR_EXPIRY_DATE, registrarExpiryDate);
+
+                                    } catch (IOException e) {
+                                        e.printStackTrace();
                                     }
 
-                                    Log.i(TAG,  whoIsServer);
-                                    whoisClient.connect(whoIsServer);
-                                    StringBuilder result = new StringBuilder("");
-                                    result.append(whoisClient.query(domainName));
-                                    Log.i(TAG,  result.toString());
-                                    String whoIsInfo = result.toString();
-
-                                    HashMap<String, String> domainInfo = DomainInfo.getInstance().getInfo(domainName);
-                                    String domainID = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_DOMAIN_ID).trim();
-
-                                    Log.i(TAG, "registrar domain id:" + domainID);
-                                    domainInfo.put(DomainInfo.REGISTRAR_DOMAIN_ID, domainID);
-
-                                    String registrarName = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_NAME).trim();
-
-                                    Log.i(TAG, "registrar name:" + registrarName);
-                                    domainInfo.put(DomainInfo.REGISTRAR_NAME, registrarName);
-
-                                    String registrarExpiryDate = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_EXPIRY_DATE).trim();
-
-                                    Log.i(TAG, "expiry date:" + registrarExpiryDate);
-                                    domainInfo.put(DomainInfo.REGISTRAR_EXPIRY_DATE, registrarExpiryDate);
-
-                                } catch (IOException e) {
-                                    e.printStackTrace();
                                 }
+                            });
+                        }
+                        }
 
-                            }
-                        });
-                    }
-
-                lastEndDate = (Date) jsonObject.get(VolleySingleton.lastEndDate);
-                count = (int) jsonObject.get(VolleySingleton.count);
+                START_DATE = (LocalDateTime) jsonObject.get(VolleySingleton.lastEndDate);
                 } catch (JSONException e) {
                     Log.e(TAG, "Error On Response from Populate Domain Request");
                     e.printStackTrace();
@@ -435,9 +431,7 @@ public class ActivityFragment extends Fragment {
 
         try {
             domainRequest.put(VolleySingleton.startDate, START_DATE);
-            // domainRequest.putOpt(VolleySingleton.endDate, END_DATE);
             domainRequest.putOpt(VolleySingleton.limit, LIMIT);
-            domainRequest.putOpt(VolleySingleton.listTypes, LIST_TYPES);
             VolleyRequest.addRequest(getContext(), VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY, User.getInstance().getUserID(), "", "", domainRequest, volleyResponseListener);
         } catch (JSONException e) {
             Log.e(TAG, "Populate Domain Request Creation Failed");

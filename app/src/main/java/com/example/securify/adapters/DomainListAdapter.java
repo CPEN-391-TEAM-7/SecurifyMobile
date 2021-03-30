@@ -1,6 +1,7 @@
 package com.example.securify.adapters;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,6 +15,13 @@ import android.widget.TextView;
 import com.example.securify.domain.DomainInfo;
 import com.example.securify.domain.DomainLists;
 import com.example.securify.R;
+import com.example.securify.model.User;
+import com.example.securify.ui.volley.VolleyRequest;
+import com.example.securify.ui.volley.VolleyResponseListener;
+import com.example.securify.ui.volley.VolleySingleton;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -27,6 +35,8 @@ public class DomainListAdapter extends BaseExpandableListAdapter {
     private boolean isActivityFragment;
     private final String BLACKLIST_DOMAIN = "Blacklist Domain";
     private final String WHITELIST_DOMAIN = "Whitelist Domain";
+
+    private final String TAG = "DomainListAdapter";
 
     public DomainListAdapter (Context _context, ArrayList<String> dList, boolean _isWhiteList, boolean _isActivityFragment) {
         context = _context;
@@ -95,15 +105,58 @@ public class DomainListAdapter extends BaseExpandableListAdapter {
                 String domain = domainList.get(groupPosition);
                 domainList.remove(groupPosition);
 
+                JSONObject putObject = new JSONObject();
+
                 if (isWhiteList) {
-                    DomainLists.getInstance().removeFromWhiteList(domain);
-                    DomainLists.getInstance().addToBlackList(domain);
+                    try {
+                        putObject.put(VolleySingleton.userID, User.getInstance().getUserID());
+                        putObject.put(VolleySingleton.listType, VolleySingleton.Blacklist);
+                        putObject.put(VolleySingleton.domainName, domain);
+                        VolleyRequest.addRequest(context, VolleyRequest.PUT_LIST, "", "", "", putObject, new VolleyResponseListener() {
+                            @Override
+                            public void onError(Object response) {
+                                Log.e(TAG, response.toString());
+;                            }
+
+                            @Override
+                            public void onResponse(Object response) {
+                                notifyDataSetChanged();
+                            }
+                        });
+
+                        DomainLists.getInstance().removeFromWhiteList(domain);
+                        DomainLists.getInstance().addToBlackList(domain);
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
                 } else {
+
+                    try {
+                        putObject.put(VolleySingleton.userID, User.getInstance().getUserID());
+                        putObject.put(VolleySingleton.listType, VolleySingleton.Whitelist);
+                        putObject.put(VolleySingleton.domainName, domain);
+                        VolleyRequest.addRequest(context, VolleyRequest.PUT_LIST, "", "", "", putObject, new VolleyResponseListener() {
+                            @Override
+                            public void onError(Object response) {
+                                Log.e(TAG, response.toString());
+                                ;                            }
+
+                            @Override
+                            public void onResponse(Object response) {
+                                notifyDataSetChanged();
+                            }
+                        });
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+
                     DomainLists.getInstance().removeFromBlackList(domain);
                     DomainLists.getInstance().addToWhiteList(domain);
                 }
 
-                notifyDataSetChanged();
+
             }
         });
 

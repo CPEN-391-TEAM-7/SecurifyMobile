@@ -139,7 +139,7 @@ public class BlackListFragment extends Fragment {
                                 // TODO: implement proper timestamping
                                 String timeStamp = LocalDateTime.now().format(formatter);
                                 Log.i(TAG, "timestamp:" + timeStamp);
-                                domainInfo.put(DomainInfo.DOMAIN_TIMESTAMP, timeStamp);
+                                domainInfo.put(DomainInfo.DOMAIN_TIMESTAMP, "");
 
                                 DomainInfo.getInstance().addDomain(domain_to_add, domainInfo);
                             } catch (IOException e) {
@@ -327,7 +327,7 @@ public class BlackListFragment extends Fragment {
                         // TODO: implement proper timestamping
                         String timeStamp = LocalDateTime.now().format(formatter);
                         Log.i(TAG, "timestamp:" + timeStamp);
-                        domainInfo.put(DomainInfo.DOMAIN_TIMESTAMP, timeStamp);
+                        domainInfo.put(DomainInfo.DOMAIN_TIMESTAMP, "");
 
                         DomainInfo.getInstance().addDomain(domainName, domainInfo);
 
