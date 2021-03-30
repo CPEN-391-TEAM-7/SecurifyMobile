@@ -170,7 +170,7 @@ public class LoginActivity extends AppCompatActivity {
                 });
             }
 
-
+            // Login Successful
             signInButton.setVisibility(View.GONE);
             signOutButton.setVisibility(View.VISIBLE);
 
@@ -180,6 +180,7 @@ public class LoginActivity extends AppCompatActivity {
 
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);
             startActivity(intent);
+            // Login Successful
 
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.
