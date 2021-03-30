@@ -178,8 +178,8 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
 
                         VolleyRequest.addRequest(context, VolleyRequest.PUT_LIST, User.getInstance().getUserID(), domain, "", postData, new VolleyResponseListener() {
                             @Override
-                            public void onError(String message) {
-                                Log.i(TAG, message);
+                            public void onError(Object response) {
+                                Log.i(TAG, response.toString());
                             }
 
                             @Override
@@ -215,8 +215,8 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
 
                         VolleyRequest.addRequest(context, VolleyRequest.PUT_LIST, User.getInstance().getUserID(), domain, "", postData, new VolleyResponseListener() {
                             @Override
-                            public void onError(String message) {
-                                Log.i(TAG, message);
+                            public void onError(Object response) {
+                                Log.i(TAG, response.toString());
                             }
 
                             @Override

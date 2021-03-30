@@ -30,8 +30,11 @@ import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
 
 public class LoginActivity extends AppCompatActivity {
 
@@ -132,8 +135,8 @@ public class LoginActivity extends AppCompatActivity {
 
                 JSONObject postData = new JSONObject();
                 try {
-                    postData.put("userID", "testID3");
-                    postData.put("name", "Luffy D Monkey");
+                    postData.put("userID", personId);
+                    postData.put("name", personName);
 
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -142,8 +145,39 @@ public class LoginActivity extends AppCompatActivity {
                 // Send request here.
                 VolleyRequest.addRequest(getBaseContext(), VolleyRequest.POST_REGISTER_USER, "", "", "", postData, new VolleyResponseListener() {
                     @Override
-                    public void onError(String message) {
-                        Log.i(TAG, message);
+                    public void onError(Object response) {
+                        VolleyError error = (VolleyError) response;
+                        String statusCode = String.valueOf(error.networkResponse.statusCode);
+
+                        if (statusCode.equals("409")) {
+                            
+                            try {
+                                String responseBody = new String(error.networkResponse.data, "utf-8");
+                                JSONObject data = new JSONObject(responseBody);
+
+                                Log.i(TAG, data.toString());
+
+                                JSONObject userObject= (JSONObject) data.get("user");
+
+                                Log.i(TAG, "userID: " + userObject.get("userID"));
+                                Log.i(TAG, "name: " + userObject.get("name"));
+
+                                signInButton.setVisibility(View.GONE);
+                                signOutButton.setVisibility(View.VISIBLE);
+
+                                Toast.makeText(getApplicationContext(), "Welcome to Securify", Toast.LENGTH_SHORT).show();
+
+                                Log.i("LOGIN", "Successful");
+
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(intent);
+                            } catch (JSONException | UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+
+                        } else {
+                            Log.e(TAG, response.toString());
+                        }
                     }
 
                     @Override
@@ -154,33 +188,28 @@ public class LoginActivity extends AppCompatActivity {
                             JSONObject json = new JSONObject(response.toString());
 
                             Log.i(TAG, "userID: " + json.getString("userID"));
-                            Log.i(TAG, "userID: " + json.getString("name"));
+                            Log.i(TAG, "name: " + json.getString("name"));
 
+                            signInButton.setVisibility(View.GONE);
+                            signOutButton.setVisibility(View.VISIBLE);
 
+                            Toast.makeText(getApplicationContext(), "Welcome to Securify", Toast.LENGTH_SHORT).show();
 
-                            Log.i(TAG, "name: " + User.getInstance().getName());
+                            Log.i("REGISTER", "Successful");
+
+                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                            startActivity(intent);
 
                         } catch (JSONException e){
                             Log.e(TAG, "JSON Error");
                             e.printStackTrace();
                         }
 
-                        // TODO: Only go to mainActivity if we get user back.
+
                     }
                 });
             }
 
-            // Login Successful
-            signInButton.setVisibility(View.GONE);
-            signOutButton.setVisibility(View.VISIBLE);
-
-            Toast.makeText(getApplicationContext(), "Welcome to Securify", Toast.LENGTH_SHORT).show();
-
-            Log.i("LOGIN", "Successful");
-
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            startActivity(intent);
-            // Login Successful
 
         } catch (ApiException e) {
             // The ApiException status code indicates the detailed failure reason.

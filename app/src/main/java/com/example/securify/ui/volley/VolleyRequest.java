@@ -100,7 +100,7 @@ public class VolleyRequest {
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                listener.onError(error.toString());
+                listener.onError(error);
             }
         });
 

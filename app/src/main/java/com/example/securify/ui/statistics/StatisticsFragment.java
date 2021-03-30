@@ -166,8 +166,8 @@ public class StatisticsFragment extends Fragment {
                 VolleyRequest.addRequest(getContext(), VolleyRequest.GET_BY_DATE_MOST_REQUESTED_DOMAINS, User.getInstance().getUserID(), "", "", getData, new VolleyResponseListener() {
 
                     @Override
-                    public void onError(String message) {
-                        Log.e(TAG, message);
+                    public void onError(Object response) {
+                        Log.e(TAG, response.toString());
                     }
 
                     @Override
@@ -302,8 +302,8 @@ public class StatisticsFragment extends Fragment {
 
         VolleyResponseListener volleyResponseListener = new VolleyResponseListener() {
             @Override
-            public void onError(String message) {
-                Log.e(TAG, message);
+            public void onError(Object response) {
+                Log.e(TAG, response.toString());
             }
 
             @Override
@@ -501,8 +501,8 @@ public class StatisticsFragment extends Fragment {
                 int finalI = i;
                 VolleyRequest.addRequest(getContext(), VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY, User.getInstance().getUserID(), "", "", domainRequest, new VolleyResponseListener() {
                     @Override
-                    public void onError(String message) {
-                        Log.e(TAG, message);
+                    public void onError(Object response) {
+                        Log.e(TAG, response.toString());
                     }
 
                     @Override

@@ -181,8 +181,8 @@ public class WhiteListFragment extends Fragment {
         // Sending the request...
         VolleyRequest.addRequest(getContext(), VolleyRequest.PUT_LIST, User.getInstance().getUserID(), domainName, "", postData, new VolleyResponseListener() {
             @Override
-            public void onError(String message) {
-                Log.i(TAG, message);
+            public void onError(Object response) {
+                Log.i(TAG, response.toString());
             }
 
             @Override

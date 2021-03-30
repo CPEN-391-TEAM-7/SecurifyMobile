@@ -178,6 +178,7 @@ public class ActivityFragment extends Fragment {
         loadMoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                // TODO: test http calls
                 // populateDomains();
                 domainListAdapter.notifyDataSetChanged();
                 if (count == 0) {
@@ -329,8 +330,8 @@ public class ActivityFragment extends Fragment {
 
         volleyResponseListener = new VolleyResponseListener() {
             @Override
-            public void onError(String message) {
-                Log.e(TAG, message);
+            public void onError(Object response) {
+                Log.e(TAG, response.toString());
             }
 
             @Override
