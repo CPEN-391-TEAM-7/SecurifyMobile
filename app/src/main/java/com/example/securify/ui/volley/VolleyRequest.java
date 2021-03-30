@@ -77,7 +77,7 @@ public class VolleyRequest {
                 requestType = Request.Method.POST;
                 break;
             case PUT_LIST:
-                url = baseAddress + updateDomain + userID;
+                url = baseAddress + updateDomain;
                 requestType = Request.Method.PUT;
                 break;
             default:

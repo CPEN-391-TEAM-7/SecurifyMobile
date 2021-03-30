@@ -35,6 +35,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.net.whois.WhoisClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -74,6 +75,9 @@ public class WhiteListFragment extends Fragment {
         EditText addWhiteList = root.findViewById(R.id.add_whitelist_text);
 
         whoisClient = new WhoisClient();
+
+        clearList();
+        fetchWhitelist();
 
         Button addWhiteListDomain =  root.findViewById(R.id.add_whitelist_domain_button);
         addWhiteListDomain.setOnClickListener(new View.OnClickListener() {
@@ -166,49 +170,116 @@ public class WhiteListFragment extends Fragment {
         return root;
     }
 
+    private void fetchWhitelist() {
+
+        // Build request body
+        JSONObject postData = new JSONObject();
+
+        try {
+            postData.put("userID", User.getInstance().getUserID());
+            postData.put(VolleySingleton.listType, VolleySingleton.Whitelist);
+        } catch (JSONException e){
+            e.printStackTrace();
+            Log.e(TAG, e.toString());
+        }
+
+        VolleyRequest.addRequest(
+                getContext(),
+                VolleyRequest.GET_WHITELIST,
+                User.getInstance().getUserID(),
+                "",
+                VolleySingleton.Whitelist,
+                postData,
+                new VolleyResponseListener() {
+                    @Override
+                    public void onError(Object response) {
+                        Log.e(TAG, response.toString());
+                    }
+
+                    @Override
+                    public void onResponse(Object response) {
+                        try {
+                            JSONObject json = new JSONObject(response.toString());
+
+                            if(json.getString("status").equals("Success")) {
+                                JSONArray list = json.getJSONArray("list");
+
+                                for(int i = 0; i < list.length(); i++) {
+                                    Log.i(TAG, "Adding a domain to the list...");
+                                    JSONObject domain = list.getJSONObject(i);
+                                    addListAdapter(domain.getString("domainName"));
+                                }
+                            } else {
+                                Log.e(TAG, "HTTP REQUEST return Failed...: " + json.getString("msg"));
+                            }
+                        } catch (JSONException e){
+                            e.printStackTrace();
+                            Log.e(TAG, e.toString());
+                        }
+                    }
+                }
+        );
+    }
+
     private void addWhiteList(String domainName) {
         // This is the request body.
         JSONObject postData = new JSONObject();
 
         try {
             postData.put("userID", User.getInstance().getUserID());
-            postData.put(VolleySingleton.listType, VolleySingleton.Blacklist);
+            postData.put(VolleySingleton.listType, VolleySingleton.Whitelist);
             postData.put(VolleySingleton.domainName, domainName);
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
         // Sending the request...
-        VolleyRequest.addRequest(getContext(), VolleyRequest.PUT_LIST, User.getInstance().getUserID(), domainName, "", postData, new VolleyResponseListener() {
-            @Override
-            public void onError(Object response) {
-                Log.i(TAG, response.toString());
-            }
-
-            @Override
-            public void onResponse(Object response) {
-                Log.i(TAG, response.toString());
-                try {
-                    JSONObject json = new JSONObject(response.toString());
-
-                    // Something went wrong
-                    if(!json.getString("status").equals("Success")) {
-                        Toast.makeText(getContext(), json.getString("msg"), Toast.LENGTH_LONG).show();
+        VolleyRequest.addRequest(
+                getContext(),
+                VolleyRequest.PUT_LIST,
+                User.getInstance().getUserID(),
+                domainName,
+                "",
+                postData,
+                new VolleyResponseListener() {
+                    @Override
+                    public void onError(Object response) {
+                        Log.i(TAG, response.toString());
                     }
-                    // Successfully added.
-                    else {
-                        Toast.makeText(getContext(), json.getString("msg"), Toast.LENGTH_SHORT).show();
 
-                            whiteListArrayAdapter.notifyDataSetChanged();
-                            whiteList.add(domainName);
-                            allDomainsList.add(domainName);
+                    @Override
+                    public void onResponse(Object response) {
+                        Log.i(TAG, response.toString());
+                        try {
+                            JSONObject json = new JSONObject(response.toString());
 
+                            // Something went wrong
+                            if(!json.getString("status").equals("Success")) {
+                                Toast.makeText(getContext(), json.getString("msg"), Toast.LENGTH_LONG).show();
+                            }
+                            // Successfully added.
+                            else {
+                                Log.i(TAG, "Successfully added the domain to Whitelist");
+                                Toast.makeText(getContext(), json.getString("msg"), Toast.LENGTH_SHORT).show();
+                            }
+                        } catch (JSONException e){
+                            Log.d(TAG, e.toString());
+                        }
                     }
-                } catch (JSONException e){
-                    Log.d(TAG, e.toString());
-                }
-            }
-        });
+                });
+
+        clearList();
+        fetchWhitelist();
+    }
+
+    private void clearList() {
+        whiteList.clear();
+    }
+
+    private void addListAdapter(String domainName) {
+        if(!whiteList.contains(domainName)) whiteList.add(domainName);
+        if(!allDomainsList.contains(domainName)) allDomainsList.add(domainName);
+        whiteListArrayAdapter.notifyDataSetChanged();
     }
 
 }

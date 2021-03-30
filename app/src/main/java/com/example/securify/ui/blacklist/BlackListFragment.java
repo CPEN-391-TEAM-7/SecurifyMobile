@@ -28,6 +28,7 @@ import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
 
 import org.apache.commons.net.whois.WhoisClient;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -74,6 +75,9 @@ public class BlackListFragment extends Fragment {
         whoisClient = new WhoisClient();
 
         String userID = User.getInstance().getUserID();
+
+        clearList();
+        fetchBlacklist();
 
         Button addBlackListDomain = root.findViewById(R.id.add_blacklist_domain_button);
         addBlackListDomain.setOnClickListener(new View.OnClickListener() {
@@ -162,8 +166,60 @@ public class BlackListFragment extends Fragment {
 
         return root;
     }
+
+    private void fetchBlacklist() {
+
+        // Build request body
+        JSONObject postData = new JSONObject();
+
+        try {
+            postData.put("userID", User.getInstance().getUserID());
+            postData.put("listType", "Blacklist");
+        } catch (JSONException e){
+            e.printStackTrace();
+            Log.e(TAG, e.toString());
+        }
+
+        VolleyRequest.addRequest(
+                getContext(),
+                VolleyRequest.GET_BLACKLIST,
+                User.getInstance().getUserID(),
+                "",
+                "Blacklist",
+                postData,
+                new VolleyResponseListener() {
+                    @Override
+                    public void onError(Object response) {
+                        Log.e(TAG, response.toString());
+                    }
+
+                    @Override
+                    public void onResponse(Object response) {
+                        try {
+                            JSONObject json = new JSONObject(response.toString());
+
+                            if(json.getString("status").equals("Success")) {
+                                JSONArray list = json.getJSONArray("list");
+
+                                for(int i = 0; i < list.length(); i++) {
+                                    Log.i(TAG, "Adding a domain to the list...");
+                                    JSONObject domain = list.getJSONObject(i);
+                                    addListAdapter(domain.getString("domainName"));
+                                }
+                            } else {
+                                Log.e(TAG, "HTTP REQUEST return Failed...: " + json.getString("msg"));
+                            }
+                        } catch (JSONException e){
+                            e.printStackTrace();
+                            Log.e(TAG, e.toString());
+                        }
+                    }
+                }
+        );
+    }
     
     private void addBlacklist(String domainName) {
+
         // This is the request body.
         JSONObject postData = new JSONObject();
 
@@ -176,36 +232,53 @@ public class BlackListFragment extends Fragment {
         }
 
         // Sending the request...
-        VolleyRequest.addRequest(getContext(), VolleyRequest.PUT_LIST, User.getInstance().getUserID(), domainName, "", postData, new VolleyResponseListener() {
-            @Override
-            public void onError(Object response) {
-                Log.i(TAG, response.toString());
-            }
-
-            @Override
-            public void onResponse(Object response) {
-                Log.i(TAG, response.toString());
-                try {
-                    JSONObject json = new JSONObject(response.toString());
-
-                    // Something went wrong
-                    if(!json.getString("status").equals("Success")) {
-                        Toast.makeText(getContext(), json.getString("msg"), Toast.LENGTH_LONG).show();
-                    }
-                    // Successfully added.
-                    else {
-                        Toast.makeText(getContext(), json.getString("msg"), Toast.LENGTH_SHORT).show();
-
-                            blackListArrayAdapter.notifyDataSetChanged();
-                            blackList.add(domainName);
-                            allDomainsList.add(domainName);
-
+        VolleyRequest.addRequest(getContext(),
+                VolleyRequest.PUT_LIST,
+                User.getInstance().getUserID(),
+                domainName,
+                "",
+                postData,
+                new VolleyResponseListener() {
+                    @Override
+                    public void onError(Object response) {
+                        Log.i(TAG, response.toString());
                     }
 
-                } catch (JSONException e){
-                    Log.d(TAG, e.toString());
-                }
-            }
+                    @Override
+                    public void onResponse(Object response) {
+                        Log.i(TAG, response.toString());
+                        try {
+                            JSONObject json = new JSONObject(response.toString());
+
+                            // Something went wrong
+                            if(!json.getString("status").equals("Success")) {
+                                Toast.makeText(getContext(), json.getString("msg"), Toast.LENGTH_LONG).show();
+                            }
+                            // Successfully added.
+                            else {
+
+                                Log.i(TAG, "Successfully added the domain to Blacklist");
+
+                                Toast.makeText(getContext(), json.getString("msg"), Toast.LENGTH_SHORT).show();
+                            }
+
+                        } catch (JSONException e){
+                            Log.d(TAG, e.toString());
+                        }
+                    }
         });
+
+        clearList();
+        fetchBlacklist();
+    }
+
+    private void clearList() {
+        blackList.clear();
+    }
+
+    private void addListAdapter(String domainName) {
+        if(!blackList.contains(domainName)) blackList.add(domainName);
+        if(!allDomainsList.contains(domainName)) allDomainsList.add(domainName);
+        blackListArrayAdapter.notifyDataSetChanged();
     }
 }
