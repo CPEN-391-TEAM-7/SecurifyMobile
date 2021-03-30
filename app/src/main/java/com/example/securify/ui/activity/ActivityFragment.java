@@ -179,7 +179,7 @@ public class ActivityFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 // TODO: test http calls
-                // populateDomains();
+                 populateDomains();
                 domainListAdapter.notifyDataSetChanged();
                 if (count == 0) {
                     Toast.makeText(getContext(), "No more domains can be loaded", Toast.LENGTH_LONG).show();

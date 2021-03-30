@@ -150,7 +150,7 @@ public class LoginActivity extends AppCompatActivity {
                         String statusCode = String.valueOf(error.networkResponse.statusCode);
 
                         if (statusCode.equals("409")) {
-                            
+
                             try {
                                 String responseBody = new String(error.networkResponse.data, "utf-8");
                                 JSONObject data = new JSONObject(responseBody);

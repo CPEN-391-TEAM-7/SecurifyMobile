@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
                         // Get new FCM registration token
                         String token = task.getResult();
 
-                        // Log and toast
+                        // Log
                         Log.d(TAG, "token: " + token);
                         User.getInstance().setFireBaseToken(token);
                     }

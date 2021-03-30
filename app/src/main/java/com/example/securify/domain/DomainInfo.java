@@ -30,4 +30,6 @@ public class DomainInfo {
         return domainInfo.get(name);
     }
 
+    public boolean contains(String name) {return domainInfo.containsKey(name);}
+
 }

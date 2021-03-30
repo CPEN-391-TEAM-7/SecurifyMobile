@@ -1,7 +1,7 @@
 package com.example.securify.domain;
 
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,10 +19,11 @@ public class DomainMatcher {
     public static final String REGISTRAR_NAME  = "WREGISTRAR_NAME";
     public static final String REGISTRAR_EXPIRY_DATE= "REGISTRAR_EXPIRY_DATE";
 
-    private static final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
-
     public static String getMatch(String whoIsInfo, String match) {
-        String result = "";
+        String result = null;
+
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
         switch (match) {
             case WHOIS_SERVER:
@@ -45,15 +46,6 @@ public class DomainMatcher {
             result = matcher.group(1);
         }
 
-        if (match.equals(REGISTRAR_EXPIRY_DATE)) {
-            if (result != null) {
-                try {
-                    result = String.valueOf(simpleDateFormat.parse(result));
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
-            }
-        }
         return result;
     }
 

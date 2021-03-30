@@ -28,7 +28,10 @@ import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
 
 import java.io.IOException;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.regex.Matcher;
@@ -50,7 +53,8 @@ public class WhiteListFragment extends Fragment {
     private Boolean validDomain = true;
     private final String TAG = "WhiteListFragment";
 
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -138,7 +142,9 @@ public class WhiteListFragment extends Fragment {
                                 domainInfo.put(DomainInfo.REGISTRAR_EXPIRY_DATE, registrarExpiryDate);
 
                                 // TODO: implement proper timestamping
-                                domainInfo.put(DomainInfo.DOMAIN_TIMESTAMP, "2021-01-23-13:31:24");
+                                String timeStamp = LocalDateTime.now().format(formatter);
+                                Log.i(TAG, "timestamp:" + timeStamp);
+                                domainInfo.put(DomainInfo.DOMAIN_TIMESTAMP, timeStamp);
                                 DomainInfo.getInstance().addDomain(whitelist, domainInfo);
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -279,6 +285,69 @@ public class WhiteListFragment extends Fragment {
     private void addListAdapter(String domainName) {
         if(!whiteList.contains(domainName)) whiteList.add(domainName);
         if(!allDomainsList.contains(domainName)) allDomainsList.add(domainName);
+
+        if (!DomainInfo.getInstance().contains(domainName)) {
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        StringBuilder server = new StringBuilder("");
+
+                        whoisClient.connect("whois.iana.org");
+                        server.append(whoisClient.query(domainName));
+                        whoisClient.disconnect();
+
+                        String whoIsServer = DomainMatcher.getMatch(server.toString(), DomainMatcher.WHOIS_SERVER).trim();
+                        if (whoIsServer.equals("")) {
+                            validDomain = false;
+                            return;
+                        }
+
+                        Log.i(TAG,  whoIsServer);
+                        whoisClient.connect(whoIsServer);
+                        StringBuilder result = new StringBuilder("");
+                        result.append(whoisClient.query(domainName));
+                        Log.i(TAG,  result.toString());
+                        String whoIsInfo = result.toString();
+
+                        HashMap<String, String> domainInfo = new HashMap<>();
+                        domainInfo.put(DomainInfo.DOMAIN_NAME, domainName);
+
+                        String domainID = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_DOMAIN_ID).trim();
+
+                        Log.i(TAG, "registrar domain id:" + domainID);
+                        domainInfo.put(DomainInfo.REGISTRAR_DOMAIN_ID, domainID);
+
+                        String registrarName = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_NAME).trim();
+
+                        Log.i(TAG, "registrar name:" + registrarName);
+                        domainInfo.put(DomainInfo.REGISTRAR_NAME, registrarName);
+
+                        String registrarExpiryDate = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_EXPIRY_DATE).trim();
+
+                        Log.i(TAG, "expiry date:" + registrarExpiryDate);
+                        domainInfo.put(DomainInfo.REGISTRAR_EXPIRY_DATE, registrarExpiryDate);
+
+                        // TODO: implement proper timestamping
+                        String timeStamp = LocalDateTime.now().format(formatter);
+                        Log.i(TAG, "timestamp:" + timeStamp);
+                        domainInfo.put(DomainInfo.DOMAIN_TIMESTAMP, timeStamp);
+
+                        DomainInfo.getInstance().addDomain(domainName, domainInfo);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+            t.start();
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+
         whiteListArrayAdapter.notifyDataSetChanged();
     }
 

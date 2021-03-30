@@ -38,6 +38,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 
 public class ActivityDomainListAdapter extends BaseExpandableListAdapter implements Filterable {
     
@@ -296,6 +297,7 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
 
             FilterResults results = new FilterResults();
             ArrayList<String> filteredDomainList = new ArrayList<>();
+            ArrayList<String> filteredDomainListIterate = new ArrayList<>();
 
             mDomainFilterList = DomainLists.getInstance().getAllDomainsList();
 
@@ -313,10 +315,12 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
 
             String listConstraint = constraints.get(LIST_FILTER);
             DomainLists domainLists = DomainLists.getInstance();
+            filteredDomainListIterate.addAll(filteredDomainList);
+
 
             switch (listConstraint) {
                 case "Blacklist Domains Only":
-                    for (String domain:filteredDomainList) {
+                    for (String domain:filteredDomainListIterate) {
                         if(!domainLists.blackListContains(domain)) {
                             filteredDomainList.remove(domain);
                         }
@@ -324,13 +328,16 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
                     break;
 
                 case "Whitelist Domains Only":
-                    for (String domain: filteredDomainList) {
+                    for (String domain: filteredDomainListIterate) {
                         if(!domainLists.whiteListContains(domain)) {
                             filteredDomainList.remove(domain);
                         }
                     }
                     break;
             }
+
+            filteredDomainListIterate.clear();
+            filteredDomainListIterate.addAll(filteredDomainList);
 
             String startDate = constraints.get(START_DATE_FILTER);
             Date startDateTime = null;
@@ -375,7 +382,7 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
 
             DomainInfo domainInformation = DomainInfo.getInstance();
 
-            for (String domain:filteredDomainList) {
+            for (String domain:filteredDomainListIterate) {
 
                 Date timeStamp = null;
 
