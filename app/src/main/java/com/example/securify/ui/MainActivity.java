@@ -48,25 +48,7 @@ public class MainActivity extends AppCompatActivity {
 
         DomainLists.getInstance().setBlackList(new ArrayList<>());
         DomainLists.getInstance().setWhiteList(new ArrayList<>());
-
-        FirebaseMessaging.getInstance().getToken()
-                .addOnCompleteListener(new OnCompleteListener<String>() {
-                    @Override
-                    public void onComplete(@NonNull Task<String> task) {
-                        if (!task.isSuccessful()) {
-                            Log.w(TAG, "Fetching FCM registration token failed", task.getException());
-                            return;
-                        }
-
-                        // Get new FCM registration token
-                        String token = task.getResult();
-
-                        // Log
-                        Log.d(TAG, "token: " + token);
-                        User.getInstance().setFireBaseToken(token);
-                    }
-                });
-
+        
         FirebaseMessaging.getInstance().subscribeToTopic("alert")
                 .addOnCompleteListener(new OnCompleteListener<Void>() {
                     @Override
