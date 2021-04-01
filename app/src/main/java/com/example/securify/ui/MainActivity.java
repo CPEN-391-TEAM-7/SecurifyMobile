@@ -28,7 +28,6 @@ import java.util.ArrayList;
 
 public class MainActivity extends AppCompatActivity {
 
-    private String userID;
     private GoogleApiClient mGoogleApiClient;
     private final String TAG = "MainActivity";
 
@@ -49,12 +48,6 @@ public class MainActivity extends AppCompatActivity {
 
         DomainLists.getInstance().setBlackList(new ArrayList<>());
         DomainLists.getInstance().setWhiteList(new ArrayList<>());
-
-        Bundle extras = getIntent().getExtras();
-
-        if(extras != null) {
-            userID = extras.getString("userID");
-        }
 
         FirebaseMessaging.getInstance().getToken()
                 .addOnCompleteListener(new OnCompleteListener<String>() {

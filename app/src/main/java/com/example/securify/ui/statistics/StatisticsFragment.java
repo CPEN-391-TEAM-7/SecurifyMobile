@@ -177,48 +177,49 @@ public class StatisticsFragment extends Fragment {
                         break;
                 }
 
-                VolleyRequest.addRequest(getContext(), VolleyRequest.GET_BY_DATE_MOST_REQUESTED_DOMAINS, User.getInstance().getUserID(), "", "", getData, new VolleyResponseListener() {
+                VolleyRequest.addRequest(getContext(),
+                        VolleyRequest.GET_BY_DATE_MOST_REQUESTED_DOMAINS,
+                        User.getInstance().getUserID(),
+                        "", "",
+                        getData,
+                        new VolleyResponseListener() {
 
-                    @Override
-                    public void onError(Object response) {
-                        Log.e(TAG, response.toString());
-                    }
-
-                    @Override
-                    public void onResponse(Object response) {
-                        topDomainsData.clear();
-
-                        try {
-                            JSONObject jsonArray = new JSONObject(response.toString());
-
-                            Iterator iterator = jsonArray.keys();
-
-                            while(iterator.hasNext()) {
-
-                                HashMap<String, String> topDomainsDataEntry = new HashMap<>();
-
-                                String domainName = iterator.next().toString();
-                                topDomainsDataEntry.put(VolleySingleton.domainName, domainName);
-
-                                JSONObject jsonObject = new JSONObject(jsonArray.getString(domainName));
-                                topDomainsDataEntry.put(VolleySingleton.listType, jsonObject.getString(VolleySingleton.listType));
-                                topDomainsDataEntry.put(VolleySingleton.num_of_accesses, jsonObject.get(VolleySingleton.count).toString());
-
-                                TopDomainsInfo.getInstance().addDomain(domainName, topDomainsDataEntry);
+                            @Override
+                            public void onError(Object response) {
+                                Log.e(TAG, response.toString());
                             }
 
-                        } catch (JSONException jsonException) {
-                            jsonException.printStackTrace();
-                        }
+                            @Override
+                            public void onResponse(Object response) {
+                                topDomainsData.clear();
 
-                        setListViewHeight(topDomainsList);
-                    }
-                });
+                                try {
+                                    JSONObject jsonArray = new JSONObject(response.toString());
+                                    Iterator iterator = jsonArray.keys();
+                                    while(iterator.hasNext()) {
+
+                                        HashMap<String, String> topDomainsDataEntry = new HashMap<>();
+
+                                        String domainName = iterator.next().toString();
+                                        topDomainsDataEntry.put(VolleySingleton.domainName, domainName);
+
+                                        JSONObject jsonObject = new JSONObject(jsonArray.getString(domainName));
+                                        topDomainsDataEntry.put(VolleySingleton.listType, jsonObject.getString(VolleySingleton.listType));
+                                        topDomainsDataEntry.put(VolleySingleton.num_of_accesses, jsonObject.get(VolleySingleton.count).toString());
+
+                                        TopDomainsInfo.getInstance().addDomain(domainName, topDomainsDataEntry);
+                                    }
+
+                                } catch (JSONException jsonException) {
+                                    jsonException.printStackTrace();
+                                }
+                                setListViewHeight(topDomainsList);
+                            }
+                        });
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
-
         });
         
         /* Test Data */
@@ -384,9 +385,7 @@ public class StatisticsFragment extends Fragment {
     }
 
     private void getWeeklyData() {
-
         JSONObject domainRequest = new JSONObject();
-
         VolleyResponseListener volleyResponseListener = new VolleyResponseListener() {
             @Override
             public void onError(Object response) {

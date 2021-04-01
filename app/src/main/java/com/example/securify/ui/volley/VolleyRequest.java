@@ -10,8 +10,6 @@ import com.android.volley.toolbox.JsonObjectRequest;
 
 import org.json.JSONObject;
 
-import java.util.HashMap;
-
 public class VolleyRequest {
 
     private static final String TAG = "HTTP REQUEST";
@@ -38,7 +36,6 @@ public class VolleyRequest {
     private static final String registerUser = "/user/register";
 
     public static final String PUT_LIST = "PUT_LIST";
-
 
     public static void addRequest(Context context, String request, String userID, String domainName, String listType, JSONObject jsonObject, VolleyResponseListener listener) {
 
@@ -83,15 +80,19 @@ public class VolleyRequest {
             default:
                 return;
         }
-
         sendRequest(context, url, jsonObject, listener, requestType);
-
     }
 
+    /**
+     * This function is the one that actually makes a HTTP call to our Backend API.
+     * @param context
+     * @param url
+     * @param jsonObject
+     * @param listener
+     * @param requestType
+     */
     private static void sendRequest(Context context, String url, JSONObject jsonObject, VolleyResponseListener listener, int requestType) {
-
         Log.i(TAG, "Sending a request...");
-
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(requestType, url, jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -103,7 +104,6 @@ public class VolleyRequest {
                 listener.onError(error);
             }
         });
-
         VolleySingleton.getInstance(context).addToRequestQueue(jsonObjectRequest);
     }
 }
