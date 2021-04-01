@@ -9,6 +9,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -16,6 +17,7 @@ import androidx.lifecycle.ViewModelProvider;
 
 import com.example.securify.R;
 import com.example.securify.adapters.StatisticsListAdapter;
+import com.example.securify.domain.TopDomainsInfo;
 import com.example.securify.model.User;
 import com.example.securify.ui.volley.VolleyRequest;
 import com.example.securify.ui.volley.VolleyResponseListener;
@@ -74,7 +76,7 @@ public class StatisticsFragment extends Fragment {
 
     String[] spinnerItems = {"Daily", "Weekly", "Monthly", "Yearly", "All Time"};
 
-    private HashMap<String, HashMap<String, Object>> topDomainsData = new HashMap<>();
+    private ArrayList<String> topDomainsData = new ArrayList<>();
     private StatisticsListAdapter statisticsListAdapter;
 
     private Description description = new Description();
@@ -89,6 +91,10 @@ public class StatisticsFragment extends Fragment {
     private final DateTimeFormatter lineChartDayFormat = DateTimeFormatter.ofPattern("MMM dd");
 
     private LocalDateTime currentDateTime;
+
+    private boolean domainNameAscending = false;
+    private boolean countAscending = false;
+    private boolean listAscending = false;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -181,16 +187,16 @@ public class StatisticsFragment extends Fragment {
 
                             while(iterator.hasNext()) {
 
-                                HashMap<String, Object> topDomainsDataEntry = new HashMap<>();
+                                HashMap<String, String> topDomainsDataEntry = new HashMap<>();
 
                                 String domainName = iterator.next().toString();
                                 topDomainsDataEntry.put(VolleySingleton.domainName, domainName);
 
                                 JSONObject jsonObject = new JSONObject(jsonArray.getString(domainName));
-                                topDomainsDataEntry.put(VolleySingleton.listType, jsonObject.get(VolleySingleton.listType));
-                                topDomainsDataEntry.put(VolleySingleton.num_of_accesses, jsonObject.get(VolleySingleton.count));
+                                topDomainsDataEntry.put(VolleySingleton.listType, jsonObject.getString(VolleySingleton.listType));
+                                topDomainsDataEntry.put(VolleySingleton.num_of_accesses, jsonObject.get(VolleySingleton.count).toString());
 
-                                topDomainsData.put(domainName, topDomainsDataEntry);
+                                TopDomainsInfo.getInstance().addDomain(domainName, topDomainsDataEntry);
                             }
 
 
@@ -209,17 +215,66 @@ public class StatisticsFragment extends Fragment {
         });
         
         /* Test Data */
-        HashMap<String, Object> testData = new HashMap<>();
-        testData.put(VolleySingleton.domainName, "testName");
-        testData.put(VolleySingleton.listType, VolleySingleton.Whitelist);
-        testData.put(VolleySingleton.num_of_accesses, 10);
+        HashMap<String, String> testData1 = new HashMap<>();
+        testData1.put(VolleySingleton.domainName, "testName1");
+        testData1.put(VolleySingleton.listType, VolleySingleton.Whitelist);
+        testData1.put(VolleySingleton.num_of_accesses, String.valueOf(10));
+        HashMap<String, String> testData2 = new HashMap<>();
+        testData2.put(VolleySingleton.domainName, "testName2");
+        testData2.put(VolleySingleton.listType, VolleySingleton.Blacklist);
+        testData2.put(VolleySingleton.num_of_accesses, String.valueOf(20));
         /* Test Data */
 
-        topDomainsData.put("testName", testData);
-        statisticsListAdapter = new StatisticsListAdapter(topDomainsData, getContext());
+        TopDomainsInfo.getInstance().addDomain("testName1", testData1);
+        TopDomainsInfo.getInstance().addDomain("testName2", testData2);
+        topDomainsData.add("testName1");
+        topDomainsData.add("testName2");
+        statisticsListAdapter = new StatisticsListAdapter(topDomainsData,getContext());
         ListView topDomainsList = root.findViewById(R.id.top_domains_list);
         topDomainsList.setAdapter(statisticsListAdapter);
 
+        TextView domainTitle = root.findViewById(R.id.domain_text);
+        domainTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (domainNameAscending) {
+                    domainNameAscending = false;
+                    statisticsListAdapter.sortDomainNameDescending();;
+                } else {
+                    domainNameAscending = true;
+                    statisticsListAdapter.sortDomainNameAscending();
+                }
+
+            }
+        });
+
+        TextView countTitle = root.findViewById(R.id.count_text);
+        countTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (countAscending) {
+                    countAscending = false;
+                    statisticsListAdapter.sortCountDescending();
+                } else {
+                    countAscending = true;
+                    statisticsListAdapter.sortCountAscending();
+                }
+            }
+        });
+
+        TextView listTitle = root.findViewById(R.id.list_text);
+        listTitle.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (listAscending) {
+                    listAscending = false;
+                    statisticsListAdapter.sortListDescending();
+                } else {
+                    listAscending = true;
+                    statisticsListAdapter.sortListAscending();
+                }
+            }
+        });
 //        statisticsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
 //            @Override
 //            public void onChanged(@Nullable String s) {

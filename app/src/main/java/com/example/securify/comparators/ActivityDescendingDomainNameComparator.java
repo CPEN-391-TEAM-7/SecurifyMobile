@@ -2,7 +2,7 @@ package com.example.securify.comparators;
 
 import java.util.Comparator;
 
-public class DescendingDomainNameComparator implements Comparator<String> {
+public class ActivityDescendingDomainNameComparator implements Comparator<String> {
     @Override
     public int compare(String o1, String o2) {
         return -o1.compareTo(o2);

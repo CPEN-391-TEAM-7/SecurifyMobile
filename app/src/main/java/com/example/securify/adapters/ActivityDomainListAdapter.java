@@ -18,12 +18,12 @@ import android.widget.TextView;
 import com.example.securify.domain.DomainInfo;
 import com.example.securify.domain.DomainLists;
 import com.example.securify.R;
-import com.example.securify.comparators.AscendingDomainNameComparator;
-import com.example.securify.comparators.AscendingListComparator;
-import com.example.securify.comparators.AscendingTimeStampComparator;
-import com.example.securify.comparators.DescendingDomainNameComparator;
-import com.example.securify.comparators.DescendingListComparator;
-import com.example.securify.comparators.DescendingTimeStampComparator;
+import com.example.securify.comparators.ActivityAscendingDomainNameComparator;
+import com.example.securify.comparators.ActivityAscendingListComparator;
+import com.example.securify.comparators.ActivityAscendingTimeStampComparator;
+import com.example.securify.comparators.ActivityDescendingDomainNameComparator;
+import com.example.securify.comparators.ActivityDescendingListComparator;
+import com.example.securify.comparators.ActivityDescendingTimeStampComparator;
 import com.example.securify.model.User;
 import com.example.securify.ui.volley.VolleyRequest;
 import com.example.securify.ui.volley.VolleyResponseListener;
@@ -122,9 +122,11 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
 
             if (blacklist.contains(domainList.get(groupPosition))) {
                 listIndicator.setImageResource(R.drawable.ic_blacklist_icon);
+                listIndicator.setColorFilter(context.getColor(R.color.main7));
             } else {
                 if (whitelist.contains(domainList.get(groupPosition))) {
                     listIndicator.setImageResource(R.drawable.ic_whitelist_icon);
+                    listIndicator.setColorFilter(context.getColor(R.color.main3));
                 } else {
                     listIndicator.setImageResource(0);
                 }
@@ -250,32 +252,32 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
     }
 
     public void sortDomainNameAscending() {
-        Collections.sort(domainList, new AscendingDomainNameComparator());
+        Collections.sort(domainList, new ActivityAscendingDomainNameComparator());
         notifyDataSetChanged();
     }
 
     public void sortDomainNameDescending() {
-        Collections.sort(domainList, new DescendingDomainNameComparator());
+        Collections.sort(domainList, new ActivityDescendingDomainNameComparator());
         notifyDataSetChanged();
     }
 
     public void sortTimeStampAscending() {
-        Collections.sort(domainList, new AscendingTimeStampComparator());
+        Collections.sort(domainList, new ActivityAscendingTimeStampComparator());
         notifyDataSetChanged();
     }
 
     public void sortTimeStampDescending() {
-        Collections.sort(domainList, new DescendingTimeStampComparator());
+        Collections.sort(domainList, new ActivityDescendingTimeStampComparator());
         notifyDataSetChanged();
     }
 
     public void sortListAscending() {
-        Collections.sort(domainList, new AscendingListComparator());
+        Collections.sort(domainList, new ActivityAscendingListComparator());
         notifyDataSetChanged();
     }
 
     public void sortListDescending() {
-        Collections.sort(domainList, new DescendingListComparator());
+        Collections.sort(domainList, new ActivityDescendingListComparator());
         notifyDataSetChanged();
     }
 
