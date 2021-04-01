@@ -28,13 +28,27 @@
         android:layout_marginEnd="30dp"
         android:src="@drawable/ic_bluetooth" />
 
-    <ToggleButton
-        android:id="@+id/toggle"
-        android:layout_width="100dp"
+    <TextView
+        android:id="@+id/security_text"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/text_activity"
+        android:layout_centerVertical="true"
+        android:layout_marginTop="18dp"
+        android:text="@string/security"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        android:layout_marginLeft="145dp"
+        android:paddingRight="5dp"/>
+
+    <androidx.appcompat.widget.SwitchCompat
+        android:id="@+id/switch_compat"
+        android:layout_width="50dp"
         android:layout_height="50dp"
         android:layout_below="@id/text_activity"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="10dp"/>
+        android:layout_marginTop="10dp"
+        android:layout_toRightOf="@id/security_text" />
 
     <Button
         android:id="@+id/filter_button"
@@ -44,7 +58,7 @@
         android:drawablePadding="10dp"
         android:text="@string/filter"
         android:textAllCaps="false"
-        android:layout_below="@id/toggle"
+        android:layout_below="@id/switch_compat"
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="10dp"/>
 
@@ -171,21 +185,16 @@
 
     </RelativeLayout>
 
-    <View
-        android:id="@+id/activity_divider"
-        android:layout_width="390dp"
-        android:layout_height="1dp"
-        android:background="@android:color/darker_gray"
-        android:layout_below="@id/filter_menu"
-        android:layout_centerHorizontal="true"/>
+
 
     <LinearLayout
         android:id="@+id/activity_list_titles"
         android:layout_width="390dp"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_below="@id/activity_divider"
+        android:layout_below="@id/filter_menu"
         android:layout_centerHorizontal="true"
+        android:layout_marginBottom="10dp"
         android:layout_marginTop="10dp">
 
         <TextView
@@ -216,6 +225,13 @@
             android:textColor="@color/black"/>
     </LinearLayout>
 
+    <View
+        android:id="@+id/activity_divider"
+        android:layout_width="390dp"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:layout_below="@id/activity_list_titles"
+        android:layout_centerHorizontal="true" />
     <ExpandableListView
         android:id="@+id/activity_domain_list"
         android:layout_width="390dp"
@@ -224,16 +240,17 @@
         android:dividerHeight="0dp"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
-        android:layout_below="@id/activity_list_titles"
+        android:layout_below="@id/activity_divider"
         android:layout_above="@id/load_more_button"
         android:layout_centerHorizontal="true"/>
 
     <Button
         android:id="@+id/load_more_button"
-        android:layout_width="100dp"
+        android:layout_width="125dp"
         android:layout_height="50dp"
         android:text="@string/load_more"
         android:textSize="10sp"
+        android:layout_marginBottom="10dp"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"/>
 

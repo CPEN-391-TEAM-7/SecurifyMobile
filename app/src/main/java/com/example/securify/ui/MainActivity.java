@@ -1,6 +1,7 @@
 package com.example.securify.ui;
 
 import android.content.Intent;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;

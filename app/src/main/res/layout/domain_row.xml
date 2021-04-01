@@ -16,6 +16,7 @@
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:textSize="17sp"
+        android:textColor="@color/black"
         android:paddingTop="10dp"
         android:paddingBottom="10dp"/>
     <Button

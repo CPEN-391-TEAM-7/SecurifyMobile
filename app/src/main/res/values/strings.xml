@@ -38,4 +38,5 @@
     <string name="daily_usage">Daily Usage</string>
     <string name="top_domains">Top Domains</string>
     <string name="count">Count</string>
+    <string name="security">Security</string>
 </resources>
