@@ -141,10 +141,12 @@
         <ListView
             android:id="@+id/top_domains_list"
             android:layout_width="300dp"
-            android:layout_height="300dp"
+            android:layout_height="wrap_content"
             android:layout_below="@id/top_domains_titles"
-            android:layout_centerHorizontal="true"
-            android:layout_marginBottom="30dp"/>
+            android:layout_gravity="top"
+            android:layout_marginBottom="30dp"
+            android:layout_centerHorizontal="true"/>
+
 
     </RelativeLayout>
 </ScrollView>

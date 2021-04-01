@@ -7,6 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.BaseAdapter;
+import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -96,6 +98,8 @@ public class StatisticsFragment extends Fragment {
     private boolean countAscending = false;
     private boolean listAscending = false;
 
+    private final int LIMIT = 20;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
         statisticsViewModel =
@@ -125,14 +129,18 @@ public class StatisticsFragment extends Fragment {
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, spinnerItems);
         topDomainsSpinner.setAdapter(spinnerAdapter);
 
+        statisticsListAdapter = new StatisticsListAdapter(topDomainsData,getContext());
+        ListView topDomainsList = root.findViewById(R.id.top_domains_list);
+        topDomainsList.setAdapter(statisticsListAdapter);
+
         topDomainsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 String selectedItem = parent.getItemAtPosition(position).toString();
-                // TODO: add volley requests
                 JSONObject getData = new JSONObject();
                 try {
                     getData.put(VolleySingleton.startDate, currentDateTime);
+                    getData.put(VolleySingleton.limit, 20);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -199,12 +207,11 @@ public class StatisticsFragment extends Fragment {
                                 TopDomainsInfo.getInstance().addDomain(domainName, topDomainsDataEntry);
                             }
 
-
                         } catch (JSONException jsonException) {
                             jsonException.printStackTrace();
                         }
 
-
+                        setListViewHeight(topDomainsList);
                     }
                 });
             }
@@ -229,9 +236,6 @@ public class StatisticsFragment extends Fragment {
         TopDomainsInfo.getInstance().addDomain("testName2", testData2);
         topDomainsData.add("testName1");
         topDomainsData.add("testName2");
-        statisticsListAdapter = new StatisticsListAdapter(topDomainsData,getContext());
-        ListView topDomainsList = root.findViewById(R.id.top_domains_list);
-        topDomainsList.setAdapter(statisticsListAdapter);
 
         TextView domainTitle = root.findViewById(R.id.domain_text);
         domainTitle.setOnClickListener(new View.OnClickListener() {
@@ -281,9 +285,37 @@ public class StatisticsFragment extends Fragment {
 //                textView.setText(s);
 //            }
 //        });
+
+        setListViewHeight(topDomainsList);
         return root;
     }
 
+    private void setListViewHeight (ListView listView) {
+        ListAdapter listAdapter = listView.getAdapter();
+        int numberOfItems = listAdapter.getCount();
+
+        // Get total height of all items.
+        int totalItemsHeight = 0;
+        for (int itemPos = 0; itemPos < numberOfItems; itemPos++) {
+            View item = listAdapter.getView(itemPos, null, listView);
+            float px = 500 * (listView.getResources().getDisplayMetrics().density);
+            item.measure(View.MeasureSpec.makeMeasureSpec((int) px, View.MeasureSpec.AT_MOST), View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED));
+            totalItemsHeight += item.getMeasuredHeight();
+        }
+
+        // Get total height of all item dividers.
+        int totalDividersHeight = listView.getDividerHeight() *
+                (numberOfItems - 1);
+        // Get padding
+        int totalPadding = listView.getPaddingTop() + listView.getPaddingBottom();
+
+        // Set list height.
+        ViewGroup.LayoutParams params = listView.getLayoutParams();
+        params.height = totalItemsHeight + totalDividersHeight + totalPadding;
+        listView.setLayoutParams(params);
+        listView.requestLayout();
+        //setDynamicHeight(listView);
+    }
     private void initData() {
 
         ArrayList<String> listTypes = new ArrayList<>();
