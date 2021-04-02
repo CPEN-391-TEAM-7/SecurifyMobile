@@ -316,6 +316,19 @@ public class ActivityFragment extends Fragment {
         });
 
 
+        /* Test Data */
+        HashMap<String, String> testInfo = new HashMap<>();
+        testInfo.put(DomainInfo.DOMAIN_NAME, "testDomainActivity");
+        testInfo.put(DomainInfo.REGISTRAR_DOMAIN_ID, "testDomainID");
+        testInfo.put(DomainInfo.REGISTRAR_NAME,  "testRegistrarName");
+        testInfo.put(DomainInfo.REGISTRAR_EXPIRY_DATE, "testRegistrarExpiryDate");
+        testInfo.put(DomainInfo.DOMAIN_TIMESTAMP, "testDomainTimeStamp");
+        testInfo.put(DomainInfo.DEVICE_IP, "testDeviceIP");
+        DomainInfo.getInstance().addDomain("testDomainActivity", testInfo);
+        domainList.add("testDomainActivity");
+        domainListAdapter.notifyDataSetChanged();
+        /* Test Data */
+
         return root;
     }
 
@@ -326,6 +339,7 @@ public class ActivityFragment extends Fragment {
             @Override
             public void onError(Object response) {
                 Log.e(TAG, response.toString());
+                Toast.makeText(getContext(), "Could not load anymore domains", Toast.LENGTH_LONG).show();
             }
 
             @Override
@@ -355,11 +369,14 @@ public class ActivityFragment extends Fragment {
                             info.put(DomainInfo.REGISTRAR_DOMAIN_ID, "");
                             info.put(DomainInfo.REGISTRAR_NAME, "");
                             info.put(DomainInfo.REGISTRAR_EXPIRY_DATE, "");
+                            info.put(DomainInfo.DEVICE_IP, "");
 
                             String timeStamp = domain.get(VolleySingleton.timestamp).toString();
                             timeStamp = String.valueOf(simpleDateFormat.parse(timeStamp));
 
                             info.put(DomainInfo.DOMAIN_TIMESTAMP, timeStamp);
+
+                            // TODO: get device ip from backend
 
                             domainInfo.addDomain(domainName, info);
 

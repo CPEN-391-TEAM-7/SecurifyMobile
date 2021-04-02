@@ -111,6 +111,26 @@
             android:paddingEnd="5dp"
             />
 
+        <TextView
+            android:id="@+id/activity_device_ip_address_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/device_ip_address"
+            android:textSize="12sp"
+            android:layout_below="@id/activity_registrar_expiration_date_text"
+            />
+
+        <TextView
+            android:id="@+id/activity_device_ip_address_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:layout_toEndOf="@id/activity_device_ip_address_title"
+            android:layout_alignParentEnd="true"
+            android:layout_below="@id/activity_registrar_expiration_date_text"
+            android:paddingStart="5dp"
+            android:paddingEnd="5dp"
+            />
 
     </RelativeLayout>
 

@@ -10,6 +10,7 @@ public class DomainInfo {
     public static final String REGISTRAR_NAME = "RegistrarName";
     public static final String REGISTRAR_EXPIRY_DATE = "RegistrarExpiryDate";
     public static final String DOMAIN_TIMESTAMP = "DomainTimeStamp";
+    public static final String DEVICE_IP = "DeviceIP";
 
     public static DomainInfo getInstance()
     {

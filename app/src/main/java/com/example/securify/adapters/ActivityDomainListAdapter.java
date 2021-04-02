@@ -45,7 +45,6 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
     private ArrayList<String> domainList;
     private ArrayList<String> mDomainFilterList;
     private HashMap<String, String> domainInfo;
-    private final int numRows = 500;
     public final String DOMAIN_NAME_FILTER = "Domain Name";
     public final String START_DATE_FILTER = "Start Date";
     public final String START_TIME_FILTER = "Start Time";
@@ -242,6 +241,8 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
             activityRegistrarNameText.setText(domainInfo.get(DomainInfo.REGISTRAR_NAME));
             TextView activityRegistrarExpirationDateText = convertView.findViewById(R.id.activity_registrar_expiration_date_text);
             activityRegistrarExpirationDateText.setText(domainInfo.get(DomainInfo.REGISTRAR_EXPIRY_DATE));
+            TextView activityDeviceIPText = convertView.findViewById(R.id.activity_device_ip_address_text);
+            activityDeviceIPText.setText(domainInfo.get(DomainInfo.DEVICE_IP));
 
         return convertView;
     }
