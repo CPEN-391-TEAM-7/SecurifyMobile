@@ -290,7 +290,6 @@ public class WhiteListFragment extends Fragment {
      */
     private void addListAdapter(String domainName) {
         if(!whiteList.contains(domainName)) whiteList.add(domainName);
-
         if (!DomainInfo.getInstance().contains(domainName)) {
             Thread t = new Thread(new Runnable() {
                 @Override

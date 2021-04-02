@@ -20,7 +20,7 @@ public class DomainMatcher {
     public static final String REGISTRAR_EXPIRY_DATE= "REGISTRAR_EXPIRY_DATE";
 
     public static String getMatch(String whoIsInfo, String match) {
-        String result = null;
+        String result = "";
 
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));

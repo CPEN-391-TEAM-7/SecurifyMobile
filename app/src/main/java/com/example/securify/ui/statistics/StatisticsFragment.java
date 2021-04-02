@@ -192,24 +192,18 @@ public class StatisticsFragment extends Fragment {
                             @Override
                             public void onResponse(Object response) {
                                 topDomainsData.clear();
-
                                 try {
                                     JSONObject jsonArray = new JSONObject(response.toString());
                                     Iterator iterator = jsonArray.keys();
                                     while(iterator.hasNext()) {
-
                                         HashMap<String, String> topDomainsDataEntry = new HashMap<>();
-
                                         String domainName = iterator.next().toString();
                                         topDomainsDataEntry.put(VolleySingleton.domainName, domainName);
-
                                         JSONObject jsonObject = new JSONObject(jsonArray.getString(domainName));
                                         topDomainsDataEntry.put(VolleySingleton.listType, jsonObject.getString(VolleySingleton.listType));
                                         topDomainsDataEntry.put(VolleySingleton.num_of_accesses, jsonObject.get(VolleySingleton.count).toString());
-
                                         TopDomainsInfo.getInstance().addDomain(domainName, topDomainsDataEntry);
                                     }
-
                                 } catch (JSONException jsonException) {
                                     jsonException.printStackTrace();
                                 }
@@ -217,7 +211,6 @@ public class StatisticsFragment extends Fragment {
                             }
                         });
             }
-
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
@@ -569,12 +562,17 @@ public class StatisticsFragment extends Fragment {
         try {
             domainRequest.put(VolleySingleton.startDate, currentDateTime.toString());
             domainRequest.put(VolleySingleton.endDate, currentDateTime.minusWeeks(1).toString());
-            VolleyRequest.addRequest(getContext(), VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY, User.getInstance().getUserID(), "", "", domainRequest, volleyResponseListener);
+            VolleyRequest.addRequest(getContext(),
+                    VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY,
+                    User.getInstance().getUserID(),
+                    "",
+                    "",
+                    domainRequest,
+                    volleyResponseListener);
         } catch (JSONException e) {
             Log.e(TAG, "Initialize Data Failed");
             e.printStackTrace();
         }
-
     }
 
     private void getMonthlyData() {
@@ -585,25 +583,30 @@ public class StatisticsFragment extends Fragment {
                 domainRequest.put(VolleySingleton.startDate, dayFormat.format(currentDateTime) + "T23:59:59.999Z");
                 domainRequest.put(VolleySingleton.endDate, dayFormat.format(currentDateTime) + "T00:00:00.000Z");
                 int finalI = i;
-                VolleyRequest.addRequest(getContext(), VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY, User.getInstance().getUserID(), "", "", domainRequest, new VolleyResponseListener() {
-                    @Override
-                    public void onError(Object response) {
-                        Log.e(TAG, response.toString());
-                    }
+                VolleyRequest.addRequest(getContext(),
+                        VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY,
+                        User.getInstance().getUserID(),
+                        "",
+                        "",
+                        domainRequest,
+                        new VolleyResponseListener() {
+                            @Override
+                            public void onError(Object response) {
+                                Log.e(TAG, response.toString());
+                            }
 
-                    @Override
-                    public void onResponse(Object response) {
-                        try {
-                            JSONObject jsonResponse = new JSONObject(response.toString());
-                            Float numAccesses = (Float) jsonResponse.get(VolleySingleton.count);
-                            lineChartData.put(currentDateTime.minusDays(finalI), numAccesses);
+                            @Override
+                            public void onResponse(Object response) {
+                                try {
+                                    JSONObject jsonResponse = new JSONObject(response.toString());
+                                    Float numAccesses = (Float) jsonResponse.get(VolleySingleton.count);
+                                    lineChartData.put(currentDateTime.minusDays(finalI), numAccesses);
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
 
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-
-                    }
-                });
+                            }
+                        });
             } catch (JSONException e) {
                 e.printStackTrace();
             }
