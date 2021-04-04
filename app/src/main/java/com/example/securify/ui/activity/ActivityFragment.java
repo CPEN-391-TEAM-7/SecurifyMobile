@@ -51,9 +51,14 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 
 public class ActivityFragment extends Fragment {
@@ -68,7 +73,7 @@ public class ActivityFragment extends Fragment {
     private boolean listAscending = false;
 
     private final String TAG = "ActivityFragment";
-    private LocalDateTime START_DATE;
+    private String START_DATE;
     private final int LIMIT = 20;
 
     private WhoisClient whoisClient;
@@ -76,6 +81,7 @@ public class ActivityFragment extends Fragment {
     private VolleyResponseListener volleyResponseListener;
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     String[] listSelectorItems = {"All Domains", "Blacklist Domains Only", "Whitelist Domains Only"};
 
@@ -88,7 +94,7 @@ public class ActivityFragment extends Fragment {
 
         outputStream = BluetoothStreams.getInstance().getOutputStream();
 
-        START_DATE = LocalDateTime.now();
+        START_DATE = Instant.now().plusSeconds(86400).toString();
         SwitchCompat switchCompat = root.findViewById(R.id.switch_compat);
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -316,7 +322,7 @@ public class ActivityFragment extends Fragment {
         });
 
 
-        /* Test Data */
+        /*
         HashMap<String, String> testInfo = new HashMap<>();
         testInfo.put(DomainInfo.DOMAIN_NAME, "testDomainActivity");
         testInfo.put(DomainInfo.REGISTRAR_DOMAIN_ID, "testDomainID");
@@ -327,15 +333,25 @@ public class ActivityFragment extends Fragment {
         DomainInfo.getInstance().addDomain("testDomainActivity", testInfo);
         domainList.add("testDomainActivity");
         domainListAdapter.notifyDataSetChanged();
-        /* Test Data */
+        */
 
         return root;
     }
 
     private void populateDomains() {
-        JSONObject domainRequest = new JSONObject();
+        JSONObject getRequest = new JSONObject();
 
-        volleyResponseListener = new VolleyResponseListener() {
+        try {
+            getRequest.put(VolleySingleton.startDate, START_DATE);
+            getRequest.put(VolleySingleton.limit, LIMIT);
+            Log.d(TAG, getRequest.toString());
+
+        } catch (JSONException e) {
+            Log.e(TAG, "Populate Domain Request Creation Failed");
+            e.printStackTrace();
+        }
+
+        VolleyRequest.addRequest(getContext(), VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY, User.getInstance().getUserID(), "", "", getRequest, new VolleyResponseListener() {
             @Override
             public void onError(Object response) {
                 Log.e(TAG, response.toString());
@@ -361,7 +377,7 @@ public class ActivityFragment extends Fragment {
                     for (int i = 0; i < domainList.length(); i++) {
 
                         domain = domainList.getJSONObject(i);
-                        String domainName = domain.get(VolleySingleton.domainName).toString();
+                        String domainName = domain.getString(VolleySingleton.domainName);
                         if (!DomainInfo.getInstance().contains(domainName)) {
                             HashMap<String, String> info = new HashMap<>();
 
@@ -371,12 +387,14 @@ public class ActivityFragment extends Fragment {
                             info.put(DomainInfo.REGISTRAR_EXPIRY_DATE, "");
                             info.put(DomainInfo.DEVICE_IP, "");
 
-                            String timeStamp = domain.get(VolleySingleton.timestamp).toString();
+                            String timeStamp = domain.getString(VolleySingleton.timestamp);
                             timeStamp = String.valueOf(simpleDateFormat.parse(timeStamp));
 
                             info.put(DomainInfo.DOMAIN_TIMESTAMP, timeStamp);
 
-                            // TODO: get device ip from backend
+                            String deviceIP = domain.getString(VolleySingleton.ipAddress);
+                            info.put(DomainInfo.DEVICE_IP, deviceIP);
+
 
                             domainInfo.addDomain(domainName, info);
 
@@ -433,9 +451,9 @@ public class ActivityFragment extends Fragment {
                                 }
                             });
                         }
-                        }
+                    }
 
-                START_DATE = (LocalDateTime) jsonObject.get(VolleySingleton.lastEndDate);
+                    START_DATE = jsonObject.getString(VolleySingleton.lastEndDate);
                 } catch (JSONException e) {
                     Log.e(TAG, "Error On Response from Populate Domain Request");
                     e.printStackTrace();
@@ -443,16 +461,7 @@ public class ActivityFragment extends Fragment {
                     e.printStackTrace();
                 }
             }
-        };
-
-        try {
-            domainRequest.put(VolleySingleton.startDate, START_DATE);
-            domainRequest.putOpt(VolleySingleton.limit, LIMIT);
-            VolleyRequest.addRequest(getContext(), VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY, User.getInstance().getUserID(), "", "", domainRequest, volleyResponseListener);
-        } catch (JSONException e) {
-            Log.e(TAG, "Populate Domain Request Creation Failed");
-            e.printStackTrace();
-        }
+        });
 
     }
 

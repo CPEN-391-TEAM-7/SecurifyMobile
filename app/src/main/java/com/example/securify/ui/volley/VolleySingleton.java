@@ -29,6 +29,7 @@ public class VolleySingleton {
     public static String Undefined = "Undefined";
     public static String domains = "domains";
     public static String userID = "userID";
+    public static String ipAddress = "ipAddress";
 
     private VolleySingleton(Context context) {
         ctx = context;

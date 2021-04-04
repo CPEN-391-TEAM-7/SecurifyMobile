@@ -214,8 +214,9 @@ public class StatisticsFragment extends Fragment {
             @Override
             public void onNothingSelected(AdapterView<?> parent) {}
         });
-        
-        /* Test Data */
+
+        /*
+
         HashMap<String, String> testData1 = new HashMap<>();
         testData1.put(VolleySingleton.domainName, "testName1");
         testData1.put(VolleySingleton.listType, VolleySingleton.Whitelist);
@@ -224,13 +225,14 @@ public class StatisticsFragment extends Fragment {
         testData2.put(VolleySingleton.domainName, "testName2");
         testData2.put(VolleySingleton.listType, VolleySingleton.Blacklist);
         testData2.put(VolleySingleton.num_of_accesses, String.valueOf(20));
-        /* Test Data */
+
 
         TopDomainsInfo.getInstance().addDomain("testName1", testData1);
         TopDomainsInfo.getInstance().addDomain("testName2", testData2);
         topDomainsData.add("testName1");
         topDomainsData.add("testName2");
 
+         */
         TextView domainTitle = root.findViewById(R.id.domain_text);
         domainTitle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -327,20 +329,24 @@ public class StatisticsFragment extends Fragment {
         days.add("SAT");
         days.add("SUN");
 
+        /*
         // Test Data
         int i  = 1;
         for (String type: listTypes) {
             pieChartData.put(type, 100 * i++);
         }
 
-        /*
+
+         */
+
         for (String type: listTypes) {
             pieChartData.put(type, 0 );
         }
-         */
+
 
         HashMap<String, Integer> init;
 
+        /*
         // Test Data
         for (String day: days) {
             barChartData.put(day, new HashMap<>());
@@ -350,7 +356,9 @@ public class StatisticsFragment extends Fragment {
                 init.put(type, 10 * j++);
             }
         }
-        /*
+
+         */
+
         for (String day: days) {
             barChartData.put(day, new HashMap<>());
             init = barChartData.get(day);
@@ -359,21 +367,22 @@ public class StatisticsFragment extends Fragment {
             }
         }
 
-         */
+
 
         LocalDateTime localDateTime = LocalDateTime.now();
 
+        /*
         // Test Data
         for (int j = 30; j >= 0; j--) {
             lineChartData.put(localDateTime.minusDays(j), (float) j);
             Log.i(TAG, localDateTime.minusDays(j).format(lineChartDayFormat));
         }
-
-        /*
-        for (int j = 30; j >= 0; j--) {
-            mLineChartData.put(localDateTime.minusDays(j).format(lineChartDayFormat), 0);
-        }
          */
+
+        for (int j = 30; j >= 0; j--) {
+            lineChartData.put(localDateTime.minusDays(j), (float) 0);
+        }
+
 
     }
 
