@@ -3,6 +3,7 @@ package com.example.securify.ui.volley;
 import android.content.Context;
 import android.util.Log;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -47,15 +48,15 @@ public class VolleyRequest {
         switch (request) {
             case GET_RECENT_DOMAIN_REQUEST_ACTIVITY:
                 url = baseAddress + recentDomainUrl + userID;
-                requestType = Request.Method.GET;
+                requestType = Request.Method.POST;
                 break;
             case GET_ALL_TIME_MOST_REQUESTED_DOMAINS:
                 url = baseAddress + mostRequestedAllTimeDomainUrl + userID;
-                requestType = Request.Method.GET;
+                requestType = Request.Method.POST;
                 break;
             case GET_BY_DATE_MOST_REQUESTED_DOMAINS:
                 url = baseAddress + mostRequestedBtwnDatesUrl + userID;
-                requestType = Request.Method.GET;
+                requestType = Request.Method.POST;
                 break;
             case GET_BLACKLIST:
                 url = baseAddress + blackListUrl + userID;
@@ -92,7 +93,7 @@ public class VolleyRequest {
      * @param requestType
      */
     private static void sendRequest(Context context, String url, JSONObject jsonObject, VolleyResponseListener listener, int requestType) {
-        Log.i(TAG, "Sending a request...");
+        Log.i(TAG, "SENDING REQUEST ====> \n" + "Sending a request to..." + url + "\n" + "With JSON: " + jsonObject.toString());
         JsonObjectRequest jsonObjectRequest = new JsonObjectRequest(requestType, url, jsonObject, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
@@ -105,5 +106,10 @@ public class VolleyRequest {
             }
         });
         VolleySingleton.getInstance(context).addToRequestQueue(jsonObjectRequest);
+
+        jsonObjectRequest.setRetryPolicy(new DefaultRetryPolicy(
+                6000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
     }
 }

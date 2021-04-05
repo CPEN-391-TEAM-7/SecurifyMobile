@@ -30,6 +30,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.Request;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.securify.bluetooth.BluetoothStreams;
 import com.example.securify.domain.DomainInfo;
 import com.example.securify.domain.DomainLists;
@@ -73,7 +77,7 @@ public class ActivityFragment extends Fragment {
     private boolean listAscending = false;
 
     private final String TAG = "ActivityFragment";
-    private String START_DATE;
+    private String START_DATE = "";
     private final int LIMIT = 20;
 
     private WhoisClient whoisClient;
@@ -94,7 +98,7 @@ public class ActivityFragment extends Fragment {
 
         outputStream = BluetoothStreams.getInstance().getOutputStream();
 
-        START_DATE = Instant.now().plusSeconds(86400).toString();
+        START_DATE = "2021-04-04T10:11:36.251Z";
         SwitchCompat switchCompat = root.findViewById(R.id.switch_compat);
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -339,8 +343,10 @@ public class ActivityFragment extends Fragment {
     }
 
     private void populateDomains() {
+
         JSONObject getRequest = new JSONObject();
 
+        Log.i(TAG, "getRequest body " +  getRequest.toString());
         try {
             getRequest.put(VolleySingleton.startDate, START_DATE);
             getRequest.put(VolleySingleton.limit, LIMIT);
@@ -351,25 +357,38 @@ public class ActivityFragment extends Fragment {
             e.printStackTrace();
         }
 
-        VolleyRequest.addRequest(getContext(), VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY, User.getInstance().getUserID(), "", "", getRequest, new VolleyResponseListener() {
+        Log.d(TAG, "HELLO before the volley request??");
+
+        VolleyRequest.addRequest(getContext(),
+                VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY,
+                User.getInstance().getUserID(),
+                "",
+                "",
+                getRequest,
+                new VolleyResponseListener() {
             @Override
             public void onError(Object response) {
-                Log.e(TAG, response.toString());
+                VolleyError error = (VolleyError) response;
+                Log.i(TAG, "What's the status code? => " + String.valueOf(error.networkResponse.statusCode));
+                Log.e(TAG, "Am I seeing error here? Error: " + response.toString());
                 Toast.makeText(getContext(), "Could not load anymore domains", Toast.LENGTH_LONG).show();
             }
 
             @Override
             public void onResponse(Object response) {
-                JSONObject jsonObject = null;
-                try {
-                    jsonObject = new JSONObject(response.toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
-                }
-                try {
+                Log.d(TAG, "Did I get a response?");
+                JSONObject jsonObject;
 
-                    JSONArray domainList =  jsonObject.getJSONArray(VolleySingleton.activities);
+//                try {
+//                    jsonObject = new JSONObject(response.toString());
+//                } catch (JSONException e) {
+//                    e.printStackTrace();
+//                }
+
+                try {
                     Log.i(TAG, response.toString());
+                    jsonObject = new JSONObject(response.toString()); // Moved this line to here
+                    JSONArray domainList =  jsonObject.getJSONArray(VolleySingleton.activities);
                     DomainInfo domainInfo = DomainInfo.getInstance();
                     DomainLists domainLists = DomainLists.getInstance();
                     JSONObject domain;
@@ -394,7 +413,6 @@ public class ActivityFragment extends Fragment {
 
                             String deviceIP = domain.getString(VolleySingleton.ipAddress);
                             info.put(DomainInfo.DEVICE_IP, deviceIP);
-
 
                             domainInfo.addDomain(domainName, info);
 
@@ -453,7 +471,7 @@ public class ActivityFragment extends Fragment {
                         }
                     }
 
-                    START_DATE = jsonObject.getString(VolleySingleton.lastEndDate);
+//                    START_DATE = jsonObject.getString(VolleySingleton.lastEndDate);
                 } catch (JSONException e) {
                     Log.e(TAG, "Error On Response from Populate Domain Request");
                     e.printStackTrace();
