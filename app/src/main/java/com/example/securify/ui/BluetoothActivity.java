@@ -282,28 +282,6 @@ public class BluetoothActivity extends AppCompatActivity {
     }
 
 
-    public String ReadFromBTDevice() {
-        byte c;
-        String s = "";
-
-        try {
-            for (int i = 0; i < 200; i++) {
-                SystemClock.sleep(10);
-                if (mmInStream.available() > 0) {
-                    if ((c = (byte) mmInStream.read()) != '\r') {
-                        s += (char) c;
-                    } else {
-                        return s;
-                    }
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return "--No Response--";
-    }
-
     private void setUpBluetooth() {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 

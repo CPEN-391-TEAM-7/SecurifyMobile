@@ -15,15 +15,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 
+import com.example.securify.comparators.ActivityListComparator;
 import com.example.securify.domain.DomainInfo;
 import com.example.securify.domain.DomainLists;
 import com.example.securify.R;
-import com.example.securify.comparators.ActivityAscendingDomainNameComparator;
-import com.example.securify.comparators.ActivityAscendingListComparator;
-import com.example.securify.comparators.ActivityAscendingTimeStampComparator;
-import com.example.securify.comparators.ActivityDescendingDomainNameComparator;
-import com.example.securify.comparators.ActivityDescendingListComparator;
-import com.example.securify.comparators.ActivityDescendingTimeStampComparator;
+import com.example.securify.comparators.AscendingDomainNameComparator;
+import com.example.securify.comparators.AscendingTimeStampComparator;
+import com.example.securify.comparators.DescendingDomainNameComparator;
+import com.example.securify.comparators.DescendingTimeStampComparator;
 import com.example.securify.domain.DomainMatcher;
 import com.example.securify.model.User;
 import com.example.securify.ui.volley.VolleyRequest;
@@ -61,10 +60,27 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
 
     private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
 
+    public static HashMap<String, Integer> prioritiesWhiteList = new HashMap<>();
+    public static HashMap<String, Integer> prioritiesBlackList = new HashMap<>();
+    public static HashMap<String, Integer> prioritiesUndefined = new HashMap<>();
+
     public ActivityDomainListAdapter(Context _context, ArrayList<String> dList) {
         context = _context;
         domainList = dList;
         getFilter();
+
+        prioritiesWhiteList.put(VolleySingleton.Undefined, 3);
+        prioritiesWhiteList.put(VolleySingleton.Blacklist, 2);
+        prioritiesWhiteList.put(VolleySingleton.Whitelist, 1);
+
+        prioritiesBlackList.put(VolleySingleton.Undefined, 3);
+        prioritiesBlackList.put(VolleySingleton.Whitelist, 2);
+        prioritiesBlackList.put(VolleySingleton.Blacklist, 1);
+
+        prioritiesUndefined.put(VolleySingleton.Blacklist, 3);
+        prioritiesUndefined.put(VolleySingleton.Whitelist, 2);
+        prioritiesUndefined.put(VolleySingleton.Undefined, 1);
+
     }
 
     @Override
@@ -313,35 +329,30 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
     }
 
     public void sortDomainNameAscending() {
-        Collections.sort(domainList, new ActivityAscendingDomainNameComparator());
+        Collections.sort(domainList, new AscendingDomainNameComparator());
         notifyDataSetChanged();
     }
 
     public void sortDomainNameDescending() {
-        Collections.sort(domainList, new ActivityDescendingDomainNameComparator());
+        Collections.sort(domainList, new DescendingDomainNameComparator());
         notifyDataSetChanged();
     }
 
     public void sortTimeStampAscending() {
-        Collections.sort(domainList, new ActivityAscendingTimeStampComparator());
+        Collections.sort(domainList, new AscendingTimeStampComparator());
         notifyDataSetChanged();
     }
 
     public void sortTimeStampDescending() {
-        Collections.sort(domainList, new ActivityDescendingTimeStampComparator());
+        Collections.sort(domainList, new DescendingTimeStampComparator());
         notifyDataSetChanged();
     }
 
-    public void sortListAscending() {
-        Collections.sort(domainList, new ActivityAscendingListComparator());
+
+    public void sortList(int listPriority) {
+        Collections.sort(domainList, new ActivityListComparator(listPriority));
         notifyDataSetChanged();
     }
-
-    public void sortListDescending() {
-        Collections.sort(domainList, new ActivityDescendingListComparator());
-        notifyDataSetChanged();
-    }
-
 
     @Override
     public Filter getFilter() {
@@ -458,12 +469,6 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
                     Log.e(TAG, domain + "'s timestamp is null");
                     continue;
                 }
-
-                /*
-                Log.e(TAG, "startDateTime:" + startDateTime);
-                Log.e(TAG, "endDateTime:" + endDateTime);
-                Log.e(TAG, "timeStamp:" + timeStamp);
-                 */
 
                 if (startDateTime != null) {
 

@@ -17,7 +17,9 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.securify.R;
+import com.example.securify.comparators.StatisticsListComparator;
 import com.example.securify.adapters.StatisticsListAdapter;
+import com.example.securify.comparators.ActivityListComparator;
 import com.example.securify.domain.TopDomainsInfo;
 import com.example.securify.model.User;
 import com.example.securify.ui.volley.VolleyRequest;
@@ -87,12 +89,14 @@ public class StatisticsFragment extends Fragment {
     private final DateTimeFormatter lineChartDayFormat = DateTimeFormatter.ofPattern("MMM dd");
 
     private LocalDateTime currentDateTime;
+    private final String END_DATE = "0000-01-01T00:00:00.000";
 
     private boolean domainNameAscending = false;
     private boolean countAscending = false;
-    private boolean listAscending = false;
 
     private final int LIMIT = 20;
+
+    private int listPriority = StatisticsListComparator.priorityWhiteList;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -106,7 +110,7 @@ public class StatisticsFragment extends Fragment {
         lineChart = root.findViewById(R.id.lineChart_view);
 
         description.setText("");
-        currentDateTime = LocalDateTime.now().plusDays(1);
+        currentDateTime = LocalDateTime.now();
 
         initColors();
         initData();
@@ -127,8 +131,8 @@ public class StatisticsFragment extends Fragment {
                 String selectedItem = parent.getItemAtPosition(position).toString();
                 JSONObject getData = new JSONObject();
                 try {
-                    getData.put(VolleySingleton.startDate, currentDateTime.plusDays(1));
-                    getData.put(VolleySingleton.limit, 20);
+                    getData.put(VolleySingleton.startDate, currentDateTime);
+                    getData.put(VolleySingleton.limit, LIMIT);
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -162,6 +166,11 @@ public class StatisticsFragment extends Fragment {
                         }
                         break;
                     case "All Time":
+                        try {
+                            getData.put(VolleySingleton.endDate, END_DATE);
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
                         break;
                 }
 
@@ -175,26 +184,36 @@ public class StatisticsFragment extends Fragment {
                             @Override
                             public void onError(Object response) {
                                 Log.e(TAG, response.toString());
+                                topDomainsData.clear();
+                                statisticsListAdapter.notifyDataSetChanged();
                             }
 
                             @Override
                             public void onResponse(Object response) {
                                 topDomainsData.clear();
+
                                 try {
                                     JSONObject jsonObject = new JSONObject(response.toString());
                                     Log.d(TAG, jsonObject.toString());
-                                    /*
+                                    JSONArray jsonArray = jsonObject.getJSONArray("mostRequested");
                                     for (int i = 0; i < jsonArray.length(); i++) {
                                         HashMap<String, String> topDomainsDataEntry = new HashMap<>();
                                         JSONObject jsonDomain = jsonArray.getJSONObject(i);
-                                        String domainName = jsonDomain.keys().next();
-                                        topDomainsDataEntry.put(VolleySingleton.domainName, domainName);
-                                        topDomainsDataEntry.put(VolleySingleton.listType, jsonDomain.getString(VolleySingleton.listType));
-                                        topDomainsDataEntry.put(VolleySingleton.num_of_accesses, jsonDomain.get(VolleySingleton.count).toString());
-                                        TopDomainsInfo.getInstance().addDomain(domainName, topDomainsDataEntry);
+                                        String domainName = jsonDomain.getString(VolleySingleton.domainName);
+
+                                        if (!TopDomainsInfo.getInstance().contains(domainName)) {
+                                            topDomainsDataEntry.put(VolleySingleton.domainName, domainName);
+                                            topDomainsDataEntry.put(VolleySingleton.listType, jsonDomain.getString(VolleySingleton.listType));
+                                            topDomainsDataEntry.put(VolleySingleton.num_of_accesses, jsonDomain.get(VolleySingleton.count).toString());
+                                            TopDomainsInfo.getInstance().addDomain(domainName, topDomainsDataEntry);
+                                        }
+
+                                        topDomainsData.add(domainName);
                                     }
 
-                                     */
+                                    statisticsListAdapter.notifyDataSetChanged();
+
+
                                 } catch (JSONException jsonException) {
                                     jsonException.printStackTrace();
                                 }
@@ -206,24 +225,7 @@ public class StatisticsFragment extends Fragment {
             public void onNothingSelected(AdapterView<?> parent) {}
         });
 
-        /*
 
-        HashMap<String, String> testData1 = new HashMap<>();
-        testData1.put(VolleySingleton.domainName, "testName1");
-        testData1.put(VolleySingleton.listType, VolleySingleton.Whitelist);
-        testData1.put(VolleySingleton.num_of_accesses, String.valueOf(10));
-        HashMap<String, String> testData2 = new HashMap<>();
-        testData2.put(VolleySingleton.domainName, "testName2");
-        testData2.put(VolleySingleton.listType, VolleySingleton.Blacklist);
-        testData2.put(VolleySingleton.num_of_accesses, String.valueOf(20));
-
-
-        TopDomainsInfo.getInstance().addDomain("testName1", testData1);
-        TopDomainsInfo.getInstance().addDomain("testName2", testData2);
-        topDomainsData.add("testName1");
-        topDomainsData.add("testName2");
-
-         */
         TextView domainTitle = root.findViewById(R.id.domain_text);
         domainTitle.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -257,12 +259,19 @@ public class StatisticsFragment extends Fragment {
         listTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listAscending) {
-                    listAscending = false;
-                    statisticsListAdapter.sortListDescending();
-                } else {
-                    listAscending = true;
-                    statisticsListAdapter.sortListAscending();
+                switch (listPriority) {
+                    case StatisticsListComparator.priorityWhiteList:
+                        statisticsListAdapter.sortList(listPriority);
+                        listPriority = StatisticsListComparator.priorityBlackList;
+                        break;
+                    case StatisticsListComparator.priorityBlackList:
+                        statisticsListAdapter.sortList(listPriority);
+                        listPriority = StatisticsListComparator.priorityUndefined;
+                        break;
+                    case StatisticsListComparator.priorityUndefined:
+                        statisticsListAdapter.sortList(listPriority);
+                        listPriority = StatisticsListComparator.priorityWhiteList;
+                        break;
                 }
             }
         });
@@ -296,8 +305,9 @@ public class StatisticsFragment extends Fragment {
         params.height = totalItemsHeight + totalDividersHeight + totalPadding;
         listView.setLayoutParams(params);
         listView.requestLayout();
-        //setDynamicHeight(listView);
+
     }
+
     private void initData() {
 
         ArrayList<String> listTypes = new ArrayList<>();
@@ -329,10 +339,8 @@ public class StatisticsFragment extends Fragment {
             }
         }
 
-        LocalDateTime localDateTime = LocalDateTime.now();
-
         for (int j = 30; j >= 0; j--) {
-            lineChartData.put(localDateTime.minusDays(j), (float) 0);
+            lineChartData.put(currentDateTime.minusDays(j), (float) 0);
         }
 
     }
@@ -562,13 +570,13 @@ public class StatisticsFragment extends Fragment {
                                     lineChartData.put(dateTime, numAccesses);
                                     showLineChart();
                                 } catch (JSONException e) {
-                                   // e.printStackTrace();
+                                    e.printStackTrace();
                                 }
 
                             }
                         });
             } catch (JSONException e) {
-                //e.printStackTrace();
+                e.printStackTrace();
             }
 
         }

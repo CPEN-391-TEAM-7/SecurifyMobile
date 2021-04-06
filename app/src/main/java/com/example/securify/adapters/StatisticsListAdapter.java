@@ -9,18 +9,16 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.example.securify.R;
-import com.example.securify.comparators.ActivityAscendingDomainNameComparator;
-import com.example.securify.comparators.ActivityDescendingDomainNameComparator;
-import com.example.securify.comparators.StatisticsAscendingCountComparator;
-import com.example.securify.comparators.StatisticsAscendingListComparator;
-import com.example.securify.comparators.StatisticsDescendingCountComparator;
-import com.example.securify.comparators.StatisticsDescendingListComparator;
+import com.example.securify.comparators.AscendingDomainNameComparator;
+import com.example.securify.comparators.DescendingDomainNameComparator;
+import com.example.securify.comparators.AscendingCountComparator;
+import com.example.securify.comparators.DescendingCountComparator;
+import com.example.securify.comparators.StatisticsListComparator;
 import com.example.securify.domain.TopDomainsInfo;
 import com.example.securify.ui.volley.VolleySingleton;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 
 public class StatisticsListAdapter extends BaseAdapter {
 
@@ -66,7 +64,8 @@ public class StatisticsListAdapter extends BaseAdapter {
         if (TopDomainsInfo.getInstance().getInfo(domainString).get(VolleySingleton.listType).equals(VolleySingleton.Blacklist)) {
             domainList.setImageResource(R.drawable.ic_blacklist_icon);
             domainList.setColorFilter(context.getColor(R.color.main7));
-        } else {
+        }
+        if (TopDomainsInfo.getInstance().getInfo(domainString).get(VolleySingleton.listType).equals(VolleySingleton.Whitelist)) {
             domainList.setImageResource(R.drawable.ic_whitelist_icon);
             domainList.setColorFilter(context.getColor(R.color.main3));
         }
@@ -75,34 +74,28 @@ public class StatisticsListAdapter extends BaseAdapter {
     }
 
     public void sortDomainNameAscending() {
-        Collections.sort(domainList, new ActivityAscendingDomainNameComparator());
+        Collections.sort(domainList, new AscendingDomainNameComparator());
         notifyDataSetChanged();
     }
 
     public void sortDomainNameDescending() {
-        Collections.sort(domainList, new ActivityDescendingDomainNameComparator());
+        Collections.sort(domainList, new DescendingDomainNameComparator());
         notifyDataSetChanged();
     }
 
     public void sortCountAscending() {
-        Collections.sort(domainList, new StatisticsAscendingCountComparator());
+        Collections.sort(domainList, new AscendingCountComparator());
         notifyDataSetChanged();
     }
 
     public void sortCountDescending() {
-        Collections.sort(domainList, new StatisticsDescendingCountComparator());
-        notifyDataSetChanged();
-    }
-
-    public void sortListAscending() {
-        Collections.sort(domainList, new StatisticsAscendingListComparator());
-        notifyDataSetChanged();
-    }
-
-    public void sortListDescending() {
-        Collections.sort(domainList, new StatisticsDescendingListComparator());
+        Collections.sort(domainList, new DescendingCountComparator());
         notifyDataSetChanged();
     }
 
 
+    public void sortList(int listPriority) {
+        Collections.sort(domainList, new StatisticsListComparator(listPriority));
+        notifyDataSetChanged();
+    }
 }

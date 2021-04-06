@@ -35,6 +35,7 @@ import com.android.volley.Request;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.securify.bluetooth.BluetoothStreams;
+import com.example.securify.comparators.ActivityListComparator;
 import com.example.securify.domain.DomainInfo;
 import com.example.securify.domain.DomainLists;
 import com.example.securify.R;
@@ -85,7 +86,9 @@ public class ActivityFragment extends Fragment {
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
     private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
-    String[] listSelectorItems = {"All Domains", "Blacklist Domains Only", "Whitelist Domains Only"};
+    private final String[] listSelectorItems = {"All Domains", "Blacklist Domains Only", "Whitelist Domains Only"};
+
+    private int listPriority = ActivityListComparator.priorityWhiteList;
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -96,21 +99,19 @@ public class ActivityFragment extends Fragment {
 
         outputStream = BluetoothStreams.getInstance().getOutputStream();
 
-        START_DATE = Instant.now().plusSeconds(86400).toString();
+        START_DATE = Instant.now().toString();
         SwitchCompat switchCompat = root.findViewById(R.id.switch_compat);
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
+                
             /*
                 if (isChecked) {
                     WritetoBTDevice("1");
                 } else {
                     WritetoBTDevice("0");
                 }
-                
-             */
-
+            */
                 Toast.makeText(getContext(), "Not connected to bluetooth device", Toast.LENGTH_LONG).show();
             }
         });
@@ -168,12 +169,19 @@ public class ActivityFragment extends Fragment {
         listTitle.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if (listAscending) {
-                    listAscending = false;
-                    domainListAdapter.sortListDescending();
-                } else {
-                    listAscending = true;
-                    domainListAdapter.sortListAscending();
+                switch (listPriority) {
+                    case ActivityListComparator.priorityWhiteList:
+                        domainListAdapter.sortList(listPriority);
+                        listPriority = ActivityListComparator.priorityBlackList;
+                        break;
+                    case ActivityListComparator.priorityBlackList:
+                        domainListAdapter.sortList(listPriority);
+                        listPriority = ActivityListComparator.priorityUndefined;
+                        break;
+                    case ActivityListComparator.priorityUndefined:
+                        domainListAdapter.sortList(listPriority);
+                        listPriority = ActivityListComparator.priorityWhiteList;
+                        break;
                 }
             }
         });
@@ -377,6 +385,9 @@ public class ActivityFragment extends Fragment {
 
                                 if (!DomainInfo.getInstance().contains(domainName)) {
                                     info = new HashMap<>();
+                                    info.put(DomainInfo.REGISTRAR_DOMAIN_ID, "");
+                                    info.put(DomainInfo.REGISTRAR_NAME, "");
+                                    info.put(DomainInfo.REGISTRAR_EXPIRY_DATE, "");
                                 } else {
                                     info = DomainInfo.getInstance().getInfo(domainName);
                                 }
