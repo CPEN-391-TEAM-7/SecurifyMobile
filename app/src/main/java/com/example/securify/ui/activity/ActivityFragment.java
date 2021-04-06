@@ -391,6 +391,14 @@ public class ActivityFragment extends Fragment {
 
                                     domainInfo.addDomain(domainName, info);
 
+                                    if (activity.get(VolleySingleton.listType).equals(VolleySingleton.Blacklist)) {
+                                        DomainLists.getInstance().addToBlackList(domainName);
+                                    }
+
+                                    if (activity.get(VolleySingleton.listType).equals(VolleySingleton.Whitelist)) {
+                                        DomainLists.getInstance().addToWhiteList(domainName);
+                                    }
+
                                 }
                                 domainListAdapter.notifyDataSetChanged();
                             }

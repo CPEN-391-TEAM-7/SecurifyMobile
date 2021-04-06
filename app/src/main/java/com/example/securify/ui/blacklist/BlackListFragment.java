@@ -36,6 +36,7 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class BlackListFragment extends Fragment {
@@ -77,6 +78,7 @@ public class BlackListFragment extends Fragment {
 
         clearList();
         fetchBlacklist();
+
 
         Button addBlackListDomain = root.findViewById(R.id.add_blacklist_domain_button);
         addBlackListDomain.setOnClickListener(new View.OnClickListener() {
@@ -148,10 +150,12 @@ public class BlackListFragment extends Fragment {
                         e.printStackTrace();
                     }
                 }
-
+                
                 addBlackList.getText().clear();
                 if (validDomain) {
                     addBlacklist(domain_to_add);
+                    Collections.sort(blackList);
+                    blackListArrayAdapter.notifyDataSetChanged();
                 } else {
                     Toast.makeText(getContext(), "Invalid Domain", Toast.LENGTH_LONG).show();
                     validDomain = true;
@@ -205,6 +209,9 @@ public class BlackListFragment extends Fragment {
                             } else {
                                 Log.e(TAG, "HTTP REQUEST return Failed...: " + json.getString("msg"));
                             }
+
+                            Collections.sort(blackList);
+                            blackListArrayAdapter.notifyDataSetChanged();
                         } catch (JSONException e){
                             e.printStackTrace();
                             Log.e(TAG, e.toString());

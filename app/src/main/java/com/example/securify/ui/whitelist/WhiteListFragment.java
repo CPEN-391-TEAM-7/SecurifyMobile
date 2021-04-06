@@ -28,9 +28,9 @@ import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 
 import org.apache.commons.net.whois.WhoisClient;
@@ -154,6 +154,8 @@ public class WhiteListFragment extends Fragment {
 
                 if (validDomain) {
                     addWhiteList(whitelist);
+                    Collections.sort(whiteList);
+                    whiteListArrayAdapter.notifyDataSetChanged();
                 } else {
                     Toast.makeText(getContext(), "Invalid Domain", Toast.LENGTH_LONG).show();
                     validDomain = true;
@@ -208,6 +210,9 @@ public class WhiteListFragment extends Fragment {
                             } else {
                                 Log.e(TAG, "HTTP REQUEST return Failed...: " + json.getString("msg"));
                             }
+                            
+                            Collections.sort(whiteList);
+                            whiteListArrayAdapter.notifyDataSetChanged();
                         } catch (JSONException e){
                             e.printStackTrace();
                             Log.e(TAG, e.toString());

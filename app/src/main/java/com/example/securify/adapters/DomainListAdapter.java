@@ -220,7 +220,7 @@ public class DomainListAdapter extends BaseExpandableListAdapter {
                         Log.i(TAG,  result.toString());
                         String whoIsInfo = result.toString();
 
-                        HashMap<String, String> domainInfo = new HashMap<>();
+                        HashMap<String, String> domainInfo = DomainInfo.getInstance().getInfo(domainName);
                         domainInfo.put(DomainInfo.DOMAIN_NAME, domainName);
 
                         String domainID = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_DOMAIN_ID).trim();
