@@ -210,7 +210,7 @@ public class WhiteListFragment extends Fragment {
                             } else {
                                 Log.e(TAG, "HTTP REQUEST return Failed...: " + json.getString("msg"));
                             }
-                            
+
                             Collections.sort(whiteList);
                             whiteListArrayAdapter.notifyDataSetChanged();
                         } catch (JSONException e){

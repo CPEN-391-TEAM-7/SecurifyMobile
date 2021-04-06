@@ -372,34 +372,35 @@ public class ActivityFragment extends Fragment {
                                 activity = activities.getJSONObject(i);
                                 String domainName = activity.getString("domainName");
                                 if(!domainList.contains(domainName)) domainList.add(domainName);
+
+                                HashMap<String, String> info;
+
                                 if (!DomainInfo.getInstance().contains(domainName)) {
-                                    HashMap<String, String> info = new HashMap<>();
-
-                                    info.put(DomainInfo.DOMAIN_NAME, domainName);
-                                    info.put(DomainInfo.REGISTRAR_DOMAIN_ID, "");
-                                    info.put(DomainInfo.REGISTRAR_NAME, "");
-                                    info.put(DomainInfo.REGISTRAR_EXPIRY_DATE, "");
-                                    info.put(DomainInfo.DEVICE_IP, "");
-
-                                    String timeStamp = activity.getString(VolleySingleton.timestamp);
-                                    timeStamp = String.valueOf(simpleDateFormat.parse(timeStamp));
-
-                                    info.put(DomainInfo.DOMAIN_TIMESTAMP, timeStamp);
-
-                                    String deviceIP = activity.getString(VolleySingleton.ipAddress);
-                                    info.put(DomainInfo.DEVICE_IP, deviceIP);
-
-                                    domainInfo.addDomain(domainName, info);
-
-                                    if (activity.get(VolleySingleton.listType).equals(VolleySingleton.Blacklist)) {
-                                        DomainLists.getInstance().addToBlackList(domainName);
-                                    }
-
-                                    if (activity.get(VolleySingleton.listType).equals(VolleySingleton.Whitelist)) {
-                                        DomainLists.getInstance().addToWhiteList(domainName);
-                                    }
-
+                                    info = new HashMap<>();
+                                } else {
+                                    info = DomainInfo.getInstance().getInfo(domainName);
                                 }
+
+                                info.put(DomainInfo.DOMAIN_NAME, domainName);
+                                info.put(DomainInfo.DEVICE_IP, "");
+
+                                String timeStamp = activity.getString(VolleySingleton.timestamp);
+                                timeStamp = String.valueOf(simpleDateFormat.parse(timeStamp));
+
+                                info.put(DomainInfo.DOMAIN_TIMESTAMP, timeStamp);
+                                String deviceIP = activity.getString(VolleySingleton.ipAddress);
+                                info.put(DomainInfo.DEVICE_IP, deviceIP);
+
+                                domainInfo.addDomain(domainName, info);
+
+                                if (activity.get(VolleySingleton.listType).equals(VolleySingleton.Blacklist)) {
+                                    DomainLists.getInstance().addToBlackList(domainName);
+                                }
+
+                                if (activity.get(VolleySingleton.listType).equals(VolleySingleton.Whitelist)) {
+                                    DomainLists.getInstance().addToWhiteList(domainName);
+                                }
+
                                 domainListAdapter.notifyDataSetChanged();
                             }
                             START_DATE = jsonObject.getString(VolleySingleton.lastEndDate);
