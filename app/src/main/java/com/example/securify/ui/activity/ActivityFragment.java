@@ -21,7 +21,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
-import android.widget.ToggleButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -30,24 +29,19 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.Request;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.example.securify.bluetooth.BluetoothStreams;
+import com.example.securify.bluetooth.BluetoothOutputStream;
 import com.example.securify.comparators.ActivityListComparator;
 import com.example.securify.domain.DomainInfo;
 import com.example.securify.domain.DomainLists;
 import com.example.securify.R;
 import com.example.securify.adapters.ActivityDomainListAdapter;
-import com.example.securify.domain.DomainMatcher;
 import com.example.securify.model.User;
 import com.example.securify.ui.BluetoothActivity;
 import com.example.securify.ui.volley.VolleyRequest;
 import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
 
-import org.apache.commons.net.whois.WhoisClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -57,34 +51,24 @@ import java.io.OutputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 
 public class ActivityFragment extends Fragment {
 
-    // TODO: prevent dialogs from appearing twice
     private ActivityViewModel activityViewModel;
     private OutputStream outputStream;
     private ArrayList<String> domainList = new ArrayList<>();
     private ActivityDomainListAdapter domainListAdapter;
     private boolean domainNameAscending = false;
     private boolean timeStampAscending = false;
-    private boolean listAscending = false;
 
     private final String TAG = "ActivityFragment";
     private String START_DATE = "";
     private final int LIMIT = 20;
 
-    private VolleyResponseListener volleyResponseListener;
-
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-    private final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
     private final String[] listSelectorItems = {"All Domains", "Blacklist Domains Only", "Whitelist Domains Only"};
 
@@ -97,24 +81,22 @@ public class ActivityFragment extends Fragment {
         View root = inflater.inflate(R.layout.fragment_activity, container, false);
         final TextView textView = root.findViewById(R.id.text_activity);
 
-        outputStream = BluetoothStreams.getInstance().getOutputStream();
+        outputStream = BluetoothOutputStream.getInstance().getOutputStream();
 
         START_DATE = Instant.now().toString();
         SwitchCompat switchCompat = root.findViewById(R.id.switch_compat);
         switchCompat.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                
-            /*
+
                 if (isChecked) {
                     WritetoBTDevice("1");
                 } else {
                     WritetoBTDevice("0");
                 }
-            */
-                Toast.makeText(getContext(), "Not connected to bluetooth device", Toast.LENGTH_LONG).show();
             }
         });
+
         activityViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
             @Override
             public void onChanged(@Nullable String s) {
@@ -334,6 +316,9 @@ public class ActivityFragment extends Fragment {
         return root;
     }
 
+    /**
+     * Populate activity domain list
+     */
     private void populateDomains() {
 
         JSONObject getRequest = new JSONObject();
@@ -351,10 +336,10 @@ public class ActivityFragment extends Fragment {
 
         Log.d(TAG, "HELLO before the volley request??");
 
+        // Set up backend request
         VolleyRequest.addRequest(getContext(),
                 VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY,
                 User.getInstance().getUserID(),
-                "",
                 "",
                 getRequest,
                 new VolleyResponseListener() {
@@ -427,6 +412,10 @@ public class ActivityFragment extends Fragment {
 
     }
 
+    /**
+     * Writes a string message to connected bluetooth device
+     * @param message string message to be written to bluetooth device
+     */
     public void WritetoBTDevice(String message) {
         String s = "\r\n";
 

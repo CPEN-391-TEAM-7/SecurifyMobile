@@ -19,7 +19,6 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.securify.R;
 import com.example.securify.comparators.StatisticsListComparator;
 import com.example.securify.adapters.StatisticsListAdapter;
-import com.example.securify.comparators.ActivityListComparator;
 import com.example.securify.domain.TopDomainsInfo;
 import com.example.securify.model.User;
 import com.example.securify.ui.volley.VolleyRequest;
@@ -83,7 +82,7 @@ public class StatisticsFragment extends Fragment {
     private HashMap<String, Integer> pieChartData =  new HashMap<>();
     private HashMap<String, HashMap<String, Integer>> barChartData = new HashMap<>();
     private Map<LocalDateTime, Float> lineChartData = new TreeMap<>();
-    private ArrayList<String> days = new ArrayList<String>();
+    private ArrayList<String> days = new ArrayList<>();
 
     private final DateTimeFormatter dayFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd");
     private final DateTimeFormatter lineChartDayFormat = DateTimeFormatter.ofPattern("MMM dd");
@@ -103,7 +102,6 @@ public class StatisticsFragment extends Fragment {
         statisticsViewModel =
                 new ViewModelProvider(this).get(StatisticsViewModel.class);
         View root = inflater.inflate(R.layout.fragment_statistics, container, false);
-        //final TextView textView = root.findViewById(R.id.text_statistics);
 
         pieChart = root.findViewById(R.id.pieChart_view);
         barChart = root.findViewById(R.id.barChart_view);
@@ -112,6 +110,7 @@ public class StatisticsFragment extends Fragment {
         description.setText("");
         currentDateTime = LocalDateTime.now();
 
+        // Displays domain data
         initColors();
         initData();
         getWeeklyData();
@@ -125,6 +124,7 @@ public class StatisticsFragment extends Fragment {
         ListView topDomainsList = root.findViewById(R.id.top_domains_list);
         topDomainsList.setAdapter(statisticsListAdapter);
 
+        // Set up backend request for top domains
         topDomainsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -177,7 +177,7 @@ public class StatisticsFragment extends Fragment {
                 VolleyRequest.addRequest(getContext(),
                         VolleyRequest.GET_BY_DATE_MOST_REQUESTED_DOMAINS,
                         User.getInstance().getUserID(),
-                        "", "",
+                        "",
                         getData,
                         new VolleyResponseListener() {
 
@@ -281,6 +281,11 @@ public class StatisticsFragment extends Fragment {
         return root;
     }
 
+    /**
+     *
+     * Adjusts height of list view, adapted from https://stackoverflow.com/a/48027821
+     * @param listView
+     */
     private void setListViewHeight (ListView listView) {
         ListAdapter listAdapter = listView.getAdapter();
         int numberOfItems = listAdapter.getCount();
@@ -308,8 +313,12 @@ public class StatisticsFragment extends Fragment {
 
     }
 
+    /**
+     *  Initializes data associated with the displayed charts
+     */
     private void initData() {
 
+        // defines viable list types
         ArrayList<String> listTypes = new ArrayList<>();
         listTypes.add(VolleySingleton.Whitelist);
         listTypes.add(VolleySingleton.Blacklist);
@@ -325,12 +334,14 @@ public class StatisticsFragment extends Fragment {
         days.add("SAT");
         days.add("SUN");
 
+        // initializes pie chart
         for (String type: listTypes) {
             pieChartData.put(type, 0);
         }
 
         HashMap<String, Integer> init;
 
+        // initializes bar chart
         for (String day: days) {
             barChartData.put(day, new HashMap<>());
             init = barChartData.get(day);
@@ -339,13 +350,89 @@ public class StatisticsFragment extends Fragment {
             }
         }
 
+        // initializes line chart
         for (int j = 30; j >= 0; j--) {
             lineChartData.put(currentDateTime.minusDays(j), (float) 0);
         }
 
     }
 
+    /**
+     * Get weekly domain data from backend
+     */
     private void getWeeklyData() {
+
+        HashMap<String, String> dateHashMap = new HashMap<>();
+
+        // Get associated index based on current day of week
+        int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
+        int dayIndex = 0;
+
+        switch (dayOfWeek) {
+            case Calendar.MONDAY:
+                dayIndex = 0;
+                break;
+            case Calendar.TUESDAY:
+                dayIndex = 1;
+                break;
+            case Calendar.WEDNESDAY:
+                dayIndex = 2;
+                break;
+            case Calendar.THURSDAY:
+                dayIndex = 3;
+                break;
+            case Calendar.FRIDAY:
+                dayIndex = 4;
+                break;
+            case Calendar.SATURDAY:
+                dayIndex = 5;
+                break;
+            case Calendar.SUNDAY:
+                dayIndex = 6;
+                break;
+        }
+
+        LocalDateTime localDateTime = LocalDateTime.now();
+        String dayDate;
+
+        // initializes the dates corresponds to the days of the week
+        for (int i = 0; i < 7; i++) {
+
+            dayDate = localDateTime.minusDays(i).format(dayFormat);
+
+            switch(dayIndex) {
+                case 0:
+                    dateHashMap.put("MON", dayDate);
+                    break;
+                case 1:
+                    dateHashMap.put("TUE", dayDate);
+                    break;
+                case 2:
+                    dateHashMap.put("WED", dayDate);
+                    break;
+                case 3:
+                    dateHashMap.put("THU", dayDate);
+                    break;
+                case 4:
+                    dateHashMap.put("FRI", dayDate);
+                    break;
+                case 5:
+                    dateHashMap.put("SAT", dayDate);
+                    break;
+                case 6:
+                    dateHashMap.put("SUN", dayDate);
+                    break;
+            }
+
+            dayIndex--;
+
+            if (dayIndex < 0) {
+                dayIndex = 6;
+            }
+
+        }
+
+        // Set up backend request
         JSONObject domainRequest = new JSONObject();
         VolleyResponseListener volleyResponseListener = new VolleyResponseListener() {
             @Override
@@ -355,74 +442,6 @@ public class StatisticsFragment extends Fragment {
 
             @Override
             public void onResponse(Object response) {
-
-                HashMap<String, String> dateHashMap = new HashMap<>();
-
-                int dayOfWeek = Calendar.getInstance().get(Calendar.DAY_OF_WEEK);
-                int dayIndex = 0;
-
-                switch (dayOfWeek) {
-                    case Calendar.MONDAY:
-                        dayIndex = 0;
-                        break;
-                    case Calendar.TUESDAY:
-                        dayIndex = 1;
-                        break;
-                    case Calendar.WEDNESDAY:
-                        dayIndex = 2;
-                        break;
-                    case Calendar.THURSDAY:
-                        dayIndex = 3;
-                        break;
-                    case Calendar.FRIDAY:
-                        dayIndex = 4;
-                        break;
-                    case Calendar.SATURDAY:
-                        dayIndex = 5;
-                        break;
-                    case Calendar.SUNDAY:
-                        dayIndex = 6;
-                        break;
-                }
-
-                LocalDateTime localDateTime = LocalDateTime.now();
-                String dayDate;
-
-                for (int i = 0; i < 7; i++) {
-
-                    dayDate = localDateTime.minusDays(i).format(dayFormat);
-
-                    switch(dayIndex) {
-                        case 0:
-                            dateHashMap.put("MON", dayDate);
-                            break;
-                        case 1:
-                            dateHashMap.put("TUE", dayDate);
-                            break;
-                        case 2:
-                            dateHashMap.put("WED", dayDate);
-                            break;
-                        case 3:
-                            dateHashMap.put("THU", dayDate);
-                            break;
-                        case 4:
-                            dateHashMap.put("FRI", dayDate);
-                            break;
-                        case 5:
-                            dateHashMap.put("SAT", dayDate);
-                            break;
-                        case 6:
-                            dateHashMap.put("SUN", dayDate);
-                            break;
-                    }
-
-                    dayIndex--;
-
-                    if (dayIndex < 0) {
-                        dayIndex = 6;
-                    }
-
-                }
 
                 try {
 
@@ -443,6 +462,7 @@ public class StatisticsFragment extends Fragment {
                         JSONObject jsonArrayElement = domainList.getJSONObject(i);
                         String listType = jsonArrayElement.getString(VolleySingleton.listType);
 
+                        // increment appropriate list type in pie chart
                         switch (listType) {
                             case "Whitelist":
                                 numDomains = pieChartData.get(VolleySingleton.Whitelist);
@@ -470,6 +490,7 @@ public class StatisticsFragment extends Fragment {
                         ZonedDateTime date = ZonedDateTime.parse(timeStamp);
                         timeStamp = date.toString().split("T")[0];
 
+                        // increment appropriate number of accesses per day of week
                         if (timeStamp.equals(dateHashMap.get("MON"))) {
                             numDomains = barChartData.get("MON").get(listType);
                             barChartData.get("MON").put(listType, ++numDomains);
@@ -526,13 +547,13 @@ public class StatisticsFragment extends Fragment {
         };
 
 
+        // Send backend request
         try {
             domainRequest.put(VolleySingleton.startDate, currentDateTime.toString());
             domainRequest.put(VolleySingleton.endDate, currentDateTime.minusWeeks(1).toString());
             VolleyRequest.addRequest(getContext(),
                     VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY,
                     User.getInstance().getUserID(),
-                    "",
                     "",
                     domainRequest,
                     volleyResponseListener);
@@ -542,8 +563,12 @@ public class StatisticsFragment extends Fragment {
         }
     }
 
+    /**
+     * Get monthly domain data from backend
+     */
     private void getMonthlyData() {
 
+        // Set up backend requests
         for (int i = 0; i <= 30; i++) {
             JSONObject domainRequest = new JSONObject();
             LocalDateTime dateTime = currentDateTime.minusDays(i);
@@ -553,7 +578,6 @@ public class StatisticsFragment extends Fragment {
                 VolleyRequest.addRequest(getContext(),
                         VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY,
                         User.getInstance().getUserID(),
-                        "",
                         "",
                         domainRequest,
                         new VolleyResponseListener() {

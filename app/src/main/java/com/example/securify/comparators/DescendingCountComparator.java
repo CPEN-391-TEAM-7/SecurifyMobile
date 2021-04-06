@@ -5,8 +5,10 @@ import com.example.securify.ui.volley.VolleySingleton;
 
 import java.util.Comparator;
 
+/**
+ * Sorts top domains by descending number of accesses in StatisticsFragment
+ */
 public class DescendingCountComparator implements Comparator<String> {
-
 
     @Override
     public int compare(String o1, String o2) {

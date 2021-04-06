@@ -38,7 +38,16 @@ public class VolleyRequest {
 
     public static final String PUT_LIST = "PUT_LIST";
 
-    public static void addRequest(Context context, String request, String userID, String domainName, String listType, JSONObject jsonObject, VolleyResponseListener listener) {
+    /**
+     * Sets up HTTP call to Backend API
+     * @param context
+     * @param request type of request
+     * @param userID user's google ID
+     * @param domainName name of domain
+     * @param jsonObject body of http call
+     * @param listener runs on response to http call
+     */
+    public static void addRequest(Context context, String request, String userID, String domainName, JSONObject jsonObject, VolleyResponseListener listener) {
 
         String url;
         int requestType;
@@ -81,6 +90,7 @@ public class VolleyRequest {
             default:
                 return;
         }
+
         sendRequest(context, url, jsonObject, listener, requestType);
     }
 
@@ -88,9 +98,9 @@ public class VolleyRequest {
      * This function is the one that actually makes a HTTP call to our Backend API.
      * @param context
      * @param url
-     * @param jsonObject
-     * @param listener
-     * @param requestType
+     * @param jsonObject body of http call
+     * @param listener runs on response to http call
+     * @param requestType type of request
      */
     private static void sendRequest(Context context, String url, JSONObject jsonObject, VolleyResponseListener listener, int requestType) {
         Log.i(TAG, "SENDING REQUEST ====> \n" + "Sending a request to..." + url + "\n" + "With JSON: " + jsonObject.toString());

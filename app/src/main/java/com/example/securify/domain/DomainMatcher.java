@@ -5,9 +5,11 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Parses WhoIs response for domain information
+ */
 public class DomainMatcher {
     private static Pattern pattern;
-    private static Matcher matcher;
 
     private static final String WHOIS_SERVER_PATTERN = "whois:\\s(.*)";
     private static final String REGISTRAR_DOMAIN_ID_PATTERN = "Registry Domain ID:\\s*(.*)";
@@ -40,7 +42,7 @@ public class DomainMatcher {
                 break;
         }
 
-        matcher = pattern.matcher(whoIsInfo);
+        Matcher matcher = pattern.matcher(whoIsInfo);
 
         while (matcher.find()) {
             result = matcher.group(1);

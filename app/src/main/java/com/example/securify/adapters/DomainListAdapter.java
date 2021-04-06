@@ -11,7 +11,6 @@ import android.widget.ExpandableListView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-
 import com.example.securify.domain.DomainInfo;
 import com.example.securify.domain.DomainLists;
 import com.example.securify.R;
@@ -26,30 +25,24 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+/**
+ * Adapter class that displays blacklisted/whitelisted domains in BlackListFragment and WhiteListFragment respectively
+ */
 public class DomainListAdapter extends BaseExpandableListAdapter {
-    private Context context;
+    private final Context context;
     private ArrayList<String> domainList;
     private HashMap<String, String> domainInfo;
-    private final int numRows = 500;
     private boolean isWhiteList;
-    private boolean isActivityFragment;
-    private final String BLACKLIST_DOMAIN = "Blacklist Domain";
-    private final String WHITELIST_DOMAIN = "Whitelist Domain";
 
     private final String TAG = "DomainListAdapter";
 
-    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
-
-    public DomainListAdapter (Context _context, ArrayList<String> dList, boolean _isWhiteList, boolean _isActivityFragment) {
+    public DomainListAdapter (Context _context, ArrayList<String> dList, boolean _isWhiteList) {
         context = _context;
         domainList = dList;
         isWhiteList = _isWhiteList;
-        isActivityFragment = _isActivityFragment;
     }
 
     @Override
@@ -98,11 +91,14 @@ public class DomainListAdapter extends BaseExpandableListAdapter {
         TextView domainName = convertView.findViewById(R.id.domain_name);
         domainName.setText(domainList.get(groupPosition));
 
+        // Set change domain button as appropriate (depending on which list the domain is initially in)
         Button changeDomainListButton = convertView.findViewById(R.id.change_domain_list_button);
 
         if (isWhiteList) {
+            String BLACKLIST_DOMAIN = "Blacklist Domain";
             changeDomainListButton.setText(BLACKLIST_DOMAIN);
         } else {
+            String WHITELIST_DOMAIN = "Whitelist Domain";
             changeDomainListButton.setText(WHITELIST_DOMAIN);
         }
 
@@ -119,7 +115,7 @@ public class DomainListAdapter extends BaseExpandableListAdapter {
                         putObject.put(VolleySingleton.userID, User.getInstance().getUserID());
                         putObject.put(VolleySingleton.listType, VolleySingleton.Blacklist);
                         putObject.put(VolleySingleton.domainName, domain);
-                        VolleyRequest.addRequest(context, VolleyRequest.PUT_LIST, "", "", "", putObject, new VolleyResponseListener() {
+                        VolleyRequest.addRequest(context, VolleyRequest.PUT_LIST, "", "", putObject, new VolleyResponseListener() {
                             @Override
                             public void onError(Object response) {
                                 Log.e(TAG, response.toString());
@@ -143,7 +139,7 @@ public class DomainListAdapter extends BaseExpandableListAdapter {
                         putObject.put(VolleySingleton.userID, User.getInstance().getUserID());
                         putObject.put(VolleySingleton.listType, VolleySingleton.Whitelist);
                         putObject.put(VolleySingleton.domainName, domain);
-                        VolleyRequest.addRequest(context, VolleyRequest.PUT_LIST, "", "", "", putObject, new VolleyResponseListener() {
+                        VolleyRequest.addRequest(context, VolleyRequest.PUT_LIST, "", "", putObject, new VolleyResponseListener() {
                             @Override
                             public void onError(Object response) {
                                 Log.e(TAG, response.toString());
@@ -189,6 +185,7 @@ public class DomainListAdapter extends BaseExpandableListAdapter {
 
         domainInfo = DomainInfo.getInstance().getInfo(domainList.get(groupPosition));
 
+        // Sets up WhoIs query if domain info is empty
         WhoisClient whoisClient = new WhoisClient();
 
         if (convertView == null) {
@@ -253,12 +250,17 @@ public class DomainListAdapter extends BaseExpandableListAdapter {
                 e.printStackTrace();
             }
         }
+
+        // Display domain
         TextView domainNameText = convertView.findViewById(R.id.domain_name_text);
         domainNameText.setText(domainInfo.get(DomainInfo.DOMAIN_NAME));
+
         TextView registryDomainIDText = convertView.findViewById(R.id.registry_domain_id_text);
         registryDomainIDText.setText(domainInfo.get(DomainInfo.REGISTRAR_DOMAIN_ID));
+
         TextView registrarNameText = convertView.findViewById(R.id.registrar_name_text);
         registrarNameText.setText(domainInfo.get(DomainInfo.REGISTRAR_NAME));
+
         TextView registrarExpirationDateText = convertView.findViewById(R.id.registrar_expiration_date_text);
         registrarExpirationDateText.setText(domainInfo.get(DomainInfo.REGISTRAR_EXPIRY_DATE));
 

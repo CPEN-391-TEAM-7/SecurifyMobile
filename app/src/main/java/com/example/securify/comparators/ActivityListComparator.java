@@ -6,9 +6,12 @@ import com.example.securify.ui.volley.VolleySingleton;
 import java.util.Comparator;
 import java.util.HashMap;
 
+/**
+ * Sorts activity domains by their list in ActivityFragment
+ */
 public class ActivityListComparator implements Comparator<String> {
 
-    HashMap<String, Integer> priorityList;
+    private HashMap<String, Integer> priorityList;
 
     private static HashMap<String, Integer> prioritiesWhiteList = new HashMap<>();
     private static HashMap<String, Integer> prioritiesBlackList = new HashMap<>();
@@ -18,6 +21,7 @@ public class ActivityListComparator implements Comparator<String> {
     public final static int priorityBlackList = 1;
     public final static int priorityUndefined = 2;
 
+    // Set up order of sorting
     static {
         prioritiesWhiteList.put(VolleySingleton.Undefined, 3);
         prioritiesWhiteList.put(VolleySingleton.Blacklist, 2);
@@ -32,7 +36,11 @@ public class ActivityListComparator implements Comparator<String> {
         prioritiesUndefined.put(VolleySingleton.Undefined, 1);
     }
 
-
+    /**
+     * Sorts activity domains by list
+     * @param priorityList determines which domains are displayed first, 0 corresponds with whitelist priority,
+     *                     1 with blacklist priority, 2 with undefined list priority
+     */
     public ActivityListComparator(int priorityList) {
 
         switch (priorityList) {
@@ -59,6 +67,7 @@ public class ActivityListComparator implements Comparator<String> {
 
         return priorityList.get(VolleySingleton.Undefined);
     }
+
     @Override
     public int compare(String o1, String o2) {
         int priority1 = getPriority(o1);

@@ -18,11 +18,14 @@ import com.example.securify.domain.TopDomainsInfo;
 import com.example.securify.ui.volley.VolleySingleton;
 
 import java.util.ArrayList;
-import java.util.Collections;
 
+
+/**
+ * Adapter class that displays the top domains in StatisticsFragment
+ */
 public class StatisticsListAdapter extends BaseAdapter {
 
-    private Context context;
+    private final Context context;
     private ArrayList<String> domainList;
 
     public StatisticsListAdapter(ArrayList<String> domainList, Context _context) {
@@ -61,6 +64,7 @@ public class StatisticsListAdapter extends BaseAdapter {
 
         ImageView domainList = row.findViewById(R.id.statistics_list);
 
+        // Get appropriate image associated with a domain's list type
         if (TopDomainsInfo.getInstance().getInfo(domainString).get(VolleySingleton.listType).equals(VolleySingleton.Blacklist)) {
             domainList.setImageResource(R.drawable.ic_blacklist_icon);
             domainList.setColorFilter(context.getColor(R.color.main7));
@@ -74,28 +78,28 @@ public class StatisticsListAdapter extends BaseAdapter {
     }
 
     public void sortDomainNameAscending() {
-        Collections.sort(domainList, new AscendingDomainNameComparator());
+        domainList.sort(new AscendingDomainNameComparator());
         notifyDataSetChanged();
     }
 
     public void sortDomainNameDescending() {
-        Collections.sort(domainList, new DescendingDomainNameComparator());
+        domainList.sort(new DescendingDomainNameComparator());
         notifyDataSetChanged();
     }
 
     public void sortCountAscending() {
-        Collections.sort(domainList, new AscendingCountComparator());
+        domainList.sort(new AscendingCountComparator());
         notifyDataSetChanged();
     }
 
     public void sortCountDescending() {
-        Collections.sort(domainList, new DescendingCountComparator());
+        domainList.sort(new DescendingCountComparator());
         notifyDataSetChanged();
     }
 
 
     public void sortList(int listPriority) {
-        Collections.sort(domainList, new StatisticsListComparator(listPriority));
+        domainList.sort(new StatisticsListComparator(listPriority));
         notifyDataSetChanged();
     }
 }

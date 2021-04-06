@@ -12,8 +12,11 @@ import com.example.securify.R;
 
 import java.util.ArrayList;
 
+/**
+ *  Adapter class for bluetooth devices list displayed in BluetoothActivity
+ */
 public class DeviceArrayAdapter extends ArrayAdapter<String> {
-    private Context context;
+    private final Context context;
     private ArrayList<String> stringArray;
     private final int numRows = 500;
     private boolean [] RowValidity = new boolean[numRows];
@@ -31,6 +34,7 @@ public class DeviceArrayAdapter extends ArrayAdapter<String> {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View row =  inflater.inflate(R.layout.bluetooth_row, parent, false);
 
+        // Display bluetooth device
         ImageView icon = row.findViewById(R.id.BTicon);
         icon.setImageResource(R.drawable.ic_bluetooth);
         icon.setVisibility(View.VISIBLE);
@@ -42,15 +46,16 @@ public class DeviceArrayAdapter extends ArrayAdapter<String> {
         icon.setImageResource(R.drawable.ic_clear);
         icon.setVisibility(View.VISIBLE);
 
+        // Set all bluetooth devices to unconnected
         if(!RowValidity[position])
             icon.setImageResource(R.drawable.ic_clear);
         else
             icon.setImageResource(R.drawable.ic_check);
+
         return row;
     }
 
     public void setValid(int position) {RowValidity[position] = true;}
-    public void setInValid(int position) {RowValidity[position] = false;}
     public void clearValidity() {
         for (int i = 0; i < numRows; i++) {
             RowValidity[i] = false;

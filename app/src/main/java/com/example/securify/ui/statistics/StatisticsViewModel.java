@@ -7,7 +7,7 @@ import androidx.lifecycle.ViewModel;
 public class StatisticsViewModel extends ViewModel {
 
     private MutableLiveData<String> mText;
-    //private MutableLiveData<T> object;
+
 
     public StatisticsViewModel() {
         mText = new MutableLiveData<>();

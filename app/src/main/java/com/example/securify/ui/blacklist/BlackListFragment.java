@@ -33,8 +33,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,14 +41,11 @@ public class BlackListFragment extends Fragment {
 
     private BlackListViewModel blackListViewModel;
     private ArrayList<String> blackList;
-    private ArrayList<String> allDomainsList;
     private DomainListAdapter blackListArrayAdapter;
 
     private WhoisClient whoisClient;
     private Boolean validDomain = true;
     private final String TAG = "BlackListFragment";
-
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -65,20 +60,21 @@ public class BlackListFragment extends Fragment {
             }
         });
 
+        // Fetch blacklist from DomainLists singleton
         blackList = DomainLists.getInstance().getBlackList();
-        blackListArrayAdapter = new DomainListAdapter(getContext(), blackList, false, false);
+        blackListArrayAdapter = new DomainListAdapter(getContext(), blackList, false);
         ExpandableListView blackListDomains = root.findViewById(R.id.blacklist_domains);
         blackListDomains.setAdapter(blackListArrayAdapter);
         blackListDomains.setGroupIndicator(null);
 
-        allDomainsList = DomainLists.getInstance().getActivityDomainsList();
+
         EditText addBlackList = root.findViewById(R.id.add_blacklist_text);
 
         whoisClient = new WhoisClient();
 
+        // Collect the whitelist of the user in the DataBase. (HTTP CALL)
         clearList();
         fetchBlacklist();
-
 
         Button addBlackListDomain = root.findViewById(R.id.add_blacklist_domain_button);
         addBlackListDomain.setOnClickListener(new View.OnClickListener() {
@@ -167,6 +163,9 @@ public class BlackListFragment extends Fragment {
         return root;
     }
 
+    /**
+     * Collects the whitelisted domains from the Backend API.
+     */
     private void fetchBlacklist() {
 
         // Build request body
@@ -180,12 +179,12 @@ public class BlackListFragment extends Fragment {
             Log.e(TAG, e.toString());
         }
 
+
         VolleyRequest.addRequest(
                 getContext(),
                 VolleyRequest.GET_BLACKLIST,
                 User.getInstance().getUserID(),
                 "",
-                "Blacklist",
                 postData,
                 new VolleyResponseListener() {
                     @Override
@@ -220,7 +219,11 @@ public class BlackListFragment extends Fragment {
                 }
         );
     }
-    
+
+    /**
+     * makes a HTTP Request to the Backend API adding the domain name to the BlackList.
+     * @param domainName name of domain added to BlackList
+     */
     private void addBlacklist(String domainName) {
 
         // This is the request body.
@@ -239,7 +242,6 @@ public class BlackListFragment extends Fragment {
                 VolleyRequest.PUT_LIST,
                 User.getInstance().getUserID(),
                 domainName,
-                "",
                 postData,
                 new VolleyResponseListener() {
                     @Override
@@ -275,10 +277,18 @@ public class BlackListFragment extends Fragment {
         fetchBlacklist();
     }
 
+    /**
+     * Clears the elements (Adapters) in the List
+     */
     private void clearList() {
         blackList.clear();
     }
 
+    /**
+     * Adds the domain to the list in the UI. This function should only be called
+     * once the domain is properly registered in the Backend API.
+     * @param domainName name of domain added to adapter
+     */
     private void addListAdapter(String domainName) {
         if(!blackList.contains(domainName)) blackList.add(domainName);
         if (!DomainInfo.getInstance().contains(domainName)) {

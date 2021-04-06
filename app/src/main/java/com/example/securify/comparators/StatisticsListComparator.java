@@ -2,13 +2,15 @@ package com.example.securify.comparators;
 
 import android.util.Log;
 
-import com.example.securify.domain.DomainLists;
 import com.example.securify.domain.TopDomainsInfo;
 import com.example.securify.ui.volley.VolleySingleton;
 
 import java.util.Comparator;
 import java.util.HashMap;
 
+/**
+ * Sorts activity domains by their list in StatisticsFragment
+ */
 public class StatisticsListComparator implements Comparator<String> {
     HashMap<String, Integer> priorityList;
 
@@ -20,6 +22,7 @@ public class StatisticsListComparator implements Comparator<String> {
     public final static int priorityBlackList = 1;
     public final static int priorityUndefined = 2;
 
+    // Set up order of sorting
     static {
         prioritiesWhiteList.put(VolleySingleton.Undefined, 3);
         prioritiesWhiteList.put(VolleySingleton.Blacklist, 2);
@@ -34,7 +37,11 @@ public class StatisticsListComparator implements Comparator<String> {
         prioritiesUndefined.put(VolleySingleton.Undefined, 1);
     }
 
-
+    /**
+     * Sorts activity domains by list
+     * @param priorityList determines which domains are displayed first, 0 corresponds with whitelist priority,
+     *                     1 with blacklist priority, 2 with undefined list priority
+     */
     public StatisticsListComparator(int priorityList) {
 
         switch (priorityList) {
@@ -52,18 +59,16 @@ public class StatisticsListComparator implements Comparator<String> {
 
     private int getPriority(String domainName)  {
         if (TopDomainsInfo.getInstance().getInfo(domainName).get(VolleySingleton.listType).equals(VolleySingleton.Whitelist)) {
-            Log.d("TEST", domainName + " = " + "whitelist");
             return priorityList.get(VolleySingleton.Whitelist);
         }
 
         if (TopDomainsInfo.getInstance().getInfo(domainName).get(VolleySingleton.listType).equals(VolleySingleton.Blacklist)) {
-            Log.d("TEST", domainName + " = " + "blacklist");
             return priorityList.get(VolleySingleton.Blacklist);
         }
 
-        Log.d("TEST", domainName + " = " + "undefined");
         return priorityList.get(VolleySingleton.Undefined);
     }
+
     @Override
     public int compare(String o1, String o2) {
         int priority1 = getPriority(o1);

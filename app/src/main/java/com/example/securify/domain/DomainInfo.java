@@ -2,9 +2,13 @@ package com.example.securify.domain;
 
 import java.util.HashMap;
 
+/**
+ * Singleton class that stores domain information
+ */
 public class DomainInfo {
     private static DomainInfo DOMAIN_INFO = null;
     private HashMap<String, HashMap<String, String>> domainInfo = new HashMap<>();
+
     public static final String DOMAIN_NAME = "DomainName";
     public static final String REGISTRAR_DOMAIN_ID = "RegistrarDomainID";
     public static final String REGISTRAR_NAME = "RegistrarName";

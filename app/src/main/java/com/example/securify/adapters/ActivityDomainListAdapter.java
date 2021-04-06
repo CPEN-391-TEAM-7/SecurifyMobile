@@ -14,7 +14,6 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-
 import com.example.securify.comparators.ActivityListComparator;
 import com.example.securify.domain.DomainInfo;
 import com.example.securify.domain.DomainLists;
@@ -37,16 +36,17 @@ import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Objects;
 
+/**
+ *  Adapter class for the list of domains displayed in ActivityFragment
+ */
 public class ActivityDomainListAdapter extends BaseExpandableListAdapter implements Filterable {
     
-    private Context context;
+    private final Context context;
     private ArrayList<String> domainList;
-    private ArrayList<String> mDomainFilterList;
-    private HashMap<String, String> domainInfo;
     public final String DOMAIN_NAME_FILTER = "Domain Name";
     public final String START_DATE_FILTER = "Start Date";
     public final String START_TIME_FILTER = "Start Time";
@@ -54,32 +54,16 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
     public final String END_TIME_FILTER = "End Time";
     public final String LIST_FILTER = "List";
     public HashMap<String, String> constraints = new HashMap<>();
-    private ArrayList<String> filteredList =  new ArrayList<>();
     private DomainFilter domainFilter;
     private final String TAG = "ACTIVITY_DOMAIN_LIST_ADAPTER";
 
-    private SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
 
-    public static HashMap<String, Integer> prioritiesWhiteList = new HashMap<>();
-    public static HashMap<String, Integer> prioritiesBlackList = new HashMap<>();
-    public static HashMap<String, Integer> prioritiesUndefined = new HashMap<>();
 
     public ActivityDomainListAdapter(Context _context, ArrayList<String> dList) {
         context = _context;
         domainList = dList;
         getFilter();
-
-        prioritiesWhiteList.put(VolleySingleton.Undefined, 3);
-        prioritiesWhiteList.put(VolleySingleton.Blacklist, 2);
-        prioritiesWhiteList.put(VolleySingleton.Whitelist, 1);
-
-        prioritiesBlackList.put(VolleySingleton.Undefined, 3);
-        prioritiesBlackList.put(VolleySingleton.Whitelist, 2);
-        prioritiesBlackList.put(VolleySingleton.Blacklist, 1);
-
-        prioritiesUndefined.put(VolleySingleton.Blacklist, 3);
-        prioritiesUndefined.put(VolleySingleton.Whitelist, 2);
-        prioritiesUndefined.put(VolleySingleton.Undefined, 1);
 
     }
 
@@ -138,6 +122,7 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
 
             ImageView listIndicator = convertView.findViewById(R.id.list_indicator);
 
+            // Get appropriate image associated with a domain's list type
             if (blacklist.contains(domainList.get(groupPosition))) {
                 listIndicator.setImageResource(R.drawable.ic_blacklist_icon);
                 listIndicator.setColorFilter(context.getColor(R.color.main7));
@@ -172,7 +157,7 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
     @Override
     public View getChildView(int groupPosition, int childPosition, boolean isLastChild, View convertView, ViewGroup parent) {
 
-        domainInfo = DomainInfo.getInstance().getInfo(domainList.get(groupPosition));
+        HashMap<String, String> domainInfo = DomainInfo.getInstance().getInfo(domainList.get(groupPosition));
 
             if (convertView == null) {
                 LayoutInflater layoutInflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -196,7 +181,7 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
                             e.printStackTrace();
                         }
 
-                        VolleyRequest.addRequest(context, VolleyRequest.PUT_LIST, User.getInstance().getUserID(), domain, "", postData, new VolleyResponseListener() {
+                        VolleyRequest.addRequest(context, VolleyRequest.PUT_LIST, User.getInstance().getUserID(), domain, postData, new VolleyResponseListener() {
                             @Override
                             public void onError(Object response) {
                                 Log.i(TAG, response.toString());
@@ -233,7 +218,7 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
                             e.printStackTrace();
                         }
 
-                        VolleyRequest.addRequest(context, VolleyRequest.PUT_LIST, User.getInstance().getUserID(), domain, "", postData, new VolleyResponseListener() {
+                        VolleyRequest.addRequest(context, VolleyRequest.PUT_LIST, User.getInstance().getUserID(), domain, postData, new VolleyResponseListener() {
                             @Override
                             public void onError(Object response) {
                                 Log.i(TAG, response.toString());
@@ -252,6 +237,7 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
                 }
             });
 
+            // Sets up Whois query if domain info is empty
             WhoisClient whoisClient = new WhoisClient();
 
             if (domainInfo.get(DomainInfo.REGISTRAR_DOMAIN_ID).equals("")) {
@@ -308,15 +294,19 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
                 }
             }
 
-
+            // displays domain info to user
             TextView activityDomainNameText = convertView.findViewById(R.id.activity_domain_name_text);
             activityDomainNameText.setText(domainInfo.get(DomainInfo.DOMAIN_NAME));
+
             TextView activityRegistryDomainIDText = convertView.findViewById(R.id.activity_registry_domain_id_text);
             activityRegistryDomainIDText.setText(domainInfo.get(DomainInfo.REGISTRAR_DOMAIN_ID));
+
             TextView activityRegistrarNameText = convertView.findViewById(R.id.activity_registrar_name_text);
             activityRegistrarNameText.setText(domainInfo.get(DomainInfo.REGISTRAR_NAME));
+
             TextView activityRegistrarExpirationDateText = convertView.findViewById(R.id.activity_registrar_expiration_date_text);
             activityRegistrarExpirationDateText.setText(domainInfo.get(DomainInfo.REGISTRAR_EXPIRY_DATE));
+
             TextView activityDeviceIPText = convertView.findViewById(R.id.activity_device_ip_address_text);
             activityDeviceIPText.setText(domainInfo.get(DomainInfo.DEVICE_IP));
 
@@ -329,28 +319,27 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
     }
 
     public void sortDomainNameAscending() {
-        Collections.sort(domainList, new AscendingDomainNameComparator());
+        domainList.sort(new AscendingDomainNameComparator());
         notifyDataSetChanged();
     }
 
     public void sortDomainNameDescending() {
-        Collections.sort(domainList, new DescendingDomainNameComparator());
+        domainList.sort(new DescendingDomainNameComparator());
         notifyDataSetChanged();
     }
 
     public void sortTimeStampAscending() {
-        Collections.sort(domainList, new AscendingTimeStampComparator());
+        domainList.sort(new AscendingTimeStampComparator());
         notifyDataSetChanged();
     }
 
     public void sortTimeStampDescending() {
-        Collections.sort(domainList, new DescendingTimeStampComparator());
+        domainList.sort(new DescendingTimeStampComparator());
         notifyDataSetChanged();
     }
 
-
     public void sortList(int listPriority) {
-        Collections.sort(domainList, new ActivityListComparator(listPriority));
+        domainList.sort(new ActivityListComparator(listPriority));
         notifyDataSetChanged();
     }
 
@@ -370,97 +359,108 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
 
             FilterResults results = new FilterResults();
             ArrayList<String> filteredDomainList = new ArrayList<>();
-            ArrayList<String> filteredDomainListIterate = new ArrayList<>();
 
-            mDomainFilterList = DomainLists.getInstance().getActivityDomainsList();
+            ArrayList<String> mDomainFilterList = DomainLists.getInstance().getActivityDomainsList();
 
+            // Filters domains by name
             String nameConstraint = constraints.get(DOMAIN_NAME_FILTER);
 
-            if (!nameConstraint.equals("")) {
-                for (String domain:mDomainFilterList) {
-                    if (domain.contains(nameConstraint)) {
-                        filteredDomainList.add(domain);
+            if (nameConstraint != null) {
+                if (!nameConstraint.equals("")) {
+                    for (String domain: mDomainFilterList) {
+                        if (domain.contains(nameConstraint)) {
+                            filteredDomainList.add(domain);
+                        }
                     }
+                } else {
+                    filteredDomainList.addAll(mDomainFilterList);
                 }
-            } else {
-                filteredDomainList.addAll(mDomainFilterList);
             }
 
+            // Filters domains by list type
             String listConstraint = constraints.get(LIST_FILTER);
             DomainLists domainLists = DomainLists.getInstance();
-            filteredDomainListIterate.addAll(filteredDomainList);
+            ArrayList<String> filteredDomainListIterate = new ArrayList<>(filteredDomainList);
 
-
-            switch (listConstraint) {
-                case "Blacklist Domains Only":
-                    for (String domain:filteredDomainListIterate) {
-                        if(!domainLists.blackListContains(domain)) {
-                            filteredDomainList.remove(domain);
+            if (listConstraint != null) {
+                switch (listConstraint) {
+                    case "Blacklist Domains Only":
+                        for (String domain:filteredDomainListIterate) {
+                            if(!domainLists.blackListContains(domain)) {
+                                filteredDomainList.remove(domain);
+                            }
                         }
-                    }
-                    break;
+                        break;
 
-                case "Whitelist Domains Only":
-                    for (String domain: filteredDomainListIterate) {
-                        if(!domainLists.whiteListContains(domain)) {
-                            filteredDomainList.remove(domain);
+                    case "Whitelist Domains Only":
+                        for (String domain: filteredDomainListIterate) {
+                            if(!domainLists.whiteListContains(domain)) {
+                                filteredDomainList.remove(domain);
+                            }
                         }
-                    }
-                    break;
+                        break;
+                }
             }
 
             filteredDomainListIterate.clear();
             filteredDomainListIterate.addAll(filteredDomainList);
 
+            // format starting date constraint
             String startDate = constraints.get(START_DATE_FILTER);
             Date startDateTime = null;
 
-            if (!startDate.matches("")) {
+            if (startDate != null && !startDate.matches("")) {
                 String startTime = constraints.get(START_TIME_FILTER);
-                if (startTime.matches("")) {
-                    try {
-                        startDateTime = dateFormat.parse(startDate + "-" + "00:00:00");
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    try {
-                        startDateTime = dateFormat.parse(startDate + "-" + startTime);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+                if (startTime != null) {
+                    if (startTime.matches("")) {
+                        try {
+                            startDateTime = dateFormat.parse(startDate + "-" + "00:00:00");
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        try {
+                            startDateTime = dateFormat.parse(startDate + "-" + startTime);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
 
+            // format starting date constraint
             String endDate = constraints.get(END_DATE_FILTER);
             Date endDateTime = null;
 
-            if (!startDate.matches("")) {
+            if (startDate != null && !startDate.matches("")) {
 
                 String endTime = constraints.get(END_TIME_FILTER);
-                if (endTime.matches("")) {
-                    try {
-                        endDateTime = dateFormat.parse(endDate + "-" + "00:00:00");
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
-                } else {
-                    try {
-                        endDateTime = dateFormat.parse(endDate + "-" + endTime);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
+                if (endTime != null) {
+                    if (endTime.matches("")) {
+                        try {
+                            endDateTime = dateFormat.parse(endDate + "-" + "00:00:00");
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
+                    } else {
+                        try {
+                            endDateTime = dateFormat.parse(endDate + "-" + endTime);
+                        } catch (ParseException e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
             }
 
             DomainInfo domainInformation = DomainInfo.getInstance();
 
+            // filter domains by date
             for (String domain:filteredDomainListIterate) {
 
                 Date timeStamp = null;
 
                 try {
-                    timeStamp = dateFormat.parse(domainInformation.getInfo(domain).get(DomainInfo.DOMAIN_TIMESTAMP));
+                    timeStamp = dateFormat.parse(Objects.requireNonNull(domainInformation.getInfo(domain).get(DomainInfo.DOMAIN_TIMESTAMP)));
                 } catch (ParseException e) {
                     e.printStackTrace();
                 }

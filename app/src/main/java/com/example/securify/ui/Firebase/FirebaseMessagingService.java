@@ -7,6 +7,9 @@ import android.widget.Toast;
 
 import com.google.firebase.messaging.RemoteMessage;
 
+/**
+ * Receives and handles firebase notifications
+ */
 public class FirebaseMessagingService extends com.google.firebase.messaging.FirebaseMessagingService {
     private final String TAG = "MessagingService";
 

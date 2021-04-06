@@ -1,7 +1,8 @@
 package com.example.securify.model;
 
-import android.net.Uri;
-
+/**
+ * Singleton class that stores user information
+ */
 public class User {
 
     private String name;

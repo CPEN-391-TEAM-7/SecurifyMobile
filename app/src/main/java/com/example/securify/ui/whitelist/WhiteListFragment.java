@@ -28,7 +28,6 @@ import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
 
 import java.io.IOException;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -42,14 +41,11 @@ public class WhiteListFragment extends Fragment {
 
     private WhiteListViewModel whiteListViewModel;
     private ArrayList<String> whiteList;
-    private ArrayList<String> allDomainsList;
     private DomainListAdapter whiteListArrayAdapter;
 
     private WhoisClient whoisClient;
     private Boolean validDomain = true;
     private final String TAG = "WhiteListFragment";
-
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH:mm:ss");
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
@@ -66,13 +62,11 @@ public class WhiteListFragment extends Fragment {
 
         // Fetch whiteList from DomainLists singleton
         whiteList = DomainLists.getInstance().getWhiteList();
-        whiteListArrayAdapter =  new DomainListAdapter(getContext(), whiteList, true, false);
+        whiteListArrayAdapter =  new DomainListAdapter(getContext(), whiteList, true);
         ExpandableListView whiteListDomains = root.findViewById(R.id.whitelist_domains);
         whiteListDomains.setAdapter(whiteListArrayAdapter);
         whiteListDomains.setGroupIndicator(null);
 
-        // Fetch all Domain list from DomainLists singleton
-        allDomainsList = DomainLists.getInstance().getActivityDomainsList();
         EditText addWhiteList = root.findViewById(R.id.add_whitelist_text);
 
         whoisClient = new WhoisClient();
@@ -166,7 +160,7 @@ public class WhiteListFragment extends Fragment {
     }
 
     /**
-     * This function collects the whitelisted domains from the Backend API.
+     * Collects the whitelisted domains from the Backend API.
      */
     private void fetchWhitelist() {
 
@@ -186,7 +180,6 @@ public class WhiteListFragment extends Fragment {
                 VolleyRequest.GET_WHITELIST,
                 User.getInstance().getUserID(),
                 "",
-                VolleySingleton.Whitelist,
                 postData,
                 new VolleyResponseListener() {
                     @Override
@@ -223,8 +216,8 @@ public class WhiteListFragment extends Fragment {
     }
 
     /**
-     * This function makes a HTTP Request to the Backend API adding the domain name to the Whitelist.
-     * @param domainName
+     * Makes a HTTP Request to the Backend API adding the domain name to the Whitelist.
+     * @param domainName name of domain added to WhiteList
      */
     private void addWhiteList(String domainName) {
         // This is the request body.
@@ -244,7 +237,6 @@ public class WhiteListFragment extends Fragment {
                 VolleyRequest.PUT_LIST,
                 User.getInstance().getUserID(),
                 domainName,
-                "",
                 postData,
                 new VolleyResponseListener() {
                     @Override
@@ -285,9 +277,9 @@ public class WhiteListFragment extends Fragment {
     }
 
     /**
-     * This adds the domain to the list in the UI. This function should only be called
+     * Adds the domain to the list in the UI. This function should only be called
      * once the domain is properly registered in the Backend API.
-     * @param domainName
+     * @param domainName name of domain added to adapter
      */
     private void addListAdapter(String domainName) {
         if(!whiteList.contains(domainName)) whiteList.add(domainName);

@@ -2,6 +2,9 @@ package com.example.securify.domain;
 
 import java.util.ArrayList;
 
+/**
+ * Singleton class that stores names of domains and their associated lists
+ */
 public class DomainLists {
     private ArrayList<String> blackList = new ArrayList<>();
     private ArrayList<String> whiteList = new ArrayList<>();

@@ -1,9 +1,10 @@
 package com.example.securify.domain;
 
-import com.example.securify.ui.volley.VolleySingleton;
-
 import java.util.HashMap;
 
+/**
+ * Singleton class that stores top domain info in StatisticsFragment
+ */
 public class TopDomainsInfo {
     private static TopDomainsInfo TOP_DOMAINS_INFO = null;
     private HashMap<String, HashMap<String, String>> domainInfo = new HashMap<>();

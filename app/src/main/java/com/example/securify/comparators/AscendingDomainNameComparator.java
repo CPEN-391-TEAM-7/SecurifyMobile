@@ -2,6 +2,9 @@ package com.example.securify.comparators;
 
 import java.util.Comparator;
 
+/**
+ * Sorts domains based on ascending alphabetical order
+ */
 public class AscendingDomainNameComparator implements Comparator<String> {
 
     @Override

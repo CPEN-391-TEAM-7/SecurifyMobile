@@ -10,7 +10,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -23,7 +22,7 @@ import androidx.core.content.ContextCompat;
 
 import com.example.securify.R;
 import com.example.securify.adapters.DeviceArrayAdapter;
-import com.example.securify.bluetooth.BluetoothStreams;
+import com.example.securify.bluetooth.BluetoothOutputStream;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -121,8 +120,7 @@ public class BluetoothActivity extends AppCompatActivity {
             ignored.printStackTrace();
         }
 
-        BluetoothStreams.getInstance().setInputStream(mmInStream);
-        BluetoothStreams.getInstance().setOutputStream(mmOutStream);
+        BluetoothOutputStream.getInstance().setOutputStream(mmOutStream);
 
         super.onDestroy();
     }

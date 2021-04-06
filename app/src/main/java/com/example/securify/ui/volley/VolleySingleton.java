@@ -6,6 +6,9 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.Volley;
 
+/**
+ * Singleton class that holds the Volley RequestQueue
+ */
 public class VolleySingleton {
     private static VolleySingleton instance;
     private RequestQueue requestQueue;
@@ -14,7 +17,6 @@ public class VolleySingleton {
     public static String startDate = "startDate";
     public static String endDate = "endDate";
     public static String limit = "limit";
-    public static String listTypes = "listTypes";
     public static String activities = "activities";
     public static String listType = "listType";
     public static String domainName = "domainName";
@@ -49,7 +51,7 @@ public class VolleySingleton {
         }
         return requestQueue;
     }
-
+    
     public <T> void addToRequestQueue(Request<T> request) {
         getRequestQueue().add(request);
     }

@@ -118,7 +118,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
 
                 // Send request here.
-                VolleyRequest.addRequest(getBaseContext(), VolleyRequest.POST_REGISTER_USER, "", "", "", postData, new VolleyResponseListener() {
+                VolleyRequest.addRequest(getBaseContext(), VolleyRequest.POST_REGISTER_USER, "", "", postData, new VolleyResponseListener() {
                     @Override
                     public void onError(Object response) {
                         VolleyError error = (VolleyError) response;
