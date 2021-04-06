@@ -7,7 +7,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.Spinner;
@@ -49,16 +48,11 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.lang.reflect.Array;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Comparator;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -89,7 +83,7 @@ public class StatisticsFragment extends Fragment {
     private Map<LocalDateTime, Float> lineChartData = new TreeMap<>();
     private ArrayList<String> days = new ArrayList<String>();
 
-    private final DateTimeFormatter dayFormat = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private final DateTimeFormatter dayFormat = DateTimeFormatter.ofPattern("uuuu-MM-dd");
     private final DateTimeFormatter lineChartDayFormat = DateTimeFormatter.ofPattern("MMM dd");
 
     private LocalDateTime currentDateTime;
@@ -112,18 +106,12 @@ public class StatisticsFragment extends Fragment {
         lineChart = root.findViewById(R.id.lineChart_view);
 
         description.setText("");
-        currentDateTime = LocalDateTime.now();
+        currentDateTime = LocalDateTime.now().plusDays(1);
 
         initColors();
         initData();
         getWeeklyData();
         getMonthlyData();
-
-        initPieChart();
-        showPieChart();
-
-        showBarChart();
-        showLineChart();
 
         Spinner topDomainsSpinner = root.findViewById(R.id.top_domains_spinner);
         ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getContext(), R.layout.support_simple_spinner_dropdown_item, spinnerItems);
@@ -139,7 +127,7 @@ public class StatisticsFragment extends Fragment {
                 String selectedItem = parent.getItemAtPosition(position).toString();
                 JSONObject getData = new JSONObject();
                 try {
-                    getData.put(VolleySingleton.startDate, currentDateTime);
+                    getData.put(VolleySingleton.startDate, currentDateTime.plusDays(1));
                     getData.put(VolleySingleton.limit, 20);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -193,17 +181,20 @@ public class StatisticsFragment extends Fragment {
                             public void onResponse(Object response) {
                                 topDomainsData.clear();
                                 try {
-                                    JSONObject jsonArray = new JSONObject(response.toString());
-                                    Iterator iterator = jsonArray.keys();
-                                    while(iterator.hasNext()) {
+                                    JSONObject jsonObject = new JSONObject(response.toString());
+                                    Log.d(TAG, jsonObject.toString());
+                                    /*
+                                    for (int i = 0; i < jsonArray.length(); i++) {
                                         HashMap<String, String> topDomainsDataEntry = new HashMap<>();
-                                        String domainName = iterator.next().toString();
+                                        JSONObject jsonDomain = jsonArray.getJSONObject(i);
+                                        String domainName = jsonDomain.keys().next();
                                         topDomainsDataEntry.put(VolleySingleton.domainName, domainName);
-                                        JSONObject jsonObject = new JSONObject(jsonArray.getString(domainName));
-                                        topDomainsDataEntry.put(VolleySingleton.listType, jsonObject.getString(VolleySingleton.listType));
-                                        topDomainsDataEntry.put(VolleySingleton.num_of_accesses, jsonObject.get(VolleySingleton.count).toString());
+                                        topDomainsDataEntry.put(VolleySingleton.listType, jsonDomain.getString(VolleySingleton.listType));
+                                        topDomainsDataEntry.put(VolleySingleton.num_of_accesses, jsonDomain.get(VolleySingleton.count).toString());
                                         TopDomainsInfo.getInstance().addDomain(domainName, topDomainsDataEntry);
                                     }
+
+                                     */
                                 } catch (JSONException jsonException) {
                                     jsonException.printStackTrace();
                                 }
@@ -275,12 +266,7 @@ public class StatisticsFragment extends Fragment {
                 }
             }
         });
-//        statisticsViewModel.getText().observe(getViewLifecycleOwner(), new Observer<String>() {
-//            @Override
-//            public void onChanged(@Nullable String s) {
-//                textView.setText(s);
-//            }
-//        });
+
 
         setListViewHeight(topDomainsList);
         return root;
@@ -329,35 +315,11 @@ public class StatisticsFragment extends Fragment {
         days.add("SAT");
         days.add("SUN");
 
-        /*
-        // Test Data
-        int i  = 1;
         for (String type: listTypes) {
-            pieChartData.put(type, 100 * i++);
+            pieChartData.put(type, 0);
         }
-
-
-         */
-
-        for (String type: listTypes) {
-            pieChartData.put(type, 0 );
-        }
-
 
         HashMap<String, Integer> init;
-
-        /*
-        // Test Data
-        for (String day: days) {
-            barChartData.put(day, new HashMap<>());
-            init = barChartData.get(day);
-            int j = 1;
-            for (String type: listTypes) {
-                init.put(type, 10 * j++);
-            }
-        }
-
-         */
 
         for (String day: days) {
             barChartData.put(day, new HashMap<>());
@@ -367,22 +329,11 @@ public class StatisticsFragment extends Fragment {
             }
         }
 
-
-
         LocalDateTime localDateTime = LocalDateTime.now();
-
-        /*
-        // Test Data
-        for (int j = 30; j >= 0; j--) {
-            lineChartData.put(localDateTime.minusDays(j), (float) j);
-            Log.i(TAG, localDateTime.minusDays(j).format(lineChartDayFormat));
-        }
-         */
 
         for (int j = 30; j >= 0; j--) {
             lineChartData.put(localDateTime.minusDays(j), (float) 0);
         }
-
 
     }
 
@@ -465,7 +416,6 @@ public class StatisticsFragment extends Fragment {
 
                 }
 
-
                 try {
 
                     JSONObject jsonObject;
@@ -474,6 +424,7 @@ public class StatisticsFragment extends Fragment {
 
                     JSONArray domainList =  jsonObject.getJSONArray(VolleySingleton.activities);
                     Log.i(TAG, response.toString());
+                    Log.d(TAG, String.valueOf(domainList.length()));
 
 
                     int numDomains;
@@ -508,13 +459,8 @@ public class StatisticsFragment extends Fragment {
                         }
 
                         String timeStamp = jsonArrayElement.get(VolleySingleton.timestamp).toString();
-                        Log.i(TAG, "response timeStamp: " + timeStamp);
-
-                        LocalDateTime date = LocalDateTime.parse(timeStamp, dayFormat);
-
-                        timeStamp = date.toString();
-                        Log.i(TAG, "modified timeStamp: " + timeStamp);
-
+                        ZonedDateTime date = ZonedDateTime.parse(timeStamp);
+                        timeStamp = date.toString().split("T")[0];
 
                         if (timeStamp.equals(dateHashMap.get("MON"))) {
                             numDomains = barChartData.get("MON").get(listType);
@@ -563,7 +509,11 @@ public class StatisticsFragment extends Fragment {
                 } catch (JSONException jsonException) {
                     jsonException.printStackTrace();
                 }
-               
+
+                initPieChart();
+                showPieChart();
+
+                showBarChart();
             }
         };
 
@@ -588,10 +538,10 @@ public class StatisticsFragment extends Fragment {
 
         for (int i = 0; i <= 30; i++) {
             JSONObject domainRequest = new JSONObject();
+            LocalDateTime dateTime = currentDateTime.minusDays(i);
             try {
-                domainRequest.put(VolleySingleton.startDate, dayFormat.format(currentDateTime) + "T23:59:59.999Z");
-                domainRequest.put(VolleySingleton.endDate, dayFormat.format(currentDateTime) + "T00:00:00.000Z");
-                int finalI = i;
+                domainRequest.put(VolleySingleton.startDate, dayFormat.format(dateTime) + "T23:59:59.999Z");
+                domainRequest.put(VolleySingleton.endDate, dayFormat.format(dateTime) + "T00:00:00.000Z");
                 VolleyRequest.addRequest(getContext(),
                         VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY,
                         User.getInstance().getUserID(),
@@ -601,25 +551,29 @@ public class StatisticsFragment extends Fragment {
                         new VolleyResponseListener() {
                             @Override
                             public void onError(Object response) {
-                                Log.e(TAG, response.toString());
+                                Log.i(TAG, "No accesses found on " + dayFormat.format(dateTime));
                             }
 
                             @Override
                             public void onResponse(Object response) {
                                 try {
                                     JSONObject jsonResponse = new JSONObject(response.toString());
-                                    Float numAccesses = (Float) jsonResponse.get(VolleySingleton.count);
-                                    lineChartData.put(currentDateTime.minusDays(finalI), numAccesses);
+                                    Float numAccesses =  ((Number) jsonResponse.get(VolleySingleton.count)).floatValue();
+                                    lineChartData.put(dateTime, numAccesses);
+                                    showLineChart();
                                 } catch (JSONException e) {
-                                    e.printStackTrace();
+                                   // e.printStackTrace();
                                 }
 
                             }
                         });
             } catch (JSONException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
             }
+
         }
+
+
     }
 
     private void initColors() {

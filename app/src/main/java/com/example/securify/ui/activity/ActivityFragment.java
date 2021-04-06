@@ -325,20 +325,6 @@ public class ActivityFragment extends Fragment {
             }
         });
 
-
-        /*
-        HashMap<String, String> testInfo = new HashMap<>();
-        testInfo.put(DomainInfo.DOMAIN_NAME, "testDomainActivity");
-        testInfo.put(DomainInfo.REGISTRAR_DOMAIN_ID, "testDomainID");
-        testInfo.put(DomainInfo.REGISTRAR_NAME,  "testRegistrarName");
-        testInfo.put(DomainInfo.REGISTRAR_EXPIRY_DATE, "testRegistrarExpiryDate");
-        testInfo.put(DomainInfo.DOMAIN_TIMESTAMP, "testDomainTimeStamp");
-        testInfo.put(DomainInfo.DEVICE_IP, "testDeviceIP");
-        DomainInfo.getInstance().addDomain("testDomainActivity", testInfo);
-        domainList.add("testDomainActivity");
-        domainListAdapter.notifyDataSetChanged();
-        */
-
         return root;
     }
 
