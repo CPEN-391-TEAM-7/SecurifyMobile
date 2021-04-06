@@ -69,6 +69,7 @@ public class ActivityFragment extends Fragment {
     private final int LIMIT = 20;
 
     private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+    private final SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
 
     private final String[] listSelectorItems = {"All Domains", "Blacklist Domains Only", "Whitelist Domains Only"};
 
@@ -248,6 +249,8 @@ public class ActivityFragment extends Fragment {
                 int mDay = calendar.get(Calendar.DAY_OF_MONTH);
                 int mMonth = calendar.get(Calendar.MONTH);
                 int mYear = calendar.get(Calendar.YEAR);
+
+
                 DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(), new DatePickerDialog.OnDateSetListener() {
                     @Override
                     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
