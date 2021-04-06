@@ -15,14 +15,19 @@ import android.widget.TextView;
 import com.example.securify.domain.DomainInfo;
 import com.example.securify.domain.DomainLists;
 import com.example.securify.R;
+import com.example.securify.domain.DomainMatcher;
 import com.example.securify.model.User;
 import com.example.securify.ui.volley.VolleyRequest;
 import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
 
+import org.apache.commons.net.whois.WhoisClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -37,6 +42,8 @@ public class DomainListAdapter extends BaseExpandableListAdapter {
     private final String WHITELIST_DOMAIN = "Whitelist Domain";
 
     private final String TAG = "DomainListAdapter";
+
+    private final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
 
     public DomainListAdapter (Context _context, ArrayList<String> dList, boolean _isWhiteList, boolean _isActivityFragment) {
         context = _context;
@@ -182,12 +189,70 @@ public class DomainListAdapter extends BaseExpandableListAdapter {
 
         domainInfo = DomainInfo.getInstance().getInfo(domainList.get(groupPosition));
 
+        WhoisClient whoisClient = new WhoisClient();
 
         if (convertView == null) {
                 LayoutInflater layoutInflater = (LayoutInflater) this.context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 convertView = layoutInflater.inflate(R.layout.domain_children, null);
         }
 
+        String domainName = domainInfo.get(DomainInfo.DOMAIN_NAME);
+        if (domainInfo.get(DomainInfo.REGISTRAR_DOMAIN_ID).equals("")) {
+            Thread t = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        StringBuilder server = new StringBuilder("");
+
+                        whoisClient.connect("whois.iana.org");
+                        server.append(whoisClient.query(domainName));
+                        whoisClient.disconnect();
+
+                        String whoIsServer = DomainMatcher.getMatch(server.toString(), DomainMatcher.WHOIS_SERVER).trim();
+                        if (whoIsServer.equals("")) {
+                            return;
+                        }
+
+                        Log.i(TAG,  whoIsServer);
+                        whoisClient.connect(whoIsServer);
+                        StringBuilder result = new StringBuilder("");
+                        result.append(whoisClient.query(domainName));
+                        Log.i(TAG,  result.toString());
+                        String whoIsInfo = result.toString();
+
+                        HashMap<String, String> domainInfo = new HashMap<>();
+                        domainInfo.put(DomainInfo.DOMAIN_NAME, domainName);
+
+                        String domainID = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_DOMAIN_ID).trim();
+
+                        Log.i(TAG, "registrar domain id:" + domainID);
+                        domainInfo.put(DomainInfo.REGISTRAR_DOMAIN_ID, domainID);
+
+                        String registrarName = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_NAME).trim();
+
+                        Log.i(TAG, "registrar name:" + registrarName);
+                        domainInfo.put(DomainInfo.REGISTRAR_NAME, registrarName);
+
+                        String registrarExpiryDate = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_EXPIRY_DATE).trim();
+
+                        Log.i(TAG, "expiry date:" + registrarExpiryDate);
+                        domainInfo.put(DomainInfo.REGISTRAR_EXPIRY_DATE, registrarExpiryDate);
+
+                        DomainInfo.getInstance().addDomain(domainName, domainInfo);
+
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
+                }
+            });
+            t.start();
+            try {
+                t.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         TextView domainNameText = convertView.findViewById(R.id.domain_name_text);
         domainNameText.setText(domainInfo.get(DomainInfo.DOMAIN_NAME));
         TextView registryDomainIDText = convertView.findViewById(R.id.registry_domain_id_text);

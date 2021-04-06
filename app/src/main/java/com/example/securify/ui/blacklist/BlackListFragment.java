@@ -134,11 +134,6 @@ public class BlackListFragment extends Fragment {
                                 Log.i(TAG, "expiry date:" + registrarExpiryDate);
                                 domainInfo.put(DomainInfo.REGISTRAR_EXPIRY_DATE, registrarExpiryDate);
 
-                                // TODO: implement proper timestamping
-                                String timeStamp = LocalDateTime.now().format(formatter);
-                                Log.i(TAG, "timestamp:" + timeStamp);
-                                domainInfo.put(DomainInfo.DOMAIN_TIMESTAMP, "");
-
                                 DomainInfo.getInstance().addDomain(domain_to_add, domainInfo);
                             } catch (IOException e) {
                                 e.printStackTrace();
@@ -280,66 +275,12 @@ public class BlackListFragment extends Fragment {
     private void addListAdapter(String domainName) {
         if(!blackList.contains(domainName)) blackList.add(domainName);
         if (!DomainInfo.getInstance().contains(domainName)) {
-            Thread t = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        StringBuilder server = new StringBuilder("");
-
-                        whoisClient.connect("whois.iana.org");
-                        server.append(whoisClient.query(domainName));
-                        whoisClient.disconnect();
-
-                        String whoIsServer = DomainMatcher.getMatch(server.toString(), DomainMatcher.WHOIS_SERVER).trim();
-                        if (whoIsServer.equals("")) {
-                            validDomain = false;
-                            return;
-                        }
-
-                        Log.i(TAG,  whoIsServer);
-                        whoisClient.connect(whoIsServer);
-                        StringBuilder result = new StringBuilder("");
-                        result.append(whoisClient.query(domainName));
-                        Log.i(TAG,  result.toString());
-                        String whoIsInfo = result.toString();
-
-                        HashMap<String, String> domainInfo = new HashMap<>();
-                        domainInfo.put(DomainInfo.DOMAIN_NAME, domainName);
-
-                        String domainID = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_DOMAIN_ID).trim();
-
-                        Log.i(TAG, "registrar domain id:" + domainID);
-                        domainInfo.put(DomainInfo.REGISTRAR_DOMAIN_ID, domainID);
-
-                        String registrarName = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_NAME).trim();
-
-                        Log.i(TAG, "registrar name:" + registrarName);
-                        domainInfo.put(DomainInfo.REGISTRAR_NAME, registrarName);
-
-                        String registrarExpiryDate = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_EXPIRY_DATE).trim();
-
-                        Log.i(TAG, "expiry date:" + registrarExpiryDate);
-                        domainInfo.put(DomainInfo.REGISTRAR_EXPIRY_DATE, registrarExpiryDate);
-
-                        // TODO: implement proper timestamping
-                        String timeStamp = LocalDateTime.now().format(formatter);
-                        Log.i(TAG, "timestamp:" + timeStamp);
-                        domainInfo.put(DomainInfo.DOMAIN_TIMESTAMP, "");
-
-                        DomainInfo.getInstance().addDomain(domainName, domainInfo);
-
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-
-                }
-            });
-            t.start();
-            try {
-                t.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            HashMap<String, String> info = new HashMap<>();
+            info.put(DomainInfo.DOMAIN_NAME, domainName);
+            info.put(DomainInfo.REGISTRAR_DOMAIN_ID, "");
+            info.put(DomainInfo.REGISTRAR_NAME, "");
+            info.put(DomainInfo.REGISTRAR_EXPIRY_DATE, "");
+            DomainInfo.getInstance().addDomain(domainName, info);
         }
         blackListArrayAdapter.notifyDataSetChanged();
     }

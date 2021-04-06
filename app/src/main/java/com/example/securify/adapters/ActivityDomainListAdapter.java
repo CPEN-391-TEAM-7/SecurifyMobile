@@ -24,14 +24,17 @@ import com.example.securify.comparators.ActivityAscendingTimeStampComparator;
 import com.example.securify.comparators.ActivityDescendingDomainNameComparator;
 import com.example.securify.comparators.ActivityDescendingListComparator;
 import com.example.securify.comparators.ActivityDescendingTimeStampComparator;
+import com.example.securify.domain.DomainMatcher;
 import com.example.securify.model.User;
 import com.example.securify.ui.volley.VolleyRequest;
 import com.example.securify.ui.volley.VolleyResponseListener;
 import com.example.securify.ui.volley.VolleySingleton;
 
+import org.apache.commons.net.whois.WhoisClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -232,6 +235,63 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
                     }
                 }
             });
+
+            WhoisClient whoisClient = new WhoisClient();
+
+            if (domainInfo.get(DomainInfo.REGISTRAR_DOMAIN_ID).equals("")) {
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            StringBuilder server = new StringBuilder("");
+                            String domainName = domainList.get(groupPosition);
+                            whoisClient.connect("whois.iana.org");
+                            server.append(whoisClient.query(domainName));
+                            whoisClient.disconnect();
+
+                            String whoIsServer = DomainMatcher.getMatch(server.toString(), DomainMatcher.WHOIS_SERVER).trim();
+                            if (whoIsServer.equals("")) {
+                                return;
+                            }
+
+                            Log.i(TAG,  whoIsServer);
+                            whoisClient.connect(whoIsServer);
+                            StringBuilder result = new StringBuilder("");
+                            result.append(whoisClient.query(domainName));
+                            Log.i(TAG,  result.toString());
+                            String whoIsInfo = result.toString();
+
+                            HashMap<String, String> domainInfo = DomainInfo.getInstance().getInfo(domainName);
+                            String domainID = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_DOMAIN_ID).trim();
+
+                            Log.i(TAG, "registrar domain id:" + domainID);
+                            domainInfo.put(DomainInfo.REGISTRAR_DOMAIN_ID, domainID);
+
+                            String registrarName = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_NAME).trim();
+
+                            Log.i(TAG, "registrar name:" + registrarName);
+                            domainInfo.put(DomainInfo.REGISTRAR_NAME, registrarName);
+
+                            String registrarExpiryDate = DomainMatcher.getMatch(whoIsInfo, DomainMatcher.REGISTRAR_EXPIRY_DATE).trim();
+
+                            Log.i(TAG, "expiry date:" + registrarExpiryDate);
+                            domainInfo.put(DomainInfo.REGISTRAR_EXPIRY_DATE, registrarExpiryDate);
+
+                            notifyDataSetChanged();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                    }
+                });
+                t.start();
+                try {
+                    t.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+
 
             TextView activityDomainNameText = convertView.findViewById(R.id.activity_domain_name_text);
             activityDomainNameText.setText(domainInfo.get(DomainInfo.DOMAIN_NAME));
