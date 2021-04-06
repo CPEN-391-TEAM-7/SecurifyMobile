@@ -38,6 +38,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Objects;
 
 /**
@@ -57,7 +58,8 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
     private DomainFilter domainFilter;
     private final String TAG = "ACTIVITY_DOMAIN_LIST_ADAPTER";
 
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+    private final SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
 
 
     public ActivityDomainListAdapter(Context _context, ArrayList<String> dList) {
@@ -414,13 +416,13 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
                 if (startTime != null) {
                     if (startTime.matches("")) {
                         try {
-                            startDateTime = dateFormat.parse(startDate + "-" + "00:00:00");
+                            startDateTime = dayFormat.parse(startDate + "-" + "00:00:00");
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
                     } else {
                         try {
-                            startDateTime = dateFormat.parse(startDate + "-" + startTime);
+                            startDateTime = dayFormat.parse(startDate + "-" + startTime);
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
