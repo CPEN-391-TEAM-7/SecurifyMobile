@@ -58,7 +58,7 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
     private DomainFilter domainFilter;
     private final String TAG = "ACTIVITY_DOMAIN_LIST_ADAPTER";
 
-    private final SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-MM-dd-HH:mm:ss");
+    private final SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-M-d-HH:mm:ss");
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
 
 
@@ -434,19 +434,19 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
             String endDate = constraints.get(END_DATE_FILTER);
             Date endDateTime = null;
 
-            if (startDate != null && !startDate.matches("")) {
+            if (endDate != null && !endDate.matches("")) {
 
                 String endTime = constraints.get(END_TIME_FILTER);
                 if (endTime != null) {
                     if (endTime.matches("")) {
                         try {
-                            endDateTime = dateFormat.parse(endDate + "-" + "00:00:00");
+                            endDateTime = dayFormat.parse(endDate + "-" + "00:00:00");
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
                     } else {
                         try {
-                            endDateTime = dateFormat.parse(endDate + "-" + endTime);
+                            endDateTime = dayFormat.parse(endDate + "-" + endTime);
                         } catch (ParseException e) {
                             e.printStackTrace();
                         }
