@@ -58,7 +58,7 @@ public class ActivityDomainListAdapter extends BaseExpandableListAdapter impleme
     private DomainFilter domainFilter;
     private final String TAG = "ACTIVITY_DOMAIN_LIST_ADAPTER";
 
-    private final SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-M-d-HH:mm:ss");
+    private final SimpleDateFormat dayFormat = new SimpleDateFormat("yyyy-M-d-h:m");
     private final SimpleDateFormat dateFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.ENGLISH);
 
 
