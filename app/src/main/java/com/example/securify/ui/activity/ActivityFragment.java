@@ -303,7 +303,7 @@ public class ActivityFragment extends Fragment {
         applyButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                domainListAdapter.constraints.put(domainListAdapter.DOMAIN_NAME_FILTER, domainAutoComplete.getText().toString());
+                domainListAdapter.constraints.put(domainListAdapter.DOMAIN_NAME_FILTER, domainAutoComplete.getText().toString().toLowerCase());
                 domainListAdapter.constraints.put(domainListAdapter.START_DATE_FILTER, startDate.getText().toString());
                 domainListAdapter.constraints.put(domainListAdapter.START_TIME_FILTER, startTime.getText().toString());
                 domainListAdapter.constraints.put(domainListAdapter.END_DATE_FILTER, endDate.getText().toString());

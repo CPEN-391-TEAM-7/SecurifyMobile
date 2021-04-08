@@ -79,7 +79,7 @@ public class WhiteListFragment extends Fragment {
         addWhiteListDomain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String whitelist = addWhiteList.getText().toString();
+                String whitelist = addWhiteList.getText().toString().toLowerCase();
                 if (whiteList.contains(whitelist)) {
                     Toast.makeText(getContext(), "Domain already in whitelist", Toast.LENGTH_LONG).show();
                     addWhiteList.getText().clear();

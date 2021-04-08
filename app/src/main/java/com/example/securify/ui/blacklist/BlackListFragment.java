@@ -80,7 +80,7 @@ public class BlackListFragment extends Fragment {
         addBlackListDomain.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String domain_to_add = addBlackList.getText().toString();
+                String domain_to_add = addBlackList.getText().toString().toLowerCase();
                 if (blackList.contains(domain_to_add)) {
                     Toast.makeText(getContext(), "Domain already in whitelist", Toast.LENGTH_LONG).show();
                     addBlackList.getText().clear();
