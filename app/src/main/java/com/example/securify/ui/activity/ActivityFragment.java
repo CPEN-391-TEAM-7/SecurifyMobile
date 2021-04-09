@@ -89,11 +89,11 @@ public class ActivityFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-                if (isChecked) {
-                    WritetoBTDevice("1");
-                } else {
-                    WritetoBTDevice("0");
-                }
+//                if (isChecked) {
+//                    WritetoBTDevice("1");
+//                } else {
+//                    WritetoBTDevice("0");
+//                }
             }
         });
 
@@ -362,7 +362,13 @@ public class ActivityFragment extends Fragment {
 
                             for (int i = 0; i < activities.length(); i++) {
                                 activity = activities.getJSONObject(i);
-                                String domainName = activity.getString("domainName");
+                                String domainName;
+                                try {
+                                    domainName = activity.getString("domainName");
+                                } catch (JSONException e){
+                                    Log.e(TAG, e.toString());
+                                    continue;
+                                }
                                 if(!domainList.contains(domainName)) domainList.add(domainName);
 
                                 HashMap<String, String> info;
