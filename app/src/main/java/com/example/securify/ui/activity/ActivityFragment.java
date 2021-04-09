@@ -30,12 +30,12 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.android.volley.VolleyError;
+import com.example.securify.R;
+import com.example.securify.adapters.ActivityDomainListAdapter;
 import com.example.securify.bluetooth.BluetoothOutputStream;
 import com.example.securify.comparators.ActivityListComparator;
 import com.example.securify.domain.DomainInfo;
 import com.example.securify.domain.DomainLists;
-import com.example.securify.R;
-import com.example.securify.adapters.ActivityDomainListAdapter;
 import com.example.securify.model.User;
 import com.example.securify.ui.BluetoothActivity;
 import com.example.securify.ui.volley.VolleyRequest;
@@ -172,7 +172,6 @@ public class ActivityFragment extends Fragment {
         loadMoreButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                // TODO: test http calls
                 populateDomains();
                 Log.d(TAG, "[Activity] the list: " + domainList.toString());
                 domainListAdapter.notifyDataSetChanged();

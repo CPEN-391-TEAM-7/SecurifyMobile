@@ -58,6 +58,8 @@ public class BluetoothActivity extends AppCompatActivity {
 
     private boolean isConnected = false;
 
+    private final String TAG = "BluetoothActivity";
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -92,7 +94,6 @@ public class BluetoothActivity extends AppCompatActivity {
                     newDevice = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                     if (!DiscoveredDevices.contains(newDevice) && !PairedDevices.contains(newDevice)) {
                         String device = newDevice.getName() + "\nMAC Address =\n " + newDevice.getAddress();
-                        Toast.makeText(context, device, Toast.LENGTH_SHORT).show();
 
                         DiscoveredDevices.add(newDevice);
                         DiscoveredDevicesArray.add(device);
@@ -102,10 +103,10 @@ public class BluetoothActivity extends AppCompatActivity {
 
                     break;
                 case BluetoothAdapter.ACTION_DISCOVERY_STARTED:
-                    Toast.makeText(context, "Discovery Started", Toast.LENGTH_LONG).show();
+                    Log.i(TAG, "Discovery Started");
                     break;
                 case BluetoothAdapter.ACTION_DISCOVERY_FINISHED:
-                    Toast.makeText(context, "Discovery Finished", Toast.LENGTH_LONG).show();
+                    Log.i(TAG, "Discovery Finished");
                     break;
             }
         }
@@ -159,7 +160,7 @@ public class BluetoothActivity extends AppCompatActivity {
         try {
             mmSocket = device.createRfcommSocketToServiceRecord(DEFAULT_SPP_UUID);
         } catch (IOException e) {
-            Toast.makeText(context, "Socket Creation Failed", Toast.LENGTH_LONG).show();
+            e.printStackTrace();
         }
     }
 
@@ -214,7 +215,6 @@ public class BluetoothActivity extends AppCompatActivity {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             String text = "Discovered Device: " + DiscoveredDevicesArray.get(position);
-            Toast.makeText(context, text, Toast.LENGTH_LONG).show();
 
             if (isConnected)
                 closeConnection();
@@ -230,8 +230,6 @@ public class BluetoothActivity extends AppCompatActivity {
     private final AdapterView.OnItemClickListener mPairedClickedHandler= new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-            String text = "Paired Device: " + PairedDevicesArray.get(position);
-            Toast.makeText(context, text, Toast.LENGTH_LONG).show();
 
             if (isConnected)
                 closeConnection();
@@ -267,11 +265,6 @@ public class BluetoothActivity extends AppCompatActivity {
                     grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 setUpBluetooth();
             } else {
-                // TODO: Explain to the user that the feature is unavailable because
-                // the features requires a permission that the user has denied.
-                // At the same time, respect the user's decision. Don't link to
-                // system settings in an effort to convince the user to change
-                // their decision.
                 finish();
             }
         }

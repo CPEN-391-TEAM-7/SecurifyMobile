@@ -17,8 +17,8 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.securify.R;
-import com.example.securify.comparators.StatisticsListComparator;
 import com.example.securify.adapters.StatisticsListAdapter;
+import com.example.securify.comparators.StatisticsListComparator;
 import com.example.securify.domain.TopDomainsInfo;
 import com.example.securify.model.User;
 import com.example.securify.ui.volley.VolleyRequest;
@@ -49,9 +49,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
@@ -88,6 +92,8 @@ public class StatisticsFragment extends Fragment {
     private final DateTimeFormatter lineChartDayFormat = DateTimeFormatter.ofPattern("MMM dd");
 
     private LocalDateTime currentDateTime;
+    private Instant currentUTCDateTime;
+    private LocalDate currentLocalDate;
     private final String END_DATE = "0000-01-01T00:00:00.000";
 
     private boolean domainNameAscending = false;
@@ -109,6 +115,8 @@ public class StatisticsFragment extends Fragment {
 
         description.setText("");
         currentDateTime = LocalDateTime.now();
+        currentUTCDateTime = Instant.now();
+        currentLocalDate = LocalDate.now(ZoneId.systemDefault());
 
         // Displays domain data
         initColors();
@@ -131,7 +139,7 @@ public class StatisticsFragment extends Fragment {
                 String selectedItem = parent.getItemAtPosition(position).toString();
                 JSONObject getData = new JSONObject();
                 try {
-                    getData.put(VolleySingleton.startDate, currentDateTime);
+                    getData.put(VolleySingleton.startDate, currentUTCDateTime);
                     getData.put(VolleySingleton.limit, LIMIT);
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -139,28 +147,28 @@ public class StatisticsFragment extends Fragment {
                 switch (selectedItem) {
                     case "Daily":
                         try {
-                            getData.put(VolleySingleton.endDate, currentDateTime.minusDays(1));
+                            getData.put(VolleySingleton.endDate, currentUTCDateTime.minus(1, ChronoUnit.DAYS));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                         break;
                     case "Weekly":
                         try {
-                            getData.put(VolleySingleton.endDate, currentDateTime.minusWeeks(1));
+                            getData.put(VolleySingleton.endDate, currentUTCDateTime.minus(7, ChronoUnit.DAYS));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                         break;
                     case "Monthly":
                         try {
-                            getData.put(VolleySingleton.endDate, currentDateTime.minusMonths(1));
+                            getData.put(VolleySingleton.endDate,currentUTCDateTime.minus(1, ChronoUnit.MONTHS));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                         break;
                     case "Yearly":
                         try {
-                            getData.put(VolleySingleton.endDate, currentDateTime.minusYears(1));
+                            getData.put(VolleySingleton.endDate, currentUTCDateTime.minus(1, ChronoUnit.YEARS));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -549,8 +557,8 @@ public class StatisticsFragment extends Fragment {
 
         // Send backend request
         try {
-            domainRequest.put(VolleySingleton.startDate, currentDateTime.toString());
-            domainRequest.put(VolleySingleton.endDate, currentDateTime.minusWeeks(1).toString());
+            domainRequest.put(VolleySingleton.startDate, currentUTCDateTime);
+            domainRequest.put(VolleySingleton.endDate, currentUTCDateTime.minus(7, ChronoUnit.DAYS));
             VolleyRequest.addRequest(getContext(),
                     VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY,
                     User.getInstance().getUserID(),
@@ -571,10 +579,12 @@ public class StatisticsFragment extends Fragment {
         // Set up backend requests
         for (int i = 0; i <= 30; i++) {
             JSONObject domainRequest = new JSONObject();
-            LocalDateTime dateTime = currentDateTime.minusDays(i);
+            ZonedDateTime startDateTime = currentLocalDate.minusDays(i-1).atStartOfDay(ZoneId.systemDefault()).minusSeconds(1);
+            ZonedDateTime endDateTime = currentLocalDate.minusDays(i).atStartOfDay(ZoneId.systemDefault());
             try {
-                domainRequest.put(VolleySingleton.startDate, dayFormat.format(dateTime) + "T23:59:59.999Z");
-                domainRequest.put(VolleySingleton.endDate, dayFormat.format(dateTime) + "T00:00:00.000Z");
+                domainRequest.put(VolleySingleton.startDate, startDateTime.toInstant().toString());
+                domainRequest.put(VolleySingleton.endDate, endDateTime.toInstant().toString());
+                int finalI = i;
                 VolleyRequest.addRequest(getContext(),
                         VolleyRequest.GET_RECENT_DOMAIN_REQUEST_ACTIVITY,
                         User.getInstance().getUserID(),
@@ -583,7 +593,7 @@ public class StatisticsFragment extends Fragment {
                         new VolleyResponseListener() {
                             @Override
                             public void onError(Object response) {
-                                Log.i(TAG, "No accesses found on " + dayFormat.format(dateTime));
+                                Log.i(TAG, "No accesses found on " + startDateTime.toInstant().toString());
                             }
 
                             @Override
@@ -591,7 +601,7 @@ public class StatisticsFragment extends Fragment {
                                 try {
                                     JSONObject jsonResponse = new JSONObject(response.toString());
                                     Float numAccesses =  ((Number) jsonResponse.get(VolleySingleton.count)).floatValue();
-                                    lineChartData.put(dateTime, numAccesses);
+                                    lineChartData.put(currentDateTime.minusDays(finalI), numAccesses);
                                     showLineChart();
                                 } catch (JSONException e) {
                                     e.printStackTrace();
@@ -604,7 +614,6 @@ public class StatisticsFragment extends Fragment {
             }
 
         }
-
 
     }
 
