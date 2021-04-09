@@ -161,14 +161,14 @@ public class StatisticsFragment extends Fragment {
                         break;
                     case "Monthly":
                         try {
-                            getData.put(VolleySingleton.endDate,currentUTCDateTime.minus(1, ChronoUnit.MONTHS));
+                            getData.put(VolleySingleton.endDate,currentUTCDateTime.minus(30, ChronoUnit.DAYS));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
                         break;
                     case "Yearly":
                         try {
-                            getData.put(VolleySingleton.endDate, currentUTCDateTime.minus(1, ChronoUnit.YEARS));
+                            getData.put(VolleySingleton.endDate, currentUTCDateTime.minus(365, ChronoUnit.DAYS));
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
@@ -400,13 +400,13 @@ public class StatisticsFragment extends Fragment {
                 break;
         }
 
-        LocalDateTime localDateTime = LocalDateTime.now();
+
         String dayDate;
 
         // initializes the dates corresponds to the days of the week
         for (int i = 0; i < 7; i++) {
 
-            dayDate = localDateTime.minusDays(i).format(dayFormat);
+            dayDate = currentDateTime.minusDays(i).format(dayFormat);
 
             switch(dayIndex) {
                 case 0:
