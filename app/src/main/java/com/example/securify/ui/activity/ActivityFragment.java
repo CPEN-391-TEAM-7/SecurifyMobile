@@ -89,11 +89,11 @@ public class ActivityFragment extends Fragment {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-//                if (isChecked) {
-//                    WritetoBTDevice("1");
-//                } else {
-//                    WritetoBTDevice("0");
-//                }
+                if (isChecked) {
+                    WritetoBTDevice("1");
+                } else {
+                    WritetoBTDevice("0");
+                }
             }
         });
 
